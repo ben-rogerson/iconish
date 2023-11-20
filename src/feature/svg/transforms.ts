@@ -290,18 +290,19 @@ const strokeColorTransform = (doc: HTMLElement, config: Config) => {
   return doc;
 };
 
-export const transforms: ((doc: HTMLElement, config: Config) => HTMLElement)[] =
-  [
-    svgAttributesTransform,
-    // viewBoxTransform,
-    strokeWidthTransform,
-    vectorEffectTransform,
-    strokeLineCapTransform,
-    strokeLineJoinTransform,
-    strokeColorTransform,
-    fillColorTransform,
-  ];
+export const transforms: Array<
+  (doc: HTMLElement, config: Config) => HTMLElement
+> = [
+  svgAttributesTransform,
+  // viewBoxTransform,
+  strokeWidthTransform,
+  vectorEffectTransform,
+  strokeLineCapTransform,
+  strokeLineJoinTransform,
+  strokeColorTransform,
+  fillColorTransform,
+];
 
-export const sanitizeTransforms: ((doc: HTMLElement) => HTMLElement)[] = [
+export const sanitizeTransforms: Array<(doc: HTMLElement) => HTMLElement> = [
   svgAttributesSanitizeTransform,
 ];

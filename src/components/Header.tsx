@@ -1,4 +1,4 @@
-import { useAppActions, useAppStore } from "@/hooks/appState";
+import { useAppActions } from "@/hooks/appState";
 import { logoIcon, setIcon } from "@/lib/icons";
 import Link from "next/link";
 

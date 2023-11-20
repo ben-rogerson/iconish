@@ -24,7 +24,10 @@ export const optimizeAll = (svg: string) => {
       ],
     });
     return result.data;
-  } catch (e) {}
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    throw new Error(msg);
+  }
 };
 
 export const doTransformSvg =

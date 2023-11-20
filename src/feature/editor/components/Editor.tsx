@@ -3,9 +3,9 @@ import { AddEditor } from "@/components/Detail";
 import { RemoveButton } from "@/components/RemoveButton";
 import { Alerts } from "@/feature/editor/components/Alerts";
 import { Title } from "@/feature/editor/components/Title";
-import { useEditor, useEditorWrap } from "@/feature/editor/editor.hooks";
+import { useEditorWrap } from "@/feature/editor/editor.hooks";
 import { doSanitizeSvg } from "@/feature/svg/svgTasks";
-import { useAppActions, useAppStore } from "@/hooks/appState";
+import { useAppActions } from "@/hooks/appState";
 import { iconBarrier } from "@/lib/icons";
 import { calculateSizeSavings } from "@/utils/calculateSizeSavings";
 import { type EditorState } from "@/utils/types";
@@ -13,7 +13,6 @@ import { javascript } from "@codemirror/lang-javascript";
 import { EditorView } from "@codemirror/view";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import CodeMirror from "@uiw/react-codemirror";
-import { produce } from "immer";
 import { useCopyToClipboard } from "usehooks-ts";
 
 type EditorProps = {

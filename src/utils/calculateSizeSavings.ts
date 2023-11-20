@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 export const calculateSizeSavings = (codeBefore: string, codeAfter: string) => {
   const sizeBefore = (codeBefore.length * 2) / 1024;
   const sizeAfter = (codeAfter.length * 2) / 1024;

@@ -8,38 +8,38 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { useAppActions, useAppStore } from "@/hooks/appState";
 import { tw } from "@/lib/utils";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import validateColor from "validate-color";
 
-const saveTemplateAsFile = (
-  filename: string,
-  dataObjToWrite: Record<string, unknown>
-) => {
-  const json = JSON.stringify(dataObjToWrite);
-  const blob = new Blob([json], { type: "text/json" });
-  const link = document.createElement("a");
+// const saveTemplateAsFile = (
+//   filename: string,
+//   dataObjToWrite: Record<string, unknown>
+// ) => {
+//   const json = JSON.stringify(dataObjToWrite);
+//   const blob = new Blob([json], { type: "text/json" });
+//   const link = document.createElement("a");
 
-  link.download = filename;
-  link.href = window.URL.createObjectURL(blob);
-  link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
+//   link.download = filename;
+//   link.href = window.URL.createObjectURL(blob);
+//   link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
 
-  const evt = new MouseEvent("click", {
-    view: window,
-    bubbles: true,
-    cancelable: true,
-  });
+//   const evt = new MouseEvent("click", {
+//     view: window,
+//     bubbles: true,
+//     cancelable: true,
+//   });
 
-  link.dispatchEvent(evt);
-  link.remove();
+//   link.dispatchEvent(evt);
+//   link.remove();
 
-  return json;
-};
+//   return json;
+// };
 
 type ConfigRange = {
   title: string;
   defaultValue: string;
   type: "range";
-  onChange: (value: Array<number>) => void;
+  onChange: (value: number[]) => void;
 };
 
 type ConfigInput = {
@@ -54,7 +54,7 @@ type ConfigInput = {
 type ConfigSelect = {
   title: string;
   defaultValue: string;
-  options: Array<string>;
+  options: string[];
   onChange: (val: string) => void;
 };
 

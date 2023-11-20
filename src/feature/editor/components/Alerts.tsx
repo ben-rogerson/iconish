@@ -1,4 +1,3 @@
-import { parseSvg } from "@/feature/svg/parseSvg";
 import {
   Tooltip,
   TooltipContent,
@@ -90,7 +89,7 @@ const alerts = new Map([
       },
     },
   ],
-] satisfies [string, { desc: string; fix: string; test: (doc: Document) => boolean }][]);
+] satisfies Array<[string, { desc: string; fix: string; test: (doc: Document) => boolean }]>);
 
 export const parseSvgClient = (svg: string) =>
   new DOMParser().parseFromString(svg, "image/svg+xml");

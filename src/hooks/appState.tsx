@@ -1,6 +1,5 @@
 import { newId } from "@/utils/newId";
 import { type EditorState, type Group } from "@/utils/types";
-import deepMerge from "ts-deepmerge";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { type Config } from "../feature/config/types";
@@ -423,7 +422,7 @@ export const useAppStore = create<
       }),
       {
         name: "data-storage",
-        partialize: ({ actions, ...rest }) => rest,
+        partialize: ({ actions: _, ...rest }) => rest,
         onRehydrateStorage: () => (state) => {
           state?.actions.setHydrated();
         },

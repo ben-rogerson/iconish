@@ -1,59 +1,20 @@
-import { useAppActions, useAppStore } from "@/hooks/appState";
+import { useAppActions } from "@/hooks/appState";
 import { tw } from "@/lib/utils";
-import { useReducer, type FunctionComponent, useEffect } from "react";
+import { type FunctionComponent } from "react";
 import { type Group } from "@/utils/types";
 import { intlFormatDistance } from "date-fns";
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuLabel,
-//   DropdownMenuSeparator,
-//   DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu";
-
-import {
-  Cloud,
-  Copy,
-  CreditCard,
-  Cross,
-  Delete,
-  DeleteIcon,
-  Github,
-  Keyboard,
-  Layers,
-  LifeBuoy,
-  LogOut,
-  Mail,
-  MenuIcon,
-  MessageSquare,
-  MoreVertical,
-  Plus,
-  PlusCircle,
-  Settings,
-  Trash,
-  User,
-  UserPlus,
-  Users,
-} from "lucide-react";
-
+import { Copy, Layers, MoreVertical, Trash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useCopySvgsToClipboard } from "@/feature/svg/svg.hooks";
 import { useToast } from "@/components/ui/use-toast";
-import { activeGroupIdSchema } from "@/utils/schemas";
 
 export function Menu(props: {
   title: string;
@@ -267,7 +228,7 @@ export const GroupSet = (props: GroupSetBlock) => {
               key={`${i}-${id}`}
               type="button"
               className="pointer-events-auto relative z-10"
-              onClick={(e) => {
+              onClick={() => {
                 setActiveIcon(props.id, data.title, id);
               }}
             >

@@ -1,6 +1,11 @@
 {
     "cSpell.words": [
         "burd",
-        "partialize"
+        "codemirror",
+        "immer",
+        "partialize",
+        "Svgs",
+        "usehooks",
+        "zustand"
     ]
 }
