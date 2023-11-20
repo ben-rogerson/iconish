@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useReducer, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { Sortable } from "@/components/Sortable";
 import {
   bugIcon,
@@ -12,7 +12,6 @@ import { useAppActions, useAppStore } from "@/hooks/appState";
 import { GroupSet } from "@/components/GroupSet";
 // import { ConfigPanel } from "@/feature/config/components/ConfigPanel";
 import dynamic from "next/dynamic";
-import { hashCode } from "@/utils/hash";
 
 const AddIconInput = forwardRef<
   HTMLInputElement,

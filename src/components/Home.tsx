@@ -2,7 +2,6 @@
 import { LayoutDefault } from "@/components/LayoutDefault";
 import { Detail } from "@/components/Detail";
 import { List } from "@/components/List";
-import { Suspense } from "react";
 import { useAppStore } from "@/hooks/appState";
 
 const Home = () => {
