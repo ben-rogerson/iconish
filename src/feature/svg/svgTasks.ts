@@ -2,7 +2,7 @@ import { optimize } from "svgo";
 import { sanitizeTransforms } from "@/feature/svg/transforms";
 import { transformSvg } from "@/feature/svg/transformSvg";
 import { parseSvg } from "@/feature/svg/parseSvg";
-import { Config } from "@/feature/config/types";
+import type { Config } from "@/feature/config/types";
 
 export const optimizeAll = (svg: string) => {
   try {

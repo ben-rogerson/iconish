@@ -44,6 +44,7 @@ const SortableItem = (props: { id: string; children: ReactNode }) => {
       <button
         {...listeners}
         className="absolute -left-8 top-5 hidden text-4xl text-[--drag-indicator-text] hover:text-[--drag-indicator-text-active] group-hover:block"
+        type="button"
       >
         {icon}
         <div className="absolute inset-0 h-10 w-10 bg-transparent" />

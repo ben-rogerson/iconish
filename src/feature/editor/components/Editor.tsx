@@ -50,13 +50,17 @@ const Editor = (props: EditorProps) => {
     <div className="group/editor relative grid gap-3">
       <div className="grid grid-cols-2">
         <div className="absolute right-0 top-3">
-          <RemoveButton onClick={() => removeEditor(props.id)} />
+          <RemoveButton
+            onClick={() => {
+              removeEditor(props.id);
+            }}
+          />
         </div>
         <Title id={props.id} title={props.data.title} />
       </div>
       <div className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] md:grid">
         <div className="relative rounded-l border border-[--line-border] bg-[--page-bg-dark] p-[25%] text-center">
-          {showOutput && sanitizedSvg && (
+          {Boolean(showOutput && sanitizedSvg) && (
             <>
               <div dangerouslySetInnerHTML={{ __html: sanitizedSvg }} />
               <Alerts svg={props.data.view?.doc ?? ""} />
@@ -66,7 +70,7 @@ const Editor = (props: EditorProps) => {
             </>
           )}
           {!showOutput && iconBarrier}
-          {showOutput && (
+          {Boolean(showOutput) && (
             <div className="absolute -bottom-px left-1/2 top-full h-[50px] w-px origin-top-left bg-[--line-border] after:absolute after:bottom-px after:h-2 after:w-2 after:-translate-x-[50%] after:-rotate-45 after:border-b after:border-l after:border-b-[--line-border] after:border-l-[--line-border]" />
           )}
         </div>
@@ -78,20 +82,20 @@ const Editor = (props: EditorProps) => {
           )}
           {showOutput ? (
             <CodeMirror
-              value={props.data.view?.doc ?? ""}
               extensions={[
                 javascript({ jsx: true }),
                 [...[hasWordWrapIn ? EditorView.lineWrapping : []]],
               ]}
-              theme={vscodeDark}
               onChange={handleOnChange}
+              theme={vscodeDark}
+              value={props.data.view?.doc ?? ""}
             />
           ) : (
             <AddEditor editorId={props.id} />
           )}
         </div>
       </div>
-      {showOutput && (
+      {Boolean(showOutput) && (
         <div className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] md:grid">
           <div className="relative rounded-l border border-[--line-border] bg-[--page-bg-dark] p-[25%]">
             <div dangerouslySetInnerHTML={{ __html: svg.output }} />
@@ -106,14 +110,13 @@ const Editor = (props: EditorProps) => {
               </div>
             )}
             <CodeMirror
-              value={svg.output}
               extensions={[
                 javascript({ jsx: true }),
                 EditorView.editable.of(false),
                 [...[hasWordWrapOut ? EditorView.lineWrapping : []]],
               ]}
-              // theme={dracula}
               theme={vscodeDark}
+              value={svg.output}
               // onUpdate={handleOnUpdateOut}
             />
             <div className="text-md absolute -bottom-3 left-0 flex w-full justify-between px-6 uppercase">

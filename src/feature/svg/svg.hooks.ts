@@ -7,7 +7,7 @@ export const useCopySvgsToClipboard = (groupId: string) => {
 
   return {
     copy: () => {
-      setCopied(getSvgsFromGroupId(groupId));
+      void setCopied(getSvgsFromGroupId(groupId));
     },
     hasCopied,
   };

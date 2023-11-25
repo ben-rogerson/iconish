@@ -119,7 +119,7 @@ export const useAppStore = create<
             const groupId = get().activeGroupId;
             set({
               groups: produce(get().groups, (draft) => {
-                const group = draft.find((group) => group.id === groupId);
+                const group = draft.find((g) => g.id === groupId);
                 if (!group) return;
                 group.config = { ...group.config, ...configItem };
               }),
@@ -131,7 +131,7 @@ export const useAppStore = create<
           getConfig() {
             const group = get().actions.getGroup();
             if (!group?.config) return initialConfig;
-            return group?.config;
+            return group.config;
           },
 
           // Groups
@@ -214,7 +214,7 @@ export const useAppStore = create<
                       const editorData = editor[1];
                       const svg = transformSvg(
                         editorData.view?.doc ?? editorData.svg.original,
-                        editorData.title ?? "",
+                        editorData.title,
                         config
                       );
                       return [
@@ -262,13 +262,14 @@ export const useAppStore = create<
               .find((e) => e[0] === editorId),
 
           getSvgsFromGroupId(groupId: string) {
-            const svgs =
-              (get().groups.find((g) => g.id === groupId)?.editors ?? [])
-                .map(([, data]) =>
-                  data.svg.output.startsWith("<svg") ? data.svg.output : null
-                )
-                .filter(Boolean)
-                .join("\n") ?? "";
+            const svgs = (
+              get().groups.find((g) => g.id === groupId)?.editors ?? []
+            )
+              .map(([, data]) =>
+                data.svg.output.startsWith("<svg") ? data.svg.output : null
+              )
+              .filter(Boolean)
+              .join("\n");
             return svgs;
           },
 
@@ -288,7 +289,7 @@ export const useAppStore = create<
               // ? addGroup()?.id:
               toGroupId ?? get().activeGroupId;
 
-            const isSvg = input?.includes("<svg");
+            const isSvg = input.includes("<svg");
 
             const newEditor = isSvg
               ? initialEditorData(
@@ -296,7 +297,7 @@ export const useAppStore = create<
                   title
                 )
               : initialEditorData(undefined, input);
-            const newId = newEditor[0]; // Get id for scroll use
+            const newEditorId = newEditor[0]; // Get id for scroll use
 
             const newGroups: Group[] = [];
 
@@ -325,7 +326,7 @@ export const useAppStore = create<
               scrollTo: () => {
                 setTimeout(() => {
                   document
-                    .querySelector(`#${newId}`)
+                    .querySelector(`#${newEditorId}`)
                     ?.scrollIntoView({ behavior: "smooth" });
                 }, 0);
               },
@@ -334,7 +335,7 @@ export const useAppStore = create<
 
           addEditorAtIndex: (index, editor) => {
             const newEditor = editor ?? initialEditorData();
-            const newId = newEditor[0]; // Get id for scroll use
+            const newEditorId = newEditor[0]; // Get id for scroll use
 
             const newGroups: Group[] = [];
 
@@ -359,7 +360,7 @@ export const useAppStore = create<
               scrollTo: () => {
                 setTimeout(() => {
                   document
-                    .querySelector(`#${newId}`)
+                    .querySelector(`#${newEditorId}`)
                     ?.scrollIntoView({ behavior: "smooth" });
                 }, 0);
               },

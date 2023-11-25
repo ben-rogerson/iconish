@@ -33,14 +33,14 @@ export function Menu(props: {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button>
+        <button type="button">
           <MoreVertical />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel>
           Icon set
-          {props.createdAt && (
+          {!!props.createdAt && (
             <>
               <br />
               Added {relativeTime(props.createdAt)}
@@ -127,9 +127,9 @@ const Header: FunctionComponent<{
           type="text"
           defaultValue={props.title}
           placeholder={props.title ? "" : "Untitled set…"}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            props.updateGroupTitle(e.currentTarget.value, props.id)
-          }
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            props.updateGroupTitle(e.currentTarget.value, props.id);
+          }}
           className={tw(
             `w-[inherit] bg-transparent text-xl text-[--text-muted]`,
             `focus:text-[--text-normal] focus:text-[--text] focus:outline-none`,
@@ -225,6 +225,7 @@ export const GroupSet = (props: GroupSetBlock) => {
 
           {props.icons.map(([id, data], i) => (
             <button
+              // eslint-disable-next-line react/no-array-index-key
               key={`${i}-${id}`}
               type="button"
               className="pointer-events-auto relative z-10"
@@ -250,7 +251,9 @@ export const GroupSet = (props: GroupSetBlock) => {
         {!props.isHeader && (
           <button
             type="button"
-            onClick={() => handleSelectGroup(props.id)}
+            onClick={() => {
+              handleSelectGroup(props.id);
+            }}
             className={tw(
               "absolute inset-0 z-0 cursor-pointer rounded-lg opacity-0",
               "hover:opacity-50 group-focus-within:opacity-50 group-hover:opacity-50",

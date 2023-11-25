@@ -40,7 +40,7 @@ const List = () => {
   //   }, 0);
   // };
 
-  const showGroups = (groups?.length ?? 0) > 0;
+  const showGroups = groups.length > 0;
 
   return (
     <div id="sets" className="grid gap-9">
@@ -48,8 +48,8 @@ const List = () => {
         <div>Export</div>
         <div>Export all SVGs</div>
       </div> */}
-      {showGroups &&
-        groups?.map((g) => (
+      {!!showGroups &&
+        groups.map((g) => (
           <GroupSet
             key={g.id}
             id={g.id}

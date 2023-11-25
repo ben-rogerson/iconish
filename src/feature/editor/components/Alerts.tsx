@@ -7,12 +7,12 @@ import {
 
 const warningIcon = (
   <svg
+    className="h-[1em] w-[1em] text-xl"
     fill="none"
     stroke="currentColor"
     strokeLinecap="round"
     strokeLinejoin="round"
     strokeWidth="1.5"
-    className="h-[1em] w-[1em] text-xl"
     viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg"
   >
@@ -56,9 +56,9 @@ const alerts = new Map([
         );
         const valueSet = new Set();
         for (const path of paths) {
-          const value = path.getAttribute("fill");
+          const value = path.getAttribute("fill") ?? "";
           if (
-            ["none", "currentColor", "inherit", "initial", ""].includes(value!)
+            ["none", "currentColor", "inherit", "initial", ""].includes(value)
           )
             continue;
           valueSet.add(value);
@@ -78,9 +78,9 @@ const alerts = new Map([
         );
         const valueSet = new Set();
         for (const path of paths) {
-          const value = path.getAttribute("stroke");
+          const value = path.getAttribute("stroke") ?? "";
           if (
-            ["none", "currentColor", "inherit", "initial", ""].includes(value!)
+            ["none", "currentColor", "inherit", "initial", ""].includes(value)
           )
             continue;
           valueSet.add(value);

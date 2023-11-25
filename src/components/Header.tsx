@@ -11,6 +11,7 @@ export function Header() {
         {logoIcon}
         <div>Iconish</div>
       </Link>
+      {/* eslint-disable-next-line react/button-has-type */}
       <button
         className="flex items-center gap-2 text-[--text-muted] hover:text-[--text]"
         onClick={addGroup}

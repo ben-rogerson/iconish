@@ -80,7 +80,9 @@ export const AddEditor = (props: { editorId: string }) => {
             <div className="mr-3">Or add a</div>
             {examples.map((item) => (
               <ExampleItem
-                onClick={() => handleUpdateEditor(item[1].code)}
+                onClick={() => {
+                  handleUpdateEditor(item[1].code);
+                }}
                 key={item[0]}
                 svg={item[1].display}
                 title={item[0]}
@@ -125,7 +127,7 @@ const Detail = () => {
         <ConfigPanelNoSSR />
       </div>
       <div className="grid gap-y-20">
-        {group && (
+        {!!group && (
           <GroupSet
             id={group.id}
             title={group.title}

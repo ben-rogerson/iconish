@@ -23,6 +23,7 @@ const Add = (props: { onClick: () => void; isTop?: boolean }) => {
         "py-10 w-full block group/add absolute",
         props.isTop ? "-top-16" : "-bottom-34"
       )}
+      type="button"
       onClick={props.onClick}
     >
       <div className="bg-[--line-border-dark] invisible group-hover/add:visible h-0.5 rounded text-4xl grid place-content-center">
@@ -65,10 +66,10 @@ const Sortable = () => {
 
   const componentList: JSX.Element[] = [];
   const idList: string[] = [];
-  getEditors.forEach(([id, data], index) => {
-    idList.push(id);
+  getEditors.forEach(([editorId, data], index) => {
+    idList.push(editorId);
     componentList.push(
-      <SortableItem key={id} id={id}>
+      <SortableItem key={editorId} id={editorId}>
         <div className="relative">
           {index === 0 && (
             <Add
@@ -78,7 +79,7 @@ const Sortable = () => {
               isTop
             />
           )}
-          <Editor key={id} id={id} data={data} />
+          <Editor key={editorId} id={editorId} data={data} />
           <Add
             onClick={() => {
               addEditorAtIndex(index + 1);

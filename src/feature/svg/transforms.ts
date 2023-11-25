@@ -26,9 +26,9 @@ const fillColorTransform = (doc: HTMLElement, config: Config) => {
 
   const targetPaths = [...paths]
     .map((path) => {
-      const value = path.getAttribute("fill");
+      const value = path.getAttribute("fill") ?? "";
 
-      if (ELEMENT_COMMON_IGNORE_VALUES.includes(value!)) return null;
+      if (ELEMENT_COMMON_IGNORE_VALUES.includes(value)) return null;
       return path;
     })
     .filter(Boolean);
@@ -188,7 +188,7 @@ const svgAttributesTransform = (doc: HTMLElement, config: Config) => {
 
   if (svg.hasAttribute("stroke")) {
     const strokeConfig = config.stroke;
-    const value = svg.getAttribute("stroke")!;
+    const value = svg.getAttribute("stroke") ?? "";
 
     if (value.length > 0 && value !== strokeConfig) {
       // console.warn(
@@ -254,7 +254,7 @@ const strokeColorTransform = (doc: HTMLElement, config: Config) => {
   for (const path of paths) {
     if (!path.hasAttribute("stroke")) continue;
 
-    const value = path.getAttribute("stroke")!;
+    const value = path.getAttribute("stroke") ?? "";
     if (ELEMENT_COMMON_IGNORE_VALUES.includes(value)) continue;
     valueSet.add(value);
   }
@@ -268,7 +268,7 @@ const strokeColorTransform = (doc: HTMLElement, config: Config) => {
   for (const path of paths) {
     if (!path.hasAttribute("stroke")) continue;
 
-    const value = path.getAttribute("stroke")!;
+    const value = path.getAttribute("stroke") ?? "";
 
     // if (value === "" || value === "0") {
     //   path.removeAttribute("stroke");

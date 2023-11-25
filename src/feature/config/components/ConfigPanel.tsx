@@ -168,10 +168,12 @@ export const ConfigPanel = () => {
       key={`group-${activeGroupId}`}
     >
       {configItems.map((item, i) => (
+        // eslint-disable-next-line react/no-array-index-key
         <label className="grid" key={i}>
           <div className="">{item.title}</div>
           <div className="flex gap-2 text-[--text-muted]">
             {(isRange(item) && (
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
               <div className="absolute relative -mb-2 -mt-1 flex w-44 items-center gap-2">
                 <Slider
                   defaultValue={[Number(item.defaultValue)]}
@@ -180,12 +182,13 @@ export const ConfigPanel = () => {
                   step={1}
                   onValueChange={item.onChange}
                 />
-                {item.type === "range" && `${item.defaultValue}`}
+                {item.defaultValue}
               </div>
             )) ||
               (isInput(item) && (
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 <div className={tw`flex items-center gap-x-1.5`}>
-                  {item.theme && (
+                  {!!item.theme && (
                     <div
                       className={tw`h-3 w-3 rounded-sm`}
                       style={{ backgroundColor: `${item.theme}` }}
@@ -211,7 +214,7 @@ export const ConfigPanel = () => {
                       <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {item.options?.map((o) => (
+                      {item.options.map((o) => (
                         <SelectItem key={o} value={o}>
                           {o}
                         </SelectItem>

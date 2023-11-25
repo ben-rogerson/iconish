@@ -8,6 +8,7 @@ export const RemoveButton: FunctionComponent<{
   return (
     <button
       onClick={props.onClick}
+      type="button"
       className={tw([
         "group/button",
         "group-hover/editor:block group-hover/set:block",
