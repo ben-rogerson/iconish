@@ -4,11 +4,13 @@ import { Toaster } from "@/components/ui/toaster";
 
 const LayoutDefault = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="px-4 md:px-20 w-full max-w-[1200px]">
-      <header>
-        <Header />
-      </header>
-      <main>{children}</main>
+    <div>
+      <div className="px-4 md:px-20 w-full max-w-[1200px]">
+        <header>
+          <Header />
+        </header>
+        <main>{children}</main>
+      </div>
       <footer>
         <Footer />
       </footer>

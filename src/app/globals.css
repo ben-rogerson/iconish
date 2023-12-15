@@ -168,5 +168,6 @@ html {
 @layer base {
   * {
     @apply border-border;
+    min-width: 0; /* Giving this a trial */
   }
 }

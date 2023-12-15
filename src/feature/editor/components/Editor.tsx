@@ -23,7 +23,7 @@ type EditorProps = {
 const Editor = (props: EditorProps) => {
   const { removeEditor, updateEditorSvg } = useAppActions();
   const sanitizedSvg = doSanitizeSvg(props.data.view?.doc ?? "");
-  const [hasWordWrapIn, WordWrapIn] = useEditorWrap(true);
+  const [hasWordWrapIn, WordWrapIn] = useEditorWrap(false);
   const [hasWordWrapOut, WordWrapOut] = useEditorWrap(true);
   const [copied, copy] = useCopyToClipboard();
 
@@ -59,7 +59,7 @@ const Editor = (props: EditorProps) => {
         <Title id={props.id} title={props.data.title} />
       </div>
       <div className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] md:grid">
-        <div className="relative rounded-l border border-[--line-border] bg-[--page-bg-dark] p-[25%] text-center">
+        <div className="relative rounded-l border border-[--line-border] bg-[--page-bg-dark] p-[25%]">
           {Boolean(showOutput && sanitizedSvg) && (
             <>
               <div dangerouslySetInnerHTML={{ __html: sanitizedSvg }} />
@@ -69,7 +69,9 @@ const Editor = (props: EditorProps) => {
               </div>
             </>
           )}
-          {!showOutput && iconBarrier}
+          {!showOutput && (
+            <div className="grid place-items-center h-full">{iconBarrier}</div>
+          )}
           {Boolean(showOutput) && (
             <div className="absolute -bottom-px left-1/2 top-full h-[50px] w-px origin-top-left bg-[--line-border] after:absolute after:bottom-px after:h-2 after:w-2 after:-translate-x-[50%] after:-rotate-45 after:border-b after:border-l after:border-b-[--line-border] after:border-l-[--line-border]" />
           )}

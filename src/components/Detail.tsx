@@ -12,10 +12,14 @@ import { useAppActions, useAppStore } from "@/hooks/appState";
 import { GroupSet } from "@/components/GroupSet";
 // import { ConfigPanel } from "@/feature/config/components/ConfigPanel";
 import dynamic from "next/dynamic";
+import { Upload } from "@/components/Upload";
 
 const AddIconInput = forwardRef<
   HTMLInputElement,
-  { onEnterKey: (value: string) => void }
+  {
+    onEnterKey: (value: string) => void;
+    onUpload: (value: Set<[string, string]>) => void;
+  }
 >((props, ref) => {
   return (
     <div className="flex items-center gap-1">
@@ -29,6 +33,7 @@ const AddIconInput = forwardRef<
           props.onEnterKey(e.currentTarget.value);
         }}
       />
+      <Upload onUpload={props.onUpload} />
     </div>
   );
 });
@@ -61,7 +66,7 @@ function ExampleItem(props: ExampleItem) {
 }
 
 export const AddEditor = (props: { editorId: string }) => {
-  const { updateEditorSvg } = useAppActions();
+  const { updateEditorSvg, addEditor } = useAppActions();
 
   const ref = useRef<HTMLInputElement>(null);
   // const { toast } = useToast();
@@ -70,12 +75,22 @@ export const AddEditor = (props: { editorId: string }) => {
     updateEditorSvg(props.editorId, value);
   };
 
+  const handleOnUpload = (values: Set<[string, string]>) => {
+    [...values].forEach(([fileName, svgCode]) => {
+      addEditor(svgCode, fileName);
+    });
+  };
+
   return (
     <div className="flex items-center justify-center">
       {/* <div className="text-[600%] text-[--text-muted]">{plusIcon}</div> */}
       <div className="w-full md:px-20 md:py-4">
         <div className="grid gap-3">
-          <AddIconInput ref={ref} onEnterKey={handleUpdateEditor} />
+          <AddIconInput
+            ref={ref}
+            onEnterKey={handleUpdateEditor}
+            onUpload={handleOnUpload}
+          />
           <div className="inline-flex items-center">
             <div className="mr-3">Or add a</div>
             {examples.map((item) => (
@@ -109,7 +124,6 @@ const ConfigPanelNoSSR = dynamic(
  */
 const useGroupRender = () => {
   const { getGroup } = useAppActions();
-  console.log({ getGroup });
   const hash = useAppStore((s) => s.updateListHash);
   const [group, setGroup] = useState(getGroup());
   useEffect(() => {
@@ -123,7 +137,10 @@ const Detail = () => {
 
   return (
     <>
-      <div className="sticky top-0 z-50 flex items-center gap-6 border-b border-b-[--line-border] bg-[--page-bg] py-5">
+      <div
+        className="sticky top-0 z-50 flex items-center gap-6 border-b border-b-[--line-border] bg-[--page-bg] py-5"
+        role="toolbar"
+      >
         <ConfigPanelNoSSR />
       </div>
       <div className="grid gap-y-20">

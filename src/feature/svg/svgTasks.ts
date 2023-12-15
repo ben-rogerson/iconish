@@ -37,12 +37,5 @@ export const doTransformSvg =
     original: originalSvg,
   });
 
-export const doSanitizeSvg = (svgInput: string) => {
-  const transformedDoc = sanitizeTransforms.reduce(
-    (a, t) => t(a),
-    parseSvg(svgInput)
-  );
-
-  const output = transformedDoc.toString();
-  return output;
-};
+export const doSanitizeSvg = (svgInput: string) =>
+  sanitizeTransforms.reduce((a, t) => t(a), parseSvg(svgInput)).toString();

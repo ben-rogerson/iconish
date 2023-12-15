@@ -26,8 +26,12 @@ export function Menu(props: {
   const copyAll = useCopySvgsToClipboard(props.groupId);
 
   const handleRemoveGroup = () => {
-    removeGroup(props.groupId);
-    toast({ title: `Deleted ‘${props.title || "Untitled set"}’ icon set` });
+    const { hasRemoved } = removeGroup(props.groupId);
+    toast({
+      title: hasRemoved
+        ? `Deleted ‘${props.title || "Untitled set"}’ icon set`
+        : "Add another set first, then you can delete this one",
+    });
   };
 
   return (
@@ -116,7 +120,7 @@ const Header: FunctionComponent<{
   isCurrent: boolean;
   isLarge: boolean;
   createdAt: number;
-  updateGroupTitle: (title: string, groupId: string) => void;
+  updateGroupTitle: (groupId: string, title: string) => void;
 }> = (props) => {
   return (
     <header
@@ -128,7 +132,7 @@ const Header: FunctionComponent<{
           defaultValue={props.title}
           placeholder={props.title ? "" : "Untitled set…"}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            props.updateGroupTitle(e.currentTarget.value, props.id);
+            props.updateGroupTitle(props.id, e.currentTarget.value);
           }}
           className={tw(
             `w-[inherit] bg-transparent text-xl text-[--text-muted]`,
@@ -158,6 +162,7 @@ type GroupSetBlock = {
   title: Group["title"];
   createdAt: Group["createdAt"];
   icons: Group["editors"];
+  count?: number;
   isCurrent?: boolean;
   isHeader?: boolean;
 };
@@ -166,11 +171,15 @@ export const GroupSet = (props: GroupSetBlock) => {
   const { updateGroupTitle, setActiveGroup } = useAppActions();
   const { toast } = useToast();
 
-  const iconCount = props.icons.length;
+  const iconCount = props.count ?? props.icons.length;
   const hasIcons = props.icons.length > 0;
+  const hiddenCount =
+    !props.isHeader && props.count && props.count > props.icons.length
+      ? props.count - props.icons.length
+      : 0;
 
-  const handleUpdateGroupTitle = (title: string, groupId: string) => {
-    updateGroupTitle(title, groupId);
+  const handleUpdateGroupTitle = (groupId: string, title: string) => {
+    updateGroupTitle(groupId, title);
   };
 
   const handleSelectGroup = (groupId: string) => {
@@ -200,7 +209,7 @@ export const GroupSet = (props: GroupSetBlock) => {
   };
 
   return (
-    <div
+    <article
       className="group/set grid gap-3 overflow-hidden"
       id="header"
       key={props.id}
@@ -240,6 +249,10 @@ export const GroupSet = (props: GroupSetBlock) => {
               <Guides />
             </button>
           ))}
+
+          {hiddenCount > 0 && (
+            <div className="-mb-1 block text-lg">+{hiddenCount}</div>
+          )}
           {/* <button
                 type="button"
                 className="pointer-events-auto"
@@ -262,6 +275,6 @@ export const GroupSet = (props: GroupSetBlock) => {
           />
         )}
       </div>
-    </div>
+    </article>
   );
 };

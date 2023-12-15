@@ -42,6 +42,17 @@ const List = () => {
 
   const showGroups = groups.length > 0;
 
+  const icons = groups.map((g) => {
+    const iconsAll = g.editors.filter(
+      ([, data]) =>
+        data.svg.output &&
+        data.svg.output !== '<html xmlns="http://www.w3.org/1999/xhtml"/>'
+    );
+    const count = iconsAll.length;
+    const iconsLimit = iconsAll.slice(0, 10);
+    return { ...g, count, icons: iconsLimit };
+  });
+
   return (
     <div id="sets" className="grid gap-9">
       {/* <div className="flex justify-end gap-10">
@@ -49,18 +60,14 @@ const List = () => {
         <div>Export all SVGs</div>
       </div> */}
       {!!showGroups &&
-        groups.map((g) => (
+        icons.map((g) => (
           <GroupSet
             key={g.id}
             id={g.id}
             title={g.title}
             createdAt={g.createdAt}
-            icons={g.editors.filter(
-              ([, data]) =>
-                data.svg.output &&
-                data.svg.output !==
-                  '<html xmlns="http://www.w3.org/1999/xhtml"/>'
-            )}
+            icons={g.icons}
+            count={g.count}
             isCurrent={g.id === activeGroupId}
           />
         ))}
@@ -68,7 +75,7 @@ const List = () => {
         <button
           type="button"
           onClick={handleAddSet}
-          className="block flex items-center gap-2 py-10 text-[--text-muted] hover:text-[--text]"
+          className="flex items-center gap-2 py-10 text-[--text-muted] hover:text-[--text]"
         >
           {setIcon} Add a set
         </button>

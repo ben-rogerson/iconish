@@ -22,6 +22,16 @@ const alias: AliasOptions = Object.entries(compilerOptions.paths).reduce(
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  test: { environment: "jsdom" },
+  test: {
+    // root: "src",
+    globals: true,
+    environment: "jsdom",
+    testTimeout: 2000,
+    setupFiles: "./vitest-setup.ts",
+    include: ["**/*.test.tsx", "**/*.test.ts"],
+    coverage: {
+      enabled: true,
+    },
+  },
   resolve: { alias },
 });

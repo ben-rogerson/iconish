@@ -4,11 +4,13 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectMainLabel,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { useAppActions, useAppStore } from "@/hooks/appState";
 import { tw } from "@/lib/utils";
-import { useMemo } from "react";
+import { run } from "@/utils/run";
+import { Fragment, useMemo } from "react";
 import validateColor from "validate-color";
 
 // const saveTemplateAsFile = (
@@ -49,6 +51,7 @@ type ConfigInput = {
   theme?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onClick?: (e: React.MouseEvent<HTMLInputElement>) => void;
 };
 
 type ConfigSelect = {
@@ -93,12 +96,17 @@ export const ConfigPanel = () => {
             e.target.value && validateColor(e.target.value)
               ? e.target.value
               : null;
+
           if (!stroke) return;
+
           setConfig({ stroke });
         },
         onBlur: (e) => {
           if (validateColor(e.target.value)) return;
           e.target.value = config.stroke;
+        },
+        onClick: () => {
+          console.log("TODO: open color picker");
         },
       } satisfies ConfigInput,
       {
@@ -169,62 +177,87 @@ export const ConfigPanel = () => {
     >
       {configItems.map((item, i) => (
         // eslint-disable-next-line react/no-array-index-key
-        <label className="grid" key={i}>
-          <div className="">{item.title}</div>
-          <div className="flex gap-2 text-[--text-muted]">
-            {(isRange(item) && (
-              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-              <div className="absolute relative -mb-2 -mt-1 flex w-44 items-center gap-2">
-                <Slider
-                  defaultValue={[Number(item.defaultValue)]}
-                  max={5}
-                  min={1}
-                  step={1}
-                  onValueChange={item.onChange}
-                />
-                {item.defaultValue}
-              </div>
-            )) ||
-              (isInput(item) && (
+        <Fragment key={i}>
+          {run(() => {
+            if (isRange(item))
+              return (
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                <div className={tw`flex items-center gap-x-1.5`}>
-                  {!!item.theme && (
-                    <div
-                      className={tw`h-3 w-3 rounded-sm`}
-                      style={{ backgroundColor: `${item.theme}` }}
-                    />
-                  )}
-                  <input
-                    type="text"
-                    defaultValue={item.defaultValue}
-                    onChange={item.onChange}
-                    onBlur={item.onBlur}
-                    spellCheck={false}
-                    className="border-b border-b-transparent bg-transparent text-[--text-muted] focus:border-b-[--line-border] focus:text-[--text-normal] focus:text-[--text] focus:outline-none"
-                  />
+                <div data-testid={`range-${i}`}>
+                  {/* Can't be accessible label - id not supported with Slider */}
+                  <div id={`range-${i}-title`}>{item.title}</div>
+                  <div className="flex gap-2 text-[--text-muted]">
+                    <div className="relative -mb-2 -mt-1 flex w-44 items-center gap-2">
+                      <Slider
+                        defaultValue={[Number(item.defaultValue)]}
+                        max={5}
+                        min={1}
+                        step={1}
+                        aria-labelledby={`range-${i}-title`}
+                        onValueChange={item.onChange}
+                        id={`range-${i}`}
+                      />
+                      {item.defaultValue}
+                    </div>
+                  </div>
                 </div>
-              )) ||
-              (isSelect(item) && (
-                <div className="flex items-center gap-x-1.5">
-                  <Select
-                    onValueChange={item.onChange}
-                    defaultValue={item.defaultValue}
-                  >
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Select..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {item.options.map((o) => (
-                        <SelectItem key={o} value={o}>
-                          {o}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              );
+
+            if (isInput(item))
+              return (
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                <div data-testid={`input-${i}`}>
+                  <label htmlFor={`input-${i}`}>{item.title}</label>
+                  <div className="flex gap-2 text-[--text-muted]">
+                    <div className={tw`flex items-center gap-x-1.5`}>
+                      {!!item.theme && (
+                        <div
+                          className={tw`h-3 w-3 rounded-sm`}
+                          style={{ backgroundColor: `${item.theme}` }}
+                        />
+                      )}
+                      <input
+                        type="text"
+                        defaultValue={item.defaultValue}
+                        onChange={item.onChange}
+                        onBlur={item.onBlur}
+                        spellCheck={false}
+                        className="border-b border-b-transparent bg-transparent text-[--text-muted] focus:border-b-[--line-border] focus:text-[--text] focus:outline-none w-full"
+                        id={`input-${i}`}
+                      />
+                    </div>
+                  </div>
                 </div>
-              ))}
-          </div>
-        </label>
+              );
+
+            if (isSelect(item))
+              return (
+                <div data-testid={`select-${i}`}>
+                  <SelectMainLabel htmlFor={`select-${i}`}>
+                    {item.title}
+                  </SelectMainLabel>
+                  <div className="flex gap-2 text-[--text-muted]">
+                    <div className="flex items-center gap-x-1.5">
+                      <Select
+                        onValueChange={item.onChange}
+                        defaultValue={item.defaultValue}
+                      >
+                        <SelectTrigger className="w-[180px]" id={`select-${i}`}>
+                          <SelectValue placeholder="Select..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {item.options.map((o) => (
+                            <SelectItem key={o} value={o}>
+                              {o}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+              );
+          })}
+        </Fragment>
       ))}
       {/* Config:
       <button type="button" onClick={handleLoadConfig}>

@@ -40,6 +40,7 @@ const SortableItem = (props: { id: string; children: ReactNode }) => {
       style={style}
       {...attributes}
       className="group relative cursor-auto bg-[--page-bg]"
+      data-testid="sortable-item"
     >
       <button
         {...listeners}

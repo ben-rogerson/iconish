@@ -21,10 +21,10 @@ interface AppStoreActions {
   setConfig: (configItem: ConfigItem) => void;
   getConfig: () => Config;
 
-  updateGroupTitle: (title: string, groupId: string) => void;
+  updateGroupTitle: (groupId: string, title: string) => void;
   getGroup: () => Group | undefined;
-  addGroup: () => void;
-  removeGroup: (id: string) => void;
+  addGroup: (title?: string) => void;
+  removeGroup: (id: string) => { hasSwitched: boolean; hasRemoved: boolean };
   getSvgsFromGroupId: (groupId: string) => string;
   setActiveGroup: (id: string) => { hasSwitched: boolean };
   updateSvgOutputs: (config?: Config) => void;
@@ -55,19 +55,19 @@ interface AppStoreState {
   activeGroupId: Group["id"];
 }
 
-const initialConfig = {
+export const initialConfig = {
   strokeWidth: "2",
   stroke: "currentColor",
   fill: "currentColor",
   strokeLinecap: "round",
   strokeLinejoin: "round",
-} satisfies Config;
+} as const satisfies Config;
 
-const makeGroup = (config?: Config) =>
+const makeGroup = (config?: Config, title?: string, editors?: EditorState[]) =>
   ({
     id: newId("g"),
     createdAt: Date.now(),
-    title: "",
+    title: title ?? "",
     config: config ?? initialConfig,
     editors: [initialEditorData()],
   } satisfies Group);
@@ -78,19 +78,12 @@ const initialEditorData = (svgData?: SVGData, title?: string) => {
     {
       title: title ?? "",
       svg: {
-        ...svgData,
-        // ...{
-        // symbolReference: "",
-        // symbol: "",
-        output: "",
-        original: "",
-        // ...svgData?. ?? {}
-        // },
+        output: svgData?.output ?? "",
+        original: svgData?.original ?? "",
       },
       view: {
         doc: svgData?.original ?? "",
         selection: null,
-        // history: null,
       },
     },
   ] satisfies EditorState;
@@ -108,7 +101,8 @@ export const useAppStore = create<
       (set, get) => ({
         _hasHydrated: false,
         updateListHash: 123,
-        activeGroupId: initialGroup.editors[0][0],
+        activeGroupId: initialGroup.id,
+        // activeGroupId: initialGroup.editors[0][0],
         groups: [initialGroup],
 
         actions: {
@@ -116,11 +110,13 @@ export const useAppStore = create<
             set({ _hasHydrated: true });
           },
           setConfig(configItem) {
-            const groupId = get().activeGroupId;
+            const activeGroupId = get().activeGroupId;
+
             set({
               groups: produce(get().groups, (draft) => {
-                const group = draft.find((g) => g.id === groupId);
+                const group = draft.find((g) => g.id === activeGroupId);
                 if (!group) return;
+
                 group.config = { ...group.config, ...configItem };
               }),
             });
@@ -136,9 +132,9 @@ export const useAppStore = create<
 
           // Groups
 
-          addGroup() {
+          addGroup(title) {
             const config = get().actions.getConfig();
-            const newGroup = makeGroup(config);
+            const newGroup = makeGroup(config, title);
             set({
               groups: [...get().groups, newGroup],
               activeGroupId: newGroup.id,
@@ -150,10 +146,27 @@ export const useAppStore = create<
           },
 
           removeGroup(id) {
-            const newGroups = get().groups.filter((g) => g.id !== id);
+            const groups = get().groups;
+            if (groups.length <= 1)
+              return {
+                hasSwitched: false,
+                hasRemoved: false,
+              };
+
+            const newGroups = groups.filter((g) => g.id !== id);
             set({ groups: newGroups });
-            if (get().activeGroupId === id)
-              set({ activeGroupId: newGroups[0]?.id });
+
+            if (get().activeGroupId === id) {
+              const { hasSwitched } = get().actions.setActiveGroup(
+                newGroups[0]?.id
+              );
+              return { hasSwitched, hasRemoved: true };
+            }
+
+            return {
+              hasSwitched: false,
+              hasRemoved: newGroups.length < groups.length,
+            };
           },
 
           setActiveGroup(activeGroupId) {
@@ -236,7 +249,7 @@ export const useAppStore = create<
             get().actions.refreshEditors();
           },
 
-          updateGroupTitle(title, groupId) {
+          updateGroupTitle(groupId, title) {
             set({
               groups: get().groups.map((group) =>
                 groupId !== group.id ? group : { ...group, title: title.trim() }
@@ -246,7 +259,6 @@ export const useAppStore = create<
 
           refreshEditors: () => {
             set({ updateListHash: hashCode(newId()) });
-            console.log("refreshEditors");
           },
 
           getEditors: () => {
@@ -293,13 +305,43 @@ export const useAppStore = create<
 
             const newEditor = isSvg
               ? initialEditorData(
-                  transformSvg(input, title ?? "", get().actions.getConfig()),
+                  {
+                    ...transformSvg(
+                      input,
+                      title ?? "",
+                      get().actions.getConfig()
+                    ),
+                    original: input,
+                  },
                   title
                 )
               : initialEditorData(undefined, input);
             const newEditorId = newEditor[0]; // Get id for scroll use
 
+            // TODO: Rewrite this to use immer
             const newGroups: Group[] = [];
+
+            // if (get().groups.length === 0) {
+            //   // get current editors
+            //   const editors = get().actions.getEditors();
+            //   console.log({ editors });
+
+            //   const newGroup = makeGroup(
+            //     get().actions.getConfig(),
+            //     undefined,
+            //     editors
+            //   );
+            //   newGroups.push(newGroup);
+
+            //   get().actions.setActiveGroup(newGroup.id);
+
+            //   set({ groups: newGroups });
+            //   get().actions.refreshEditors();
+
+            //   return {
+            //     scrollTo: () => {},
+            //   };
+            // }
 
             for (const group of get().groups) {
               if (groupAddingTo !== group.id) {

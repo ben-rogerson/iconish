@@ -14,9 +14,14 @@ import {
 import { SortableItem } from "./SortableItem";
 import { Editor } from "@/feature/editor/components/Editor";
 import { useAppActions, useAppStore } from "@/hooks/appState";
-import { tw } from "@/lib/utils";
+import { cn, tw } from "@/lib/utils";
 
-const Add = (props: { onClick: () => void; isTop?: boolean }) => {
+const Add = (props: {
+  onClick: () => void;
+  isTop?: boolean;
+  isVisible?: boolean;
+}) => {
+  const isVisible = props.isVisible ?? false;
   return (
     <button
       className={tw(
@@ -25,8 +30,14 @@ const Add = (props: { onClick: () => void; isTop?: boolean }) => {
       )}
       type="button"
       onClick={props.onClick}
+      data-testid="add-editor-button"
     >
-      <div className="bg-[--line-border-dark] invisible group-hover/add:visible h-0.5 rounded text-4xl grid place-content-center">
+      <div
+        className={cn(
+          "bg-[--line-border-dark] h-0.5 rounded text-4xl grid place-content-center",
+          { "invisible group-hover/add:visible": !isVisible }
+        )}
+      >
         <div className="bg-[--page-bg] px-5 text-[--line-border]">+</div>
       </div>
     </button>
@@ -39,8 +50,10 @@ const Add = (props: { onClick: () => void; isTop?: boolean }) => {
  */
 const useEditorsRender = () => {
   const { getGroup } = useAppActions();
+  // console.log({ getGroup: getGroup() });
   const hash = useAppStore((s) => s.updateListHash);
   const [group, setGroup] = useState(getGroup());
+
   useEffect(() => {
     setGroup(getGroup());
   }, [hash, getGroup]);
@@ -89,6 +102,20 @@ const Sortable = () => {
       </SortableItem>
     );
   });
+
+  if (componentList.length === 0) {
+    componentList.push(
+      <div className="relative">
+        <Add
+          onClick={() => {
+            addEditorAtIndex(0);
+          }}
+          isVisible={true}
+          isTop
+        />
+      </div>
+    );
+  }
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;

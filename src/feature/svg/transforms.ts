@@ -19,7 +19,7 @@ const ELEMENT_COMMON_IGNORE_VALUES = [
   "0",
 ];
 
-const fillColorTransform = (doc: HTMLElement, config: Config) => {
+export const fillColorTransform = (doc: HTMLElement, config: Config) => {
   const paths = doc.querySelectorAll(
     "path[fill], line[fill], polygon[fill], polyline[fill], ellipse[fill], rect[fill], circle[fill]"
   );
@@ -60,54 +60,67 @@ const fillColorTransform = (doc: HTMLElement, config: Config) => {
   return doc;
 };
 
-const vectorEffectTransform = (doc: HTMLElement) => {
+export const vectorEffectTransform = (doc: HTMLElement) => {
   const svg = doc.querySelector("svg");
-  const hasSvgStroke =
-    svg?.getAttribute("stroke") ??
+  const hasSvgStrokeWidth =
+    // svg?.getAttribute("stroke") ??
     svg?.getAttribute("stroke-width") ??
+    svg?.getAttribute("strokewidth") ??
     svg?.getAttribute("strokeWidth");
+
+  if (!hasSvgStrokeWidth) return doc;
 
   const paths = doc.querySelectorAll(
     "path, line, polygon, polyline, ellipse, rect, circle"
   );
+
   paths.forEach((path) => {
     if (
       path.hasAttribute("vector-effect") ||
-      path.hasAttribute("vectorEffect") ||
-      (!hasSvgStroke && !path.hasAttribute("stroke"))
+      path.hasAttribute("vectoreffect") ||
+      path.hasAttribute("vectorEffect")
+      // (!hasSvgStroke && !path.hasAttribute("stroke"))
     )
       return;
+
+    path.removeAttribute("vectoreffect");
+    path.removeAttribute("vectorEffect");
     path.setAttribute("vector-effect", "non-scaling-stroke");
   });
   return doc;
 };
 
-const strokeLineCapTransform = (doc: HTMLElement, config: Config) => {
+export const strokeLineCapTransform = (doc: HTMLElement, config: Config) => {
   const paths = doc.querySelectorAll("*[stroke-linecap]");
-  const strokeLineCapConfig = config.strokeLinecap;
   paths.forEach((path) => {
-    if (path.getAttribute("stroke-linecap") === strokeLineCapConfig) return;
-    path.setAttribute("stroke-linecap", strokeLineCapConfig);
+    path.setAttribute("stroke-linecap", config.strokeLinecap);
   });
   return doc;
 };
 
-const strokeLineJoinTransform = (doc: HTMLElement, config: Config) => {
+export const strokeLineJoinTransform = (doc: HTMLElement, config: Config) => {
   const paths = doc.querySelectorAll("*[stroke-linejoin]");
-  const strokeLineJoinConfig = config.strokeLinejoin;
   paths.forEach((path) => {
-    if (path.getAttribute("stroke-linejoin") === strokeLineJoinConfig) return;
-    path.setAttribute("stroke-linejoin", strokeLineJoinConfig);
+    path.setAttribute("stroke-linejoin", config.strokeLinejoin);
   });
   return doc;
 };
 
-const strokeWidthTransform = (doc: HTMLElement, config: Config) => {
-  const paths = doc.querySelectorAll(
-    "svg[strokeWidth], path[strokeWidth], line[strokeWidth], polygon[strokeWidth], polyline[strokeWidth], ellipse[strokeWidth], rect[strokeWidth], circle[strokeWidth], svg[stroke-width], path[stroke-width], line[stroke-width], polygon[stroke-width], polyline[stroke-width], ellipse[stroke-width], rect[stroke-width], circle[stroke-width]"
-  );
-
-  const strokeWidthConfig = config.strokeWidth;
+export const strokeWidthTransform = (doc: HTMLElement, config: Config) => {
+  const elementTargets = [
+    "svg",
+    "path",
+    "line",
+    "polygon",
+    "polyline",
+    "ellipse",
+    "rect",
+    "circle",
+  ];
+  const elementTargetsString = elementTargets
+    .map((e) => `${e}[strokewidth], ${e}[strokeWidth], ${e}[stroke-width]`)
+    .join(", ");
+  const paths = doc.querySelectorAll(elementTargetsString);
 
   paths.forEach((path) => {
     // let value = null;
@@ -118,7 +131,9 @@ const strokeWidthTransform = (doc: HTMLElement, config: Config) => {
     // const value =
     //   path.getAttribute("strokeWidth") ?? path.getAttribute("stroke-width");
 
+    path.removeAttribute("strokewidth");
     path.removeAttribute("strokeWidth");
+    path.removeAttribute("stroke-width");
 
     // if (value && value !== strokeWidthConfig)
     //   console.warn(
@@ -127,12 +142,12 @@ const strokeWidthTransform = (doc: HTMLElement, config: Config) => {
     //     )}, Updated: ${strokeWidthConfig}`
     //   );
 
-    path.setAttribute("stroke-width", strokeWidthConfig);
+    path.setAttribute("stroke-width", config.strokeWidth);
   });
   return doc;
 };
 
-const svgAttributesTransform = (doc: HTMLElement, config: Config) => {
+export const svgAttributesTransform = (doc: HTMLElement, config: Config) => {
   const svg = doc.querySelector("svg");
   if (!svg) return doc;
 
@@ -243,11 +258,10 @@ export const addId = (doc: HTMLElement, title: string) => {
   // return doc;
 };
 
-const strokeColorTransform = (doc: HTMLElement, config: Config) => {
+export const strokeColorTransform = (doc: HTMLElement, config: Config) => {
   const paths = doc.querySelectorAll(
     "path[stroke], line[stroke], polygon[stroke], polyline[stroke], ellipse[stroke], rect[stroke], circle[stroke]"
   );
-  const strokeColorConfig = config.stroke;
 
   // Check for a colored svg to avoid applying stroke color
   const valueSet = new Set();
@@ -258,6 +272,7 @@ const strokeColorTransform = (doc: HTMLElement, config: Config) => {
     if (ELEMENT_COMMON_IGNORE_VALUES.includes(value)) continue;
     valueSet.add(value);
   }
+
   if (valueSet.size > 1) {
     // console.warn(
     //   `Multiple stroke colors found, avoiding applying stroke color.`
@@ -268,7 +283,7 @@ const strokeColorTransform = (doc: HTMLElement, config: Config) => {
   for (const path of paths) {
     if (!path.hasAttribute("stroke")) continue;
 
-    const value = path.getAttribute("stroke") ?? "";
+    // const value = path.getAttribute("stroke") ?? "";
 
     // if (value === "" || value === "0") {
     //   path.removeAttribute("stroke");
@@ -277,14 +292,14 @@ const strokeColorTransform = (doc: HTMLElement, config: Config) => {
 
     // if (ELEMENT_COMMON_IGNORE_VALUES.includes(value)) continue;
 
-    if (value !== strokeColorConfig)
-      // console.warn(
-      //   `Inconsistent stroke color. Found: ${path.getAttribute(
-      //     "stroke"
-      //   )}, Updated: ${strokeColorConfig}`
-      // );
+    // if (value !== strokeColorConfig)
+    // console.warn(
+    //   `Inconsistent stroke color. Found: ${path.getAttribute(
+    //     "stroke"
+    //   )}, Updated: ${strokeColorConfig}`
+    // );
 
-      path.setAttribute("stroke", strokeColorConfig);
+    path.setAttribute("stroke", config.stroke);
   }
 
   return doc;

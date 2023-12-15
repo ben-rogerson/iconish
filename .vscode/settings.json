@@ -3,11 +3,17 @@
         "burd",
         "clsx",
         "codemirror",
+        "downloadurl",
         "Iconish",
         "immer",
+        "lucide",
         "partialize",
+        "spritesheet",
         "Svgs",
+        "testid",
+        "Uncurried",
         "usehooks",
+        "vectoreffect",
         "zustand"
     ]
 }
