@@ -1,3 +1,5 @@
+/* v8 ignore start */
+
 import z from "zod";
 
 const viewSchema = z.object({

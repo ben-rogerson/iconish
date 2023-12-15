@@ -1,3 +1,5 @@
+/* v8 ignore start */
+
 import type z from "zod";
 import type {
   appStateSchema,

@@ -1,3 +1,4 @@
+/* v8 ignore start */
 import { type Config } from "tailwindcss";
 
 export default {

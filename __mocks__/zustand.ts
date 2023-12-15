@@ -1,3 +1,4 @@
+/* v8 ignore start */
 // From:
 // https://docs.pmnd.rs/zustand/guides/testing
 

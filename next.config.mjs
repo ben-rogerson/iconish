@@ -1,3 +1,4 @@
+/* v8 ignore start */
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
