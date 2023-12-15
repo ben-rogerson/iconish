@@ -1,6 +1,6 @@
 import { useAppActions } from "@/hooks/appState";
 import { tw } from "@/lib/utils";
-import { type FunctionComponent } from "react";
+import { useEffect, type FunctionComponent, useState } from "react";
 import { type Group } from "@/utils/types";
 import { intlFormatDistance } from "date-fns";
 import { Copy, Layers, MoreVertical, Trash } from "lucide-react";
@@ -122,6 +122,11 @@ const Header: FunctionComponent<{
   createdAt: number;
   updateGroupTitle: (groupId: string, title: string) => void;
 }> = (props) => {
+  const [title, setTitle] = useState(props.title);
+  useEffect(() => {
+    setTitle(props.title);
+  }, [props.title]);
+
   return (
     <header
       className={tw("relative flex justify-between", props.isLarge && "pb-3")}
@@ -129,14 +134,15 @@ const Header: FunctionComponent<{
       <div className="grid w-full gap-2">
         <input
           type="text"
-          defaultValue={props.title}
+          value={title}
           placeholder={props.title ? "" : "Untitled set…"}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             props.updateGroupTitle(props.id, e.currentTarget.value);
+            setTitle(e.currentTarget.value);
           }}
           className={tw(
             `w-[inherit] bg-transparent text-xl text-[--text-muted]`,
-            `focus:text-[--text-normal] focus:text-[--text] focus:outline-none`,
+            `focus:text-[--text] focus:outline-none`,
             `placeholder:italic placeholder-[--text-muted]`,
             props.isLarge && `text-5xl tracking-tight`
           )}
