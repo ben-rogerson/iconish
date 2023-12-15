@@ -19,10 +19,12 @@ const transform = (
 ) => {
   const doc = document.createElement("div") as unknown as HTMLElement;
   doc.innerHTML = svg;
-  return fn(
-    doc,
-    config ? ({ ...initialConfig, ...config } as Config) : initialConfig
-  ).querySelector("svg") as HTMLElement;
+  return (
+    fn(
+      doc,
+      config ? ({ ...initialConfig, ...config } as Config) : initialConfig
+    ).querySelector("svg") ?? doc
+  );
 };
 
 describe("svgAttributesTransform", () => {
@@ -40,11 +42,11 @@ describe("svgAttributesTransform", () => {
 
     expect(output.hasAttribute("width")).toBe(false);
     expect(output.hasAttribute("height")).toBe(false);
-    expect(output.getAttribute("viewBox")).toBe(null);
+    expect(output.getAttribute("viewBox")).toBeNull();
 
     expect(output2.hasAttribute("width")).toBe(false);
     expect(output2.hasAttribute("height")).toBe(false);
-    expect(output2.getAttribute("viewBox")).toBe(null);
+    expect(output2.getAttribute("viewBox")).toBeNull();
   });
 
   it("should remove fill attribute when not none", () => {
@@ -143,7 +145,7 @@ describe("strokeWidthTransform", () => {
 
   it("should not update stroke-width attribute when missing", () => {
     const output = transform(strokeWidthTransform, "<svg></svg>");
-    expect(output.getAttribute("stroke-width")).toBe(null);
+    expect(output.getAttribute("stroke-width")).toBeNull();
   });
 
   it("should update the stroke-width attribute when invalid", () => {
@@ -327,7 +329,7 @@ describe("strokeColorTransform", () => {
 
   it("should not add a stroke color when not already set", () => {
     const output = transform(svgAttributesTransform, "<svg><path /></svg>");
-    expect(output.querySelector("path")?.getAttribute("stroke")).toBe(null);
+    expect(output.querySelector("path")?.getAttribute("stroke")).toBeNull();
   });
 
   it("should avoid updates if there are elements with different stroke values", () => {
@@ -373,7 +375,7 @@ describe("fillColorTransform", () => {
 
   it("should not add a fill color when not already set", () => {
     const output = transform(svgAttributesTransform, "<svg><path /></svg>");
-    expect(output.querySelector("path")?.getAttribute("fill")).toBe(null);
+    expect(output.querySelector("path")?.getAttribute("fill")).toBeNull();
   });
 
   it("should avoid updates if there are elements with different fill values", () => {

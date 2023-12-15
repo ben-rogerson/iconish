@@ -53,7 +53,7 @@ describe("actions", () => {
   });
 
   describe("addGroup", () => {
-    it("adds a new group", () => {
+    it("can add groups", () => {
       const { result } = renderHook(() => useAppStore());
 
       expect(result.current.groups).toHaveLength(1);
@@ -68,7 +68,7 @@ describe("actions", () => {
   });
 
   describe("removeGroup", () => {
-    it("can remove groups", async () => {
+    it("can remove groups", () => {
       const { result } = renderHook(() => useAppStore());
 
       // Setup
@@ -100,7 +100,7 @@ describe("actions", () => {
       expect(result.current.activeGroupId).toBe(groupId);
     });
 
-    it("does not allow less than a single group", async () => {
+    it("does not allow less than a single group", () => {
       const { result } = renderHook(() => useAppStore());
 
       expect(result.current.groups).toHaveLength(1);
@@ -124,23 +124,8 @@ describe("actions", () => {
     });
   });
 
-  describe("addGroup", () => {
-    it("can add groups", async () => {
-      const { result } = renderHook(() => useAppStore());
-
-      expect(result.current.groups).toHaveLength(1);
-
-      act(() => {
-        result.current.actions.addGroup("Group");
-      });
-
-      expect(result.current.groups).toHaveLength(2);
-      expect(result.current.groups[1].title).toBe("Group");
-    });
-  });
-
   describe("updateGroupTitle", () => {
-    it("can update group title", async () => {
+    it("can update group title", () => {
       const { result } = renderHook(() => useAppStore());
 
       act(() => {
@@ -160,7 +145,7 @@ describe("actions", () => {
   });
 
   describe("setActiveGroup", () => {
-    it("can set active group", async () => {
+    it("can set active group", () => {
       const { result } = renderHook(() => useAppStore());
 
       act(() => {
@@ -181,7 +166,7 @@ describe("actions", () => {
       expect(result.current.activeGroupId).toBe(result.current.groups[1].id);
     });
 
-    it("avoids setting to the same group", async () => {
+    it("avoids setting to the same group", () => {
       const { result } = renderHook(() => useAppStore());
 
       expect(result.current.groups).toHaveLength(1);
@@ -221,10 +206,10 @@ describe("actions", () => {
       expect(editor[1].title).toBe("new editor");
 
       act(() => {
-        result.current.updateEditorTitle(editor[0], "newy");
+        result.current.updateEditorTitle(editor[0], "new");
       });
 
-      expect(result.current.getEditors()[1][1].title).toBe("newy");
+      expect(result.current.getEditors()[1][1].title).toBe("new");
     });
   });
 

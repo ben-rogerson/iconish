@@ -29,9 +29,9 @@ export default defineConfig({
     testTimeout: 2000,
     setupFiles: "./vitest-setup.ts",
     include: ["**/*.test.tsx", "**/*.test.ts"],
-    coverage: {
-      enabled: true,
-    },
+    // coverage: {
+    //   enabled: true,
+    // },
   },
   resolve: { alias },
 });

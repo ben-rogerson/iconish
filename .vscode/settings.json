@@ -15,5 +15,6 @@
         "usehooks",
         "vectoreffect",
         "zustand"
-    ]
+    ],
+    "testing.automaticallyOpenPeekView": "never"
 }

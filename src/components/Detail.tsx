@@ -138,7 +138,7 @@ const Detail = () => {
   return (
     <>
       <div
-        className="sticky top-0 z-50 flex items-center gap-6 border-b border-b-[--line-border] bg-[--page-bg] py-5"
+        className="sticky top-0 z-50 flex items-center gap-6 border-b border-b-[--line-border] bg-[--page-bg] py-3"
         role="toolbar"
       >
         <ConfigPanelNoSSR />

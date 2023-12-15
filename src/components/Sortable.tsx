@@ -110,7 +110,7 @@ const Sortable = () => {
           onClick={() => {
             addEditorAtIndex(0);
           }}
-          isVisible={true}
+          isVisible
           isTop
         />
       </div>

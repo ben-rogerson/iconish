@@ -4,7 +4,16 @@
 
 :root {
   /* Colors */
-  --primary: 255, 255, 255;
+  --primary: 0 0% 100%;
+  --secondary: 0 0% 94.5%;
+
+  --text: 0 0% 90.2%;
+  --muted: 0 0% 43.1%;
+  --muted-more: 0 0% 27.5%;
+  --bg: 0 0% 11.8%;
+  --bg-dark: 0 0% 0%;
+  --bg-darkish: 0 0% 17.6%;
+  /* --primary: 255, 255, 255;
   --secondary: #f1f1f1;
 
   --text: 230, 230, 230;
@@ -12,40 +21,40 @@
   --muted-more: 70, 70, 70;
   --bg: 30, 30, 30;
   --bg-dark: 0, 0, 0;
-  --bg-darkish: 45, 45, 45;
+  --bg-darkish: 45, 45, 45; */
 
   /* Generic */
-  --text-normal: rgb(var(--text));
-  --text-muted: rgb(var(--muted));
+  --text-normal: hsl(var(--text));
+  --text-muted: hsl(var(--muted));
   --text-warning: #ffc900;
 
-  --text-primary: rgb(var(--primary));
-  --text-secondary: rgb(var(--secondary));
+  --text-primary: hsl(var(--primary));
+  --text-secondary: hsl(var(--secondary));
 
-  --line-border: rgb(var(--muted));
-  --line-border-dark: rgb(var(--muted-more));
+  --line-border: hsl(var(--muted));
+  --line-border-dark: hsl(var(--muted-more));
 
-  --page-bg: rgb(var(--bg));
-  --page-bg-dark: rgb(var(--extreme));
-  --page-scrollbar: rgb(var(--bg-darkish));
+  --page-bg: hsl(var(--bg));
+  --page-bg-dark: hsl(var(--extreme));
+  --page-scrollbar: hsl(var(--bg-darkish));
 
   /* Buttons */
-  --button-text: rgb(var(--text));
-  --button-text-muted: rgb(var(--muted));
-  --button-text-hover: rgb(var(--text));
-  --button-bg: rgb(var(--bg));
-  --button-bg-hover: rgb(var(--bg-darkish));
+  --button-text: hsl(var(--text));
+  --button-text-muted: hsl(var(--muted));
+  --button-text-hover: hsl(var(--text));
+  --button-bg: hsl(var(--bg));
+  --button-bg-hover: hsl(var(--bg-darkish));
 
   /* Input fields */
-  --input-text: rgb(var(--text));
-  --input-text-muted: rgb(var(--muted));
-  --input-hover: rgb(var(--text));
-  --input-border: rgb(var(--muted));
-  --input-border-active: rgb(var(--muted));
+  --input-text: hsl(var(--text));
+  --input-text-muted: hsl(var(--muted));
+  --input-hover: hsl(var(--text));
+  --input-border: hsl(var(--muted));
+  --input-border-active: hsl(var(--muted));
 
   /* Sortable drag indicators */
-  --drag-indicator-text: rgb(var(--muted));
-  --drag-indicator-text-active: rgb(var(--text));
+  --drag-indicator-text: hsl(var(--muted));
+  --drag-indicator-text-active: hsl(var(--text));
 }
 
 @font-face {
@@ -135,32 +144,32 @@ html {
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: var(--bg);
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: var(--bg);
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: var(--bg);
     --popover-foreground: 210 40% 98%;
 
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 0 0% 43.1%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
+    --muted: 0 0% 43.1%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
+    --accent: var(--bg-darkish);
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    --border: 0 0% 27.5%;
+    --input: 0 0% 27.5%;
     --ring: 212.7 26.8% 83.9%;
   }
 }

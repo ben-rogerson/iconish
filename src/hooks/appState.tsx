@@ -69,7 +69,7 @@ const makeGroup = (config?: Config, title?: string, editors?: EditorState[]) =>
     createdAt: Date.now(),
     title: title ?? "",
     config: config ?? initialConfig,
-    editors: [initialEditorData()],
+    editors: editors ?? [initialEditorData()],
   } satisfies Group);
 
 const initialEditorData = (svgData?: SVGData, title?: string) => {

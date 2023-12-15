@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { render, renderHook, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useAppActions, useAppStore } from "@/hooks/appState";
+import { useAppActions } from "@/hooks/appState";
 import { ConfigPanel } from "@/feature/config/components/ConfigPanel";
 
 describe("<ConfigPanel />", () => {
