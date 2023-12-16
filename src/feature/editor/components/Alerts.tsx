@@ -4,6 +4,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { memo } from "react";
 
 const warningIcon = (
   <svg
@@ -94,25 +95,28 @@ const alerts = new Map([
 export const parseSvgClient = (svg: string) =>
   new DOMParser().parseFromString(svg, "image/svg+xml");
 
-export const Alerts = (props: { svg: string }) => {
-  const svg = parseSvgClient(props.svg);
+const alertDisplay = (svg: Document) =>
+  [...alerts]
+    .map(([title, { desc, fix, test }]) => {
+      if (!test(svg)) return null;
 
-  const alertsList = [...alerts].map(([title, { desc, fix, test }]) => {
-    if (!test(svg)) return null;
-
-    return (
-      <div className="flex gap-3.5" key={title}>
-        <div className="text-2xl">{warningIcon}</div>
-        <div className="grid gap-y-1">
-          <h2 className="font-bold">{title}</h2>
-          <div>{desc}</div>
-          <div>Fix: {fix}</div>
+      return (
+        <div className="flex gap-3.5" key={title}>
+          <div className="text-2xl">{warningIcon}</div>
+          <div className="grid gap-y-1">
+            <h2 className="font-bold">{title}</h2>
+            <div>{desc}</div>
+            <div>Fix: {fix}</div>
+          </div>
         </div>
-      </div>
-    );
-  });
+      );
+    })
+    .filter(Boolean);
 
-  if (alertsList.filter(Boolean).length === 0) return null;
+export const Alerts = memo(function Alerts(props: { svg: string }) {
+  const alertsList = alertDisplay(parseSvgClient(props.svg));
+
+  if (alertsList.length === 0) return null;
 
   return (
     <div className="absolute bottom-2 left-2">
@@ -128,4 +132,4 @@ export const Alerts = (props: { svg: string }) => {
       </TooltipProvider>
     </div>
   );
-};
+});

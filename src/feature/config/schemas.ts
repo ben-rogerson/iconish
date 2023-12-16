@@ -6,6 +6,7 @@ const configSchema = z.object({
   fill: z.string(),
   strokeLinecap: z.string(),
   strokeLinejoin: z.string(),
+  nonScalingStroke: z.boolean(),
 });
 
 export { configSchema };

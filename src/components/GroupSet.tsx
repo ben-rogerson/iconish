@@ -109,10 +109,7 @@ const Guides = () => {
 //   );
 // };
 
-const relativeTime = (date: number) => {
-  const timeString = intlFormatDistance(date, new Date());
-  return timeString;
-};
+const relativeTime = (date: number) => intlFormatDistance(date, new Date());
 
 const Header: FunctionComponent<{
   id: string;
@@ -135,7 +132,7 @@ const Header: FunctionComponent<{
         <input
           type="text"
           value={title}
-          placeholder={props.title ? "" : "Untitled set…"}
+          placeholder={title ? "" : "Untitled set…"}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             props.updateGroupTitle(props.id, e.currentTarget.value);
             setTitle(e.currentTarget.value);

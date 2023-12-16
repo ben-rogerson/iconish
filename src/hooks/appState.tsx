@@ -61,6 +61,7 @@ export const initialConfig = {
   fill: "currentColor",
   strokeLinecap: "round",
   strokeLinejoin: "round",
+  nonScalingStroke: true,
 } as const satisfies Config;
 
 const makeGroup = (config?: Config, title?: string, editors?: EditorState[]) =>

@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { forwardRef, memo, useEffect, useRef, useState } from "react";
 import { Sortable } from "@/components/Sortable";
 import {
   bugIcon,
@@ -65,7 +65,7 @@ function ExampleItem(props: ExampleItem) {
   );
 }
 
-export const AddEditor = (props: { editorId: string }) => {
+export const AddEditor = memo(function AddEditor(props: { editorId: string }) {
   const { updateEditorSvg, addEditor } = useAppActions();
 
   const ref = useRef<HTMLInputElement>(null);
@@ -108,7 +108,7 @@ export const AddEditor = (props: { editorId: string }) => {
       </div>
     </div>
   );
-};
+});
 
 const ConfigPanelNoSSR = dynamic(
   () =>

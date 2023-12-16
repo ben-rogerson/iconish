@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useState } from "react";
+import { memo, useCallback, useEffect, useId, useState } from "react";
 import {
   closestCenter,
   DndContext,
@@ -16,11 +16,11 @@ import { Editor } from "@/feature/editor/components/Editor";
 import { useAppActions, useAppStore } from "@/hooks/appState";
 import { cn, tw } from "@/lib/utils";
 
-const Add = (props: {
+const Add = memo(function Memo(props: {
   onClick: () => void;
   isTop?: boolean;
   isVisible?: boolean;
-}) => {
+}) {
   const isVisible = props.isVisible ?? false;
   return (
     <button
@@ -42,7 +42,7 @@ const Add = (props: {
       </div>
     </button>
   );
-};
+});
 
 /**
  * Update the group list when the hash changes.
@@ -64,16 +64,7 @@ const Sortable = () => {
   const { addEditorAtIndex, updateOrder } = useAppActions();
 
   const id = useId();
-  const sensors = useSensors(
-    // touchSensor,
-    useSensor(MouseSensor)
-    // useSensor(PointerSensor),
-    // useSensor(KeyboardSensor, {
-    //   coordinateGetter: sortableKeyboardCoordinates,
-    // })
-  );
-
-  // console.log({ sortable: "rerender" });
+  const sensors = useSensors(useSensor(MouseSensor));
 
   const getEditors = useEditorsRender();
 

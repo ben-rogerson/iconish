@@ -61,7 +61,14 @@ type ConfigSelect = {
   onChange: (val: string) => void;
 };
 
-type ConfigType = ConfigRange | ConfigInput | ConfigSelect;
+type ConfigCheckbox = {
+  title: string;
+  defaultChecked: boolean;
+  type: "checkbox";
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+};
+
+type ConfigType = ConfigRange | ConfigInput | ConfigSelect | ConfigCheckbox;
 
 const isRange = (item: ConfigType): item is ConfigRange =>
   "type" in item && item.type === "range";
@@ -70,6 +77,9 @@ const isInput = (item: ConfigType): item is ConfigInput =>
   "type" in item && item.type === "text";
 
 const isSelect = (item: ConfigType): item is ConfigSelect => !("type" in item);
+
+const isCheckbox = (item: ConfigType): item is ConfigCheckbox =>
+  "type" in item && item.type === "checkbox";
 
 export const ConfigPanel = () => {
   const activeGroupId = useAppStore((s) => s.activeGroupId);
@@ -82,7 +92,7 @@ export const ConfigPanel = () => {
         title: "stroke width",
         defaultValue: config.strokeWidth,
         type: "range",
-        onChange: (val: number[]) => {
+        onChange: (val) => {
           setConfig({ strokeWidth: String(val[0]) });
         },
       } satisfies ConfigRange,
@@ -143,6 +153,14 @@ export const ConfigPanel = () => {
           setConfig({ strokeLinejoin });
         },
       } satisfies ConfigSelect,
+      {
+        title: "non-scaling-stroke",
+        defaultChecked: config.nonScalingStroke,
+        type: "checkbox",
+        onChange: (e) => {
+          setConfig({ nonScalingStroke: Boolean(e.target.value) });
+        },
+      } satisfies ConfigCheckbox,
     ],
     [setConfig, config]
   );
@@ -255,6 +273,19 @@ export const ConfigPanel = () => {
                     </div>
                   </div>
                 </div>
+              );
+
+            if (isCheckbox(item))
+              return (
+                <>
+                  <label htmlFor={`checkbox-${i}`}>{item.title}</label>
+                  <input
+                    type={item.type}
+                    defaultChecked={item.defaultValue}
+                    onChange={item.onChange}
+                    onBlur={item.onBlur}
+                  />
+                </>
               );
           })}
         </Fragment>

@@ -13,6 +13,7 @@ import { javascript } from "@codemirror/lang-javascript";
 import { EditorView } from "@codemirror/view";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import CodeMirror from "@uiw/react-codemirror";
+import { useMemo } from "react";
 import { useCopyToClipboard } from "usehooks-ts";
 
 type EditorProps = {
@@ -22,29 +23,25 @@ type EditorProps = {
 
 const Editor = (props: EditorProps) => {
   const { removeEditor, updateEditorSvg } = useAppActions();
-  const sanitizedSvg = doSanitizeSvg(props.data.view?.doc ?? "");
   const [hasWordWrapIn, WordWrapIn] = useEditorWrap(false);
   const [hasWordWrapOut, WordWrapOut] = useEditorWrap(true);
   const [copied, copy] = useCopyToClipboard();
+  const sanitizedSvg = useMemo(
+    () => doSanitizeSvg(props.data.view?.doc ?? ""),
+    [props.data.view?.doc]
+  );
+  const sized = useMemo(
+    () =>
+      calculateSizeSavings(props.data.view?.doc ?? "", props.data.svg.output),
+    [props.data.view?.doc, props.data.svg.output]
+  );
 
-  const svg = props.data.svg;
-  const showOutput = svg.output !== "" && svg.output.includes("<svg");
-  const sized = calculateSizeSavings(props.data.view?.doc ?? "", svg.output);
+  const showOutput =
+    props.data.svg.output !== "" && props.data.svg.output.includes("<svg");
 
   const handleOnChange = (value: string) => {
     updateEditorSvg(props.id, value);
   };
-
-  // updateEditor([props.id, { svg }]);
-  //   console.log({ TODO: "save on update perhaps?" });
-  // };
-  // const handleOnUpdateOut = (viewUpdate: ViewUpdate) => {
-  // const view = viewUpdate.state.toJSON({
-  //   history: historyField,
-  // }) as View;
-  // updateEditor([props.id, { svg }]);
-  //   console.log({ TODO: "save on update perhaps?" });
-  // };
 
   return (
     <div className="group/editor relative grid gap-3">
@@ -100,13 +97,13 @@ const Editor = (props: EditorProps) => {
       {Boolean(showOutput) && (
         <div className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] md:grid">
           <div className="relative rounded-l border border-[--line-border] bg-[--page-bg-dark] p-[25%]">
-            <div dangerouslySetInnerHTML={{ __html: svg.output }} />
+            <div dangerouslySetInnerHTML={{ __html: props.data.svg.output }} />
             <div className="absolute left-2 top-2 hidden text-xs text-[--text-muted] group-focus-within/editor:block group-hover/editor:block">
               {sized.after}
             </div>
           </div>
           <div className="relative rounded-r border border-l-0 border-[--line-border] p-6">
-            {svg.output.length > 30 && (
+            {props.data.svg.output.length > 30 && (
               <div className="absolute right-6 top-0 -mt-2.5 flex justify-end bg-[--page-bg] px-1.5 group-focus-within/editor:block group-hover/editor:block md:hidden">
                 <WordWrapOut />
               </div>
@@ -118,14 +115,14 @@ const Editor = (props: EditorProps) => {
                 [...[hasWordWrapOut ? EditorView.lineWrapping : []]],
               ]}
               theme={vscodeDark}
-              value={svg.output}
+              value={props.data.svg.output}
               // onUpdate={handleOnUpdateOut}
             />
             <div className="text-md absolute -bottom-3 left-0 flex w-full justify-between px-6 uppercase">
               <div className="flex gap-3">
                 <Button
                   onClick={() => {
-                    copy(svg.output).catch(() => null);
+                    copy(props.data.svg.output).catch(() => null);
                   }}
                 >
                   <span className="uppercase text-[--text-muted]">
