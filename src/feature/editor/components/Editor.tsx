@@ -19,6 +19,7 @@ import { useCopyToClipboard } from "usehooks-ts";
 type EditorProps = {
   id: string;
   data: EditorState[1];
+  showOutput: boolean;
 };
 
 const Editor = (props: EditorProps) => {
@@ -36,15 +37,12 @@ const Editor = (props: EditorProps) => {
     [props.data.view?.doc, props.data.svg.output]
   );
 
-  const showOutput =
-    props.data.svg.output !== "" && props.data.svg.output.includes("<svg");
-
   const handleOnChange = (value: string) => {
     updateEditorSvg(props.id, value);
   };
 
   return (
-    <div className="group/editor relative grid gap-3">
+    <div className="relative grid gap-3">
       <div className="grid grid-cols-2">
         <div className="absolute right-0 top-3">
           <RemoveButton
@@ -57,7 +55,7 @@ const Editor = (props: EditorProps) => {
       </div>
       <div className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] md:grid">
         <div className="relative rounded-l border bg-[--page-bg-dark] p-[25%]">
-          {Boolean(showOutput && sanitizedSvg) && (
+          {Boolean(props.showOutput && sanitizedSvg) && (
             <>
               <div dangerouslySetInnerHTML={{ __html: sanitizedSvg }} />
               <Alerts svg={props.data.view?.doc ?? ""} />
@@ -66,10 +64,10 @@ const Editor = (props: EditorProps) => {
               </div>
             </>
           )}
-          {!showOutput && (
+          {!props.showOutput && (
             <div className="grid place-items-center h-full">{iconBarrier}</div>
           )}
-          {Boolean(showOutput) && (
+          {Boolean(props.showOutput) && (
             <div className="absolute -bottom-px left-1/2 top-full h-[50px] w-px origin-top-left bg-[--line-border] after:absolute after:bottom-px after:h-2 after:w-2 after:-translate-x-[50%] after:-rotate-45 after:border-b after:border-l after:border-b-[--line-border] after:border-l-[--line-border]" />
           )}
         </div>
@@ -79,7 +77,7 @@ const Editor = (props: EditorProps) => {
               <WordWrapIn />
             </div>
           )}
-          {showOutput ? (
+          {props.showOutput ? (
             <CodeMirror
               extensions={[
                 javascript({ jsx: true }),
@@ -94,7 +92,7 @@ const Editor = (props: EditorProps) => {
           )}
         </div>
       </div>
-      {Boolean(showOutput) && (
+      {Boolean(props.showOutput) && (
         <div className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] md:grid">
           <div className="relative rounded-l border bg-[--page-bg-dark] p-[25%]">
             <div dangerouslySetInnerHTML={{ __html: props.data.svg.output }} />

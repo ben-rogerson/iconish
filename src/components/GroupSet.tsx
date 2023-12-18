@@ -1,6 +1,12 @@
 import { useAppActions } from "@/hooks/appState";
 import { tw } from "@/lib/utils";
-import { useEffect, type FunctionComponent, useState, useRef } from "react";
+import {
+  useEffect,
+  type FunctionComponent,
+  useState,
+  useRef,
+  memo,
+} from "react";
 import { type Group } from "@/utils/types";
 import { intlFormatDistance } from "date-fns";
 import { Copy, Layers, MoreVertical, Trash } from "lucide-react";
@@ -52,7 +58,7 @@ export function Menu(props: {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button type="button">
+        <button type="button" aria-label="More options">
           <MoreVertical />
         </button>
       </DropdownMenuTrigger>
@@ -185,7 +191,7 @@ type GroupSetBlock = {
   isHeader?: boolean;
 };
 
-export const GroupSet = (props: GroupSetBlock) => {
+export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
   const { updateGroupTitle, setActiveGroup } = useAppActions();
   const { toast } = useToast();
 
@@ -211,7 +217,12 @@ export const GroupSet = (props: GroupSetBlock) => {
   };
 
   return (
-    <article className="group/set grid gap-3" id="header" key={props.id}>
+    <article
+      className="group/set grid gap-3"
+      id="header"
+      key={props.id}
+      aria-label={props.isHeader ? "Current set" : "Icon set"}
+    >
       <Header
         id={props.id}
         title={props.title}
@@ -285,7 +296,7 @@ export const GroupSet = (props: GroupSetBlock) => {
       </div>
     </article>
   );
-};
+});
 
 const IconListDraggable = (props: {
   id: string;

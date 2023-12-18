@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "tsc && next lint",
     "test": "vitest run",
-    "test:e2e": "pnpm exec playwright test --ui --project=chromium",
+    "test:e2e": "pnpm exec playwright test --ui",
     "coverage": "vitest run --coverage"
   },
   "dependencies": {

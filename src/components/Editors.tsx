@@ -18,7 +18,7 @@ const Add = memo(function Memo(props: {
       )}
       type="button"
       onClick={props.onClick}
-      data-testid="add-editor-button"
+      aria-label="Add SVG"
     >
       <div
         className={cn(
@@ -65,25 +65,37 @@ const Editors = () => {
       </div>
     );
 
-  return getEditors.map(([editorId, data], index) => (
-    <div key={editorId} className="relative">
-      {index === 0 && (
+  return getEditors.map(([editorId, data], index) => {
+    const showOutput =
+      data.svg.output !== "" && data.svg.output.includes("<svg");
+    return (
+      <article
+        key={editorId}
+        className="group/editor relative"
+        aria-label={showOutput ? "editor" : "preview"}
+      >
+        {index === 0 && (
+          <Add
+            onClick={() => {
+              addEditorAtIndex(index);
+            }}
+            isTop
+          />
+        )}
+        <Editor
+          key={editorId}
+          id={editorId}
+          data={data}
+          showOutput={showOutput}
+        />
         <Add
           onClick={() => {
-            addEditorAtIndex(index);
+            addEditorAtIndex(index + 1);
           }}
-          isTop
         />
-      )}
-      <Editor key={editorId} id={editorId} data={data} />
-      <Add
-        onClick={() => {
-          addEditorAtIndex(index + 1);
-        }}
-      />
-    </div>
-  ));
+      </article>
+    );
+  });
 };
 
-// const SortableCached = memo(Sortable);
 export { Editors };

@@ -5,7 +5,7 @@ export function Header() {
   // const { addGroup } = useAppActions();
 
   return (
-    <div className="flex justify-between pb-3 pt-6" data-testid="header">
+    <div className="flex justify-between pb-3 pt-6">
       <Link href="/" className="flex gap-x-[0.25em] text-2xl">
         {logoIcon}
         <div>Iconish</div>

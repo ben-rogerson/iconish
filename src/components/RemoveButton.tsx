@@ -9,6 +9,7 @@ export const RemoveButton: FunctionComponent<{
     <button
       onClick={props.onClick}
       type="button"
+      aria-label="Remove editor"
       className={tw([
         "group/button",
         "group-hover/editor:block group-hover/set:block",

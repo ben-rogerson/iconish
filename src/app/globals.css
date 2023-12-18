@@ -72,7 +72,7 @@ html {
   font-family: "Chivo";
   font-weight: 250;
 
-  /* scroll-margin-top: 8rem; */
+  scroll-margin-top: 8rem;
 }
 
 ::-webkit-scrollbar {

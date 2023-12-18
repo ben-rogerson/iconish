@@ -42,7 +42,6 @@ const SortableItem = (props: {
       ref={setNodeRef}
       style={style}
       className="group relative cursor-auto pointer-events-auto"
-      data-testid="sortable-item"
       onClick={props.handleOnClick}
       {...attributes}
       {...listeners}
