@@ -87,7 +87,7 @@ const isCheckbox = (item: ConfigType): item is ConfigCheckbox =>
 // Debounce for config items that update their values often (eg: a draggable slider)
 const debouncer = (
   fn: () => void,
-  ref: MutableRefObject<DebouncedFunc<() => void> | undefined>
+  ref: MutableRefObject<DebouncedFunc<() => void> | null>
 ) => {
   ref.current?.cancel();
   ref.current = debounce(fn, 200, { trailing: true });
@@ -97,7 +97,8 @@ const debouncer = (
 export const ConfigPanel = () => {
   const activeGroupId = useAppStore((s) => s.activeGroupId);
   const { getConfig, setConfig } = useAppActions();
-  const debounceRef = useRef<DebouncedFunc<() => void>>();
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const debounceRef = useRef<DebouncedFunc<() => void>>(null);
 
   const config = getConfig();
 
