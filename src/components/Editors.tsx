@@ -3,6 +3,7 @@ import { memo, useEffect, useState } from "react";
 import { Editor } from "@/feature/editor/components/Editor";
 import { useAppActions, useAppStore } from "@/hooks/appState";
 import { cn, tw } from "@/lib/utils";
+import { EditorList } from "@/components/EditorList";
 
 const Add = memo(function Memo(props: {
   onClick: () => void;
@@ -65,37 +66,42 @@ const Editors = () => {
       </div>
     );
 
-  return getEditors.map(([editorId, data], index) => {
-    const showOutput =
-      data.svg.output !== "" && data.svg.output.includes("<svg");
-    return (
-      <article
-        key={editorId}
-        className="group/editor relative"
-        aria-label={showOutput ? "editor" : "preview"}
-      >
-        {index === 0 && (
-          <Add
-            onClick={() => {
-              addEditorAtIndex(index);
-            }}
-            isTop
-          />
-        )}
-        <Editor
-          key={editorId}
-          id={editorId}
-          data={data}
-          showOutput={showOutput}
-        />
-        <Add
-          onClick={() => {
-            addEditorAtIndex(index + 1);
-          }}
-        />
-      </article>
-    );
-  });
+  return (
+    <EditorList>
+      {getEditors.map(([editorId, data], index) => {
+        const showOutput =
+          data.svg.output !== "" && data.svg.output.includes("<svg");
+        return (
+          <article
+            id={editorId}
+            key={editorId}
+            className="group/editor relative"
+            aria-label={showOutput ? "editor" : "preview"}
+          >
+            {index === 0 && (
+              <Add
+                onClick={() => {
+                  addEditorAtIndex(index);
+                }}
+                isTop
+              />
+            )}
+            <Editor
+              key={editorId}
+              id={editorId}
+              data={data}
+              showOutput={showOutput}
+            />
+            <Add
+              onClick={() => {
+                addEditorAtIndex(index + 1);
+              }}
+            />
+          </article>
+        );
+      })}
+    </EditorList>
+  );
 };
 
 export { Editors };

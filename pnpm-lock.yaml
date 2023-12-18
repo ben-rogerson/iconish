@@ -55,6 +55,7 @@ specifiers:
   react-aria: ^3.28.0
   react-dom: 18.2.0
   react-stately: ^3.26.0
+  react-virtuoso: ^4.6.2
   svgo: ^3.0.2
   tailwind-merge: ^1.14.0
   tailwindcss: 3.3.3
@@ -101,6 +102,7 @@ dependencies:
   react-aria: 3.30.0_biqbaboplfbrettd7655fr4n2y
   react-dom: 18.2.0_react@18.2.0
   react-stately: 3.28.0_react@18.2.0
+  react-virtuoso: 4.6.2_biqbaboplfbrettd7655fr4n2y
   svgo: 3.1.0
   tailwind-merge: 1.14.0
   tailwindcss: 3.3.3
@@ -6898,6 +6900,17 @@ packages:
       invariant: 2.2.4
       react: 18.2.0
       tslib: 2.6.2
+    dev: false
+
+  /react-virtuoso/4.6.2_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-vvlqvzPif+MvBrJ09+hJJrVY0xJK9yran+A+/1iwY78k0YCVKsyoNPqoLxOxzYPggspNBNXqUXEcvckN29OxyQ==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>=16 || >=17 || >= 18'
+      react-dom: '>=16 || >=17 || >= 18'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /react/18.2.0:
