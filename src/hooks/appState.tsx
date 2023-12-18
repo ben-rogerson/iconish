@@ -35,7 +35,7 @@ interface AppStoreActions {
   updateEditorTitle: (id: string, title: string) => void;
   updateEditorSvg: (editorId: string, svgCode?: string) => void;
   refreshEditors: () => void;
-  updateOrder: (activeId: string, overId: string) => void;
+  setEditorOrderByIds: (editorKeys: string[]) => void;
   removeEditor: (id: string, shouldRefresh?: boolean) => void;
   addEditor: (
     input: string,
@@ -434,13 +434,39 @@ export const useAppStore = create<
             return index;
           },
 
-          updateOrder(activeId, overId) {
-            const index = get().actions.getEditorIndexById(overId);
-            if (index === undefined) return;
+          setEditorOrderByIds(editorKeys) {
+            const activeGroupId = get().activeGroupId;
 
-            const editor = get().actions.getEditorById(activeId);
-            get().actions.removeEditor(activeId, false);
-            get().actions.addEditorAtIndex(index, editor);
+            const sortEditorsByEditorKeys = (
+              a: EditorState,
+              b: EditorState
+            ) => {
+              const x = editorKeys.indexOf(a[0]);
+              const y = editorKeys.indexOf(b[0]);
+              if (x > y) return 1;
+              if (x < y) return -1;
+              return 0;
+            };
+
+            const groups = get().groups.map((group) => {
+              if (activeGroupId !== group.id) return group;
+
+              const resorted = group.editors
+                .slice()
+                .sort(sortEditorsByEditorKeys);
+              // console.log({
+              //   origOrder: group.editors.map((e) => e[0]),
+              //   resorted: resorted.map((e) => e[0]),
+              // });
+
+              const newGroup = { ...group, editors: resorted };
+              return newGroup;
+            });
+
+            set({ groups });
+            setTimeout(() => {
+              get().actions.refreshEditors();
+            }, 0);
           },
 
           updateEditorTitle: (id: string, title: string) => {

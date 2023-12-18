@@ -12,45 +12,66 @@ describe("actions", () => {
     });
   });
 
-  describe("updateOrder", () => {
-    it("updates order when updateOrder is called", () => {
+  describe("setEditorOrderByIds", () => {
+    it("sets editor order by ids", () => {
       const { result } = renderHook(() => useAppActions());
+
       act(() => {
+        result.current.addGroup();
         result.current.addEditor(flyaway, "title");
+        // result.current.addEditor(flyaway, "title");
       });
 
-      const editorsOld = result.current.getEditors();
+      const editors = result.current.getEditors();
 
       act(() => {
-        result.current.updateOrder(editorsOld[1][0], editorsOld[0][0]);
+        result.current.setEditorOrderByIds([editors[1][0], editors[0][0]]);
       });
 
-      expect(result.current.getEditors()).toHaveLength(2);
-      const editorsNew = result.current.getEditors();
-
-      expect(editorsNew[0][0]).toBe(editorsOld[1][0]);
-      expect(editorsNew[1][0]).toBe(editorsOld[0][0]);
-    });
-
-    it("ignores order when incorrect id is specified", () => {
-      const { result } = renderHook(() => useAppActions());
-      act(() => {
-        result.current.addEditor(flyaway, "title");
-      });
-
-      const editorsOld = result.current.getEditors();
-
-      act(() => {
-        result.current.updateOrder(editorsOld[1][0], "not-an-id");
-      });
-
-      expect(result.current.getEditors()).toHaveLength(2);
-      const editorsNew = result.current.getEditors();
-
-      expect(editorsOld[0][0]).toBe(editorsNew[0][0]);
-      expect(editorsOld[1][0]).toBe(editorsNew[1][0]);
+      expect(result.current.getEditors()[0][0]).toBe(editors[1][0]);
+      expect(result.current.getEditors()[1][0]).toBe(editors[0][0]);
     });
   });
+
+  // asd("updateOrder", () => {
+  //   asdit("updates order when updateOrder is called", () => {
+  //     const { result } = renderHook(() => useAppActions());
+  //     act(() => {
+  //       result.current.addEditor(flyaway, "title");
+  //     });
+
+  //     const editorsOld = result.current.getEditors();
+
+  //     act(() => {
+  //       result.current.updateOrder(editorsOld[1][0], editorsOld[0][0]);
+  //     });
+
+  //     expect(result.current.getEditors()).toHaveLength(2);
+  //     const editorsNew = result.current.getEditors();
+
+  //     expect(editorsNew[0][0]).toBe(editorsOld[1][0]);
+  //     expect(editorsNew[1][0]).toBe(editorsOld[0][0]);
+  //   });
+
+  //   asdit("ignores order when incorrect id is specified", () => {
+  //     const { result } = renderHook(() => useAppActions());
+  //     act(() => {
+  //       result.current.addEditor(flyaway, "title");
+  //     });
+
+  //     const editorsOld = result.current.getEditors();
+
+  //     act(() => {
+  //       result.current.updateOrder(editorsOld[1][0], "not-an-id");
+  //     });
+
+  //     expect(result.current.getEditors()).toHaveLength(2);
+  //     const editorsNew = result.current.getEditors();
+
+  //     expect(editorsOld[0][0]).toBe(editorsNew[0][0]);
+  //     expect(editorsOld[1][0]).toBe(editorsNew[1][0]);
+  //   });
+  // });
 
   describe("addGroup", () => {
     it("can add groups", () => {
@@ -71,12 +92,12 @@ describe("actions", () => {
     it("can remove groups", () => {
       const { result } = renderHook(() => useAppStore());
 
-      // Setup
       expect(result.current.groups).toHaveLength(1);
+
       act(() => {
-        // Add group for better test coverage
         result.current.actions.addGroup("new group");
       });
+
       expect(result.current.groups).toHaveLength(2);
 
       const groupId = result.current.groups[1].id;

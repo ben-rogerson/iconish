@@ -1,5 +1,6 @@
 /* v8 ignore start */
 
+import { configSchema } from "@/feature/config/schemas";
 import z from "zod";
 
 const viewSchema = z.object({
@@ -36,13 +37,7 @@ const groupSchema = z.object({
   id: z.string(),
   title: z.string(),
   createdAt: z.number(),
-  config: z.object({
-    strokeWidth: z.string(),
-    stroke: z.string(),
-    fill: z.string(),
-    strokeLinecap: z.string(),
-    strokeLinejoin: z.string(),
-  }),
+  config: configSchema,
   editors: z.array(editorSchema),
 });
 

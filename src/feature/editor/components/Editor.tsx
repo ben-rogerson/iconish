@@ -56,7 +56,7 @@ const Editor = (props: EditorProps) => {
         <Title id={props.id} title={props.data.title} />
       </div>
       <div className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] md:grid">
-        <div className="relative rounded-l border border-[--line-border] bg-[--page-bg-dark] p-[25%]">
+        <div className="relative rounded-l border bg-[--page-bg-dark] p-[25%]">
           {Boolean(showOutput && sanitizedSvg) && (
             <>
               <div dangerouslySetInnerHTML={{ __html: sanitizedSvg }} />
@@ -73,7 +73,7 @@ const Editor = (props: EditorProps) => {
             <div className="absolute -bottom-px left-1/2 top-full h-[50px] w-px origin-top-left bg-[--line-border] after:absolute after:bottom-px after:h-2 after:w-2 after:-translate-x-[50%] after:-rotate-45 after:border-b after:border-l after:border-b-[--line-border] after:border-l-[--line-border]" />
           )}
         </div>
-        <div className="relative rounded-r border border-l-0 border-[--line-border] p-6">
+        <div className="relative rounded-r border border-l-0 p-6">
           {(props.data.view?.doc.length ?? 0) > 30 && (
             <div className="absolute right-6 top-0 -mt-2.5 flex justify-end bg-[--page-bg] px-1.5 group-focus-within/editor:block group-hover/editor:block md:hidden">
               <WordWrapIn />
@@ -96,13 +96,13 @@ const Editor = (props: EditorProps) => {
       </div>
       {Boolean(showOutput) && (
         <div className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] md:grid">
-          <div className="relative rounded-l border border-[--line-border] bg-[--page-bg-dark] p-[25%]">
+          <div className="relative rounded-l border bg-[--page-bg-dark] p-[25%]">
             <div dangerouslySetInnerHTML={{ __html: props.data.svg.output }} />
             <div className="absolute left-2 top-2 hidden text-xs text-[--text-muted] group-focus-within/editor:block group-hover/editor:block">
               {sized.after}
             </div>
           </div>
-          <div className="relative rounded-r border border-l-0 border-[--line-border] p-6">
+          <div className="relative rounded-r border border-l-0 p-6">
             {props.data.svg.output.length > 30 && (
               <div className="absolute right-6 top-0 -mt-2.5 flex justify-end bg-[--page-bg] px-1.5 group-focus-within/editor:block group-hover/editor:block md:hidden">
                 <WordWrapOut />

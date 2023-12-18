@@ -1,5 +1,5 @@
 import { forwardRef, memo, useEffect, useRef, useState } from "react";
-import { Sortable } from "@/components/Sortable";
+import { Editors } from "@/components/Editors";
 import {
   bugIcon,
   bugItemDisplay,
@@ -10,8 +10,7 @@ import {
 } from "@/lib/icons";
 import { useAppActions, useAppStore } from "@/hooks/appState";
 import { GroupSet } from "@/components/GroupSet";
-// import { ConfigPanel } from "@/feature/config/components/ConfigPanel";
-import dynamic from "next/dynamic";
+import { ConfigPanel } from "@/feature/config/components/ConfigPanel";
 import { Upload } from "@/components/Upload";
 
 const AddIconInput = forwardRef<
@@ -110,13 +109,13 @@ export const AddEditor = memo(function AddEditor(props: { editorId: string }) {
   );
 });
 
-const ConfigPanelNoSSR = dynamic(
-  () =>
-    import("@/feature/config/components/ConfigPanel").then(
-      (mod) => mod.ConfigPanel
-    ),
-  { ssr: false }
-);
+// const ConfigPanelNoSSR = dynamic(
+//   () =>
+//     import("@/feature/config/components/ConfigPanel").then(
+//       (mod) => mod.ConfigPanel
+//     ),
+//   { ssr: false }
+// );
 
 /**
  * Update the group list when the hash changes.
@@ -141,7 +140,7 @@ const Detail = () => {
         className="sticky top-0 z-50 flex items-center gap-6 border-b border-b-[--line-border] bg-[--page-bg] py-3"
         role="toolbar"
       >
-        <ConfigPanelNoSSR />
+        <ConfigPanel />
       </div>
       <div className="grid gap-y-20">
         {!!group && (
@@ -158,7 +157,7 @@ const Detail = () => {
             isHeader
           />
         )}
-        <Sortable />
+        <Editors />
       </div>
     </>
   );

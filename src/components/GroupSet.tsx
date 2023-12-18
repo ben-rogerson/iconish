@@ -1,6 +1,6 @@
 import { useAppActions } from "@/hooks/appState";
 import { tw } from "@/lib/utils";
-import { useEffect, type FunctionComponent, useState } from "react";
+import { useEffect, type FunctionComponent, useState, useRef } from "react";
 import { type Group } from "@/utils/types";
 import { intlFormatDistance } from "date-fns";
 import { Copy, Layers, MoreVertical, Trash } from "lucide-react";
@@ -15,6 +15,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useCopySvgsToClipboard } from "@/feature/svg/svg.hooks";
 import { useToast } from "@/components/ui/use-toast";
+import { useCallback, useId } from "react";
+import {
+  closestCenter,
+  DndContext,
+  type DragEndEvent,
+  useSensors,
+  PointerSensor,
+  useSensor,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  rectSortingStrategy,
+} from "@dnd-kit/sortable";
+import { SortableItem } from "@/components/SortableItem";
 
 export function Menu(props: {
   title: string;
@@ -90,18 +105,18 @@ export function Menu(props: {
 //   );
 // };
 
-const Guides = () => {
-  return (
-    <div className={tw("pointer-events-none absolute top-1/2 w-[3440px]")}>
-      <div
-        className={tw("absolute mt-4 h-px w-full bg-[--line-border-dark]")}
-      />
-      <div
-        className={tw("absolute -mt-4 h-px w-full bg-[--line-border-dark]")}
-      />
-    </div>
-  );
-};
+// const Guides = () => {
+//   return (
+//     <div className={tw("pointer-events-none absolute top-1/2 w-[3440px]")}>
+//       <div
+//         className={tw("absolute mt-4 h-px w-full bg-[--line-border-dark]")}
+//       />
+//       <div
+//         className={tw("absolute -mt-4 h-px w-full bg-[--line-border-dark]")}
+//       />
+//     </div>
+//   );
+// };
 
 // const Fade = () => {
 //   return (
@@ -195,28 +210,8 @@ export const GroupSet = (props: GroupSetBlock) => {
     }, 0);
   };
 
-  const setActiveIcon = (groupId: string, title: string, editorId: string) => {
-    const { hasSwitched } = setActiveGroup(groupId);
-
-    hasSwitched &&
-      toast({
-        title: `Showing ‘${title || "Untitled icon"}’`,
-        description: `In the ‘${props.title || "Untitled set"}’ icon set`,
-      });
-
-    setTimeout(() => {
-      document
-        .querySelector(`#${editorId}`)
-        ?.scrollIntoView({ behavior: "smooth" });
-    }, 0);
-  };
-
   return (
-    <article
-      className="group/set grid gap-3 overflow-hidden"
-      id="header"
-      key={props.id}
-    >
+    <article className="group/set grid gap-3" id="header" key={props.id}>
       <Header
         id={props.id}
         title={props.title}
@@ -227,15 +222,15 @@ export const GroupSet = (props: GroupSetBlock) => {
       />
       <div className="group relative">
         <div className="pointer-events-none grid grid-cols-4 sm:grid-cols-6 md:grid-cols-7 lg:grid-cols-9 xl:grid-cols-12">
-          <div className="z-10 grid place-content-center text-center bg-[--page-bg]">
+          <div className="z-10 grid place-content-center text-center">
             <div className="-mb-1 block text-lg">
               {hasIcons ? iconCount : "no"}
             </div>
             <div className="text-md">{iconCount === 1 ? "icon" : "icons"}</div>
           </div>
-          <Guides />
+          {/* <Guides /> */}
 
-          {props.icons.map(([id, data], i) => (
+          {/* {props.icons.map(([id, data], i) => (
             <button
               // eslint-disable-next-line react/no-array-index-key
               key={`${i}-${id}`}
@@ -251,7 +246,17 @@ export const GroupSet = (props: GroupSetBlock) => {
               />
               <Guides />
             </button>
-          ))}
+          ))} */}
+
+          {props.isHeader ? (
+            <IconListDraggable
+              id={props.id}
+              icons={props.icons}
+              title={props.title}
+            />
+          ) : (
+            <IconList icons={props.icons} />
+          )}
 
           {hiddenCount > 0 && (
             <div className="-mb-1 block text-lg">+{hiddenCount}</div>
@@ -271,7 +276,7 @@ export const GroupSet = (props: GroupSetBlock) => {
               handleSelectGroup(props.id);
             }}
             className={tw(
-              "absolute inset-0 z-0 cursor-pointer rounded-lg opacity-0",
+              "absolute inset-0 z-0 cursor-pointer rounded-lg border opacity-0",
               "hover:opacity-50 group-focus-within:opacity-50 group-hover:opacity-50",
               props.isCurrent && "opacity-50"
             )}
@@ -280,4 +285,96 @@ export const GroupSet = (props: GroupSetBlock) => {
       </div>
     </article>
   );
+};
+
+const IconListDraggable = (props: {
+  id: string;
+  icons: Group["editors"];
+  title: string;
+}) => {
+  const { setEditorOrderByIds } = useAppActions();
+  const { setActiveGroup } = useAppActions();
+  const sortableContextId = useId();
+  const sensors = useSensors(
+    // Allow onClick events alongside dragging
+    // https://github.com/clauderic/dnd-kit/issues/591#issuecomment-1017050816
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  );
+
+  const setActiveIcon = (groupId: string, title: string, editorId: string) => {
+    setActiveGroup(groupId);
+
+    setTimeout(() => {
+      document
+        .querySelector(`#${editorId}`)
+        ?.scrollIntoView({ behavior: "smooth" });
+    }, 0);
+  };
+
+  const idList = useRef<string[]>([]);
+  const componentList = props.icons.map(([id, data], i) => {
+    idList.current.push(id);
+
+    return (
+      <SortableItem
+        // eslint-disable-next-line react/no-array-index-key
+        key={`${i}-${id}`}
+        id={id}
+        handleOnClick={() => {
+          setActiveIcon(props.id, data.title, id);
+        }}
+      >
+        <div
+          dangerouslySetInnerHTML={{ __html: data.svg.output }}
+          className="relative z-10 rounded border border-transparent p-5 hover:border-[--text-muted] hover:shadow-sm"
+        />
+        {/* <Guides /> */}
+      </SortableItem>
+    );
+  });
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over) return;
+
+      const oldIndex = idList.current.indexOf(String(active.id));
+      const newIndex = idList.current.indexOf(String(over.id));
+
+      if (active.id !== over.id) {
+        const newEditorOrder = arrayMove(componentList, oldIndex, newIndex).map(
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+          (item) => item.props.id
+        ) as string[];
+
+        setEditorOrderByIds(newEditorOrder);
+      }
+    },
+    [componentList, idList, setEditorOrderByIds]
+  );
+
+  return (
+    <DndContext
+      id={sortableContextId}
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+    >
+      <SortableContext items={idList.current} strategy={rectSortingStrategy}>
+        {componentList}
+      </SortableContext>
+      {/* <DragOverlay>{activeId ? <Item id={activeId} /> : null}</DragOverlay> */}
+    </DndContext>
+  );
+};
+
+const IconList = (props: { icons: Group["editors"] }) => {
+  return props.icons.map(([id, data], i) => (
+    <div
+      // eslint-disable-next-line react/no-array-index-key
+      key={`${i}-${id}`}
+      dangerouslySetInnerHTML={{ __html: data.svg.output }}
+      className="relative z-10 rounded border border-transparent p-5 hover:border-[--text-muted] hover:shadow-sm"
+    />
+  ));
 };

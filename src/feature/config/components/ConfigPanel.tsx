@@ -10,8 +10,11 @@ import { Slider } from "@/components/ui/slider";
 import { useAppActions, useAppStore } from "@/hooks/appState";
 import { tw } from "@/lib/utils";
 import { run } from "@/utils/run";
-import { Fragment, useMemo } from "react";
+import type { MutableRefObject } from "react";
+import { Fragment, useMemo, useRef } from "react";
 import validateColor from "validate-color";
+import debounce from "lodash/debounce";
+import type { DebouncedFunc } from "lodash";
 
 // const saveTemplateAsFile = (
 //   filename: string,
@@ -81,9 +84,21 @@ const isSelect = (item: ConfigType): item is ConfigSelect => !("type" in item);
 const isCheckbox = (item: ConfigType): item is ConfigCheckbox =>
   "type" in item && item.type === "checkbox";
 
+// Debounce for config items that update their values often (eg: a draggable slider)
+const debouncer = (
+  fn: () => void,
+  ref: MutableRefObject<DebouncedFunc<() => void> | undefined>
+) => {
+  ref.current?.cancel();
+  ref.current = debounce(fn, 200, { trailing: true });
+  ref.current();
+};
+
 export const ConfigPanel = () => {
   const activeGroupId = useAppStore((s) => s.activeGroupId);
   const { getConfig, setConfig } = useAppActions();
+  const debounceRef = useRef<DebouncedFunc<() => void>>();
+
   const config = getConfig();
 
   const configItems = useMemo(
@@ -92,8 +107,10 @@ export const ConfigPanel = () => {
         title: "stroke width",
         defaultValue: config.strokeWidth,
         type: "range",
-        onChange: (val) => {
-          setConfig({ strokeWidth: String(val[0]) });
+        onChange: (val: number[]) => {
+          debouncer(() => {
+            setConfig({ strokeWidth: String(val[0]) });
+          }, debounceRef);
         },
       } satisfies ConfigRange,
       {
@@ -109,7 +126,10 @@ export const ConfigPanel = () => {
 
           if (!stroke) return;
 
-          setConfig({ stroke });
+          // Allow the number to be finished, then update the config
+          setTimeout(() => {
+            setConfig({ stroke });
+          }, 0);
         },
         onBlur: (e) => {
           if (validateColor(e.target.value)) return;
@@ -130,7 +150,11 @@ export const ConfigPanel = () => {
               ? e.target.value
               : null;
           if (!fill) return;
-          setConfig({ fill });
+
+          // Allow the number to be finished, then update the config
+          setTimeout(() => {
+            setConfig({ fill });
+          }, 0);
         },
         onBlur: (e) => {
           if (validateColor(e.target.value)) return;

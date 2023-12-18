@@ -3,6 +3,7 @@
         "burd",
         "clsx",
         "codemirror",
+        "debouncer",
         "downloadurl",
         "Iconish",
         "immer",

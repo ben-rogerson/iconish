@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { render, renderHook, screen, within } from "@testing-library/react";
+import {
+  render,
+  renderHook,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useAppActions } from "@/hooks/appState";
 import { ConfigPanel } from "@/feature/config/components/ConfigPanel";
@@ -29,17 +35,23 @@ describe("<ConfigPanel />", () => {
       // Value can be incremented
       await userEvent.keyboard("[ArrowRight]");
       expect(element.getAttribute("aria-valuenow")).toBe("3");
-      expect(state.getConfig().strokeWidth).toBe("3");
+      await waitFor(() => {
+        expect(state.getConfig().strokeWidth).toBe("3");
+      });
 
       // Value can be decremented
       await userEvent.keyboard("[ArrowLeft][ArrowLeft]");
       expect(element.getAttribute("aria-valuenow")).toBe("1");
-      expect(state.getConfig().strokeWidth).toBe("1");
+      await waitFor(() => {
+        expect(state.getConfig().strokeWidth).toBe("1");
+      });
 
       // Value can not be decremented below 1
       await userEvent.keyboard("[ArrowLeft][ArrowLeft]");
       expect(element.getAttribute("aria-valuenow")).toBe("1");
-      expect(state.getConfig().strokeWidth).toBe("1");
+      await waitFor(() => {
+        expect(state.getConfig().strokeWidth).toBe("1");
+      });
 
       // Value can not be incremented above 5
       await userEvent.keyboard(
