@@ -1,9 +1,12 @@
+import type { RefObject } from "react";
 import { memo, useEffect, useState } from "react";
 
 import { Editor } from "@/feature/editor/components/Editor";
 import { useAppActions, useAppStore } from "@/hooks/appState";
 import { cn, tw } from "@/lib/utils";
 import { EditorList } from "@/components/EditorList";
+import type { VirtuosoHandle } from "react-virtuoso";
+import { run } from "@/utils/run";
 
 const Add = memo(function Memo(props: {
   onClick: () => void;
@@ -34,22 +37,21 @@ const Add = memo(function Memo(props: {
 });
 
 /**
- * Update the group list when the hash changes.
- * This is a hack to get around the fact that getGroup is not reactive.
+ * Update the list when the hash changes.
+ * This is a hack to get around the fact that getEditors is not reactive.
  */
 const useEditorsRender = () => {
-  const { getGroup } = useAppActions();
-  // console.log({ getGroup: getGroup() });
+  const { getEditors } = useAppActions();
   const hash = useAppStore((s) => s.updateListHash);
-  const [group, setGroup] = useState(getGroup());
+  const [editors, setEditors] = useState(getEditors());
 
   useEffect(() => {
-    setGroup(getGroup());
-  }, [hash, getGroup]);
-  return group?.editors ?? [];
+    setEditors(getEditors());
+  }, [hash, getEditors]);
+  return editors;
 };
 
-const Editors = () => {
+const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
   const { addEditorAtIndex } = useAppActions();
   const getEditors = useEditorsRender();
 
@@ -67,7 +69,7 @@ const Editors = () => {
     );
 
   return (
-    <EditorList>
+    <EditorList virtualListRef={props.virtualListRef}>
       {getEditors.map(([editorId, data], index) => {
         const showOutput =
           data.svg.output !== "" && data.svg.output.includes("<svg");
@@ -75,7 +77,7 @@ const Editors = () => {
           <article
             id={editorId}
             key={editorId}
-            className="group/editor relative"
+            className="group/editor relative pt-6 pb-14"
             aria-label={showOutput ? "editor" : "preview"}
           >
             {index === 0 && (
@@ -92,6 +94,39 @@ const Editors = () => {
               data={data}
               showOutput={showOutput}
             />
+            {/* {JSON.stringify(data.svg.log)} */}
+            {run(() => {
+              return (
+                <ul className="p-10">
+                  {(data.svg.log ?? [])
+                    .filter((l) => !l.type.startsWith("data."))
+                    .map((l, i) => {
+                      return (
+                        <li
+                          // eslint-disable-next-line react/no-array-index-key
+                          key={i}
+                          className={cn({
+                            "text-red-500": l.type === "error",
+                            "text-green-500": l.type === "success",
+                            "text-gray-500": l.type === "debug",
+                            "text-[--text-normal]": l.type === "info",
+                          })}
+                        >
+                          <div className="grid grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] gap-2">
+                            <div className="text-right">-</div>
+                            <div>
+                              {l.msg}{" "}
+                              <span className="text-xs opacity-50">
+                                {l.type}
+                              </span>
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                </ul>
+              );
+            })}
             <Add
               onClick={() => {
                 addEditorAtIndex(index + 1);

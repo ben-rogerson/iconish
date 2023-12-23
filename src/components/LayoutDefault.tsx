@@ -1,5 +1,5 @@
 import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+// import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/toaster";
 
 const LayoutDefault = ({ children }: { children: React.ReactNode }) => {
@@ -11,9 +11,9 @@ const LayoutDefault = ({ children }: { children: React.ReactNode }) => {
         </header>
         <main>{children}</main>
       </div>
-      <footer>
+      {/* <footer>
         <Footer />
-      </footer>
+      </footer> */}
       <Toaster />
     </div>
   );

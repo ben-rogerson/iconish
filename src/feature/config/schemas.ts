@@ -1,6 +1,7 @@
 import z from "zod";
 
 const configSchema = z.object({
+  iconSetType: z.enum(["stroked", "filled"]),
   strokeWidth: z.string(),
   stroke: z.string(),
   fill: z.string(),

@@ -6,6 +6,7 @@ import type {
   editorSchema,
   groupSchema,
   svgSchema,
+  svgLogItem,
   viewSchema,
 } from "./schemas";
 
@@ -13,6 +14,7 @@ type AppState = z.infer<typeof appStateSchema>;
 type EditorState = z.infer<typeof editorSchema>;
 type View = z.infer<typeof viewSchema>;
 type Svg = z.infer<typeof svgSchema>;
+type SvgLogItem = z.infer<typeof svgLogItem>;
 type Group = z.infer<typeof groupSchema>;
 
-export type { AppState, EditorState, View, Svg, Group };
+export type { AppState, EditorState, View, Svg, SvgLogItem, Group };

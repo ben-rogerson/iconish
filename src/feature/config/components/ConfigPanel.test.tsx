@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import {
   render,
   renderHook,
@@ -11,232 +11,312 @@ import { useAppActions } from "@/hooks/appState";
 import { ConfigPanel } from "@/feature/config/components/ConfigPanel";
 
 describe("<ConfigPanel />", () => {
-  describe("stroke width", () => {
-    const setup = () => {
-      render(<ConfigPanel />);
-      const container = within(screen.getByTestId("range-0"));
-      const element = container.getByRole<HTMLSpanElement>("slider");
-      const { result } = renderHook(() => useAppActions());
-      return { container, element, state: result.current };
-    };
+  it("sets the default iconSetType as stroked", () => {
+    const { result } = renderHook(() => useAppActions());
 
-    it("has default value", () => {
-      const { container, element, state } = setup();
-      expect(container.getByText(/stroke width/i)).toBeVisible();
-      expect(element.getAttribute("aria-valuenow")).toBe("2");
-      expect(state.getConfig().strokeWidth).toBe("2");
+    // With the default single editor
+    expect(result.current.getConfig().iconSetType).toBe("stroked");
+
+    // With no editors
+    result.current.clearEditors();
+    expect(result.current.getConfig().iconSetType).toBe("stroked");
+  });
+
+  describe("stroked mode", () => {
+    beforeEach(() => {
+      const { result } = renderHook(() => useAppActions());
+      result.current.setConfig({ iconSetType: "stroked" }, true);
+      expect(result.current.getConfig().iconSetType).toBe("stroked");
     });
 
-    it("can be updated", async () => {
-      const { element, state } = setup();
+    describe("stroke width", () => {
+      const setup = () => {
+        render(<ConfigPanel />);
+        const container = within(screen.getByTestId("control-stroke-width"));
+        const element = container.getByRole<HTMLSpanElement>("slider");
+        const { result } = renderHook(() => useAppActions());
+        return { container, element, state: result.current };
+      };
 
-      element.focus();
+      it("has default value", () => {
+        const { container, element, state } = setup();
 
-      // Value can be incremented
-      await userEvent.keyboard("[ArrowRight]");
-      expect(element.getAttribute("aria-valuenow")).toBe("3");
-      await waitFor(() => {
-        expect(state.getConfig().strokeWidth).toBe("3");
+        expect(container.getByText(/stroke width/i)).toBeVisible();
+        expect(element.getAttribute("aria-valuenow")).toBe("2");
+        expect(state.getConfig().strokeWidth).toBe("2");
       });
 
-      // Value can be decremented
-      await userEvent.keyboard("[ArrowLeft][ArrowLeft]");
-      expect(element.getAttribute("aria-valuenow")).toBe("1");
-      await waitFor(() => {
-        expect(state.getConfig().strokeWidth).toBe("1");
+      it("can be updated", async () => {
+        const { element, state } = setup();
+
+        element.focus();
+
+        // Value can be incremented
+        await userEvent.keyboard("[ArrowRight]");
+        expect(element.getAttribute("aria-valuenow")).toBe("2.5");
+        await waitFor(() => {
+          expect(state.getConfig().strokeWidth).toBe("2.5");
+        });
+
+        // Value can be decremented
+        await userEvent.keyboard("[ArrowLeft][ArrowLeft]");
+        expect(element.getAttribute("aria-valuenow")).toBe("1.5");
+        await waitFor(() => {
+          expect(state.getConfig().strokeWidth).toBe("1.5");
+        });
+
+        // Value can not be decremented below 1
+        await userEvent.keyboard("[ArrowLeft][ArrowLeft]");
+        expect(element.getAttribute("aria-valuenow")).toBe("1");
+        await waitFor(() => {
+          expect(state.getConfig().strokeWidth).toBe("1");
+        });
+
+        // Value can not be incremented above 5
+        await userEvent.keyboard(
+          "[ArrowRight][ArrowRight][ArrowRight][ArrowRight][ArrowRight][ArrowRight][ArrowRight][ArrowRight][ArrowRight][ArrowRight]"
+        );
+        expect(element.getAttribute("aria-valuenow")).toBe("5");
+
+        // When blurred, value remains the same
+        element.blur();
+        expect(element).not.toHaveFocus();
+        expect(element.getAttribute("aria-valuenow")).toBe("5");
+      });
+    });
+
+    describe("stroke color", () => {
+      const setup = () => {
+        render(<ConfigPanel />);
+        const container = within(screen.getByTestId("control-stroke-color"));
+        const element = container.getByRole<HTMLInputElement>("textbox");
+        const { result } = renderHook(() => useAppActions());
+        return { container, element, state: result.current };
+      };
+
+      it("has default value", () => {
+        const { container, element } = setup();
+        expect(container.getByLabelText(/stroke/i)).toBeVisible();
+        expect(element.value).toBe("currentColor");
       });
 
-      // Value can not be decremented below 1
-      await userEvent.keyboard("[ArrowLeft][ArrowLeft]");
-      expect(element.getAttribute("aria-valuenow")).toBe("1");
-      await waitFor(() => {
-        expect(state.getConfig().strokeWidth).toBe("1");
+      it("can be updated", async () => {
+        const { element, state } = setup();
+
+        await userEvent.clear(element);
+        await userEvent.type(element, "red");
+        element.blur();
+
+        expect(element).not.toHaveFocus();
+        expect(element.value).toBe("red");
+        expect(state.getConfig().stroke).toBe("red");
       });
 
-      // Value can not be incremented above 5
-      await userEvent.keyboard(
-        "[ArrowRight][ArrowRight][ArrowRight][ArrowRight][ArrowRight][ArrowRight][ArrowRight][ArrowRight][ArrowRight][ArrowRight]"
+      it("resets on invalid color", async () => {
+        const { element, state } = setup();
+
+        // Displays element value but state is not updated
+        await userEvent.clear(element);
+        await userEvent.type(element, "invalid");
+        expect(element.value).toBe("invalid");
+        expect(state.getConfig().stroke).toBe("currentColor");
+
+        // On blur, element value is reset to default value
+        await userEvent.tab();
+        expect(element).not.toHaveFocus();
+        expect(element.value).toBe("currentColor");
+        expect(state.getConfig().stroke).toBe("currentColor");
+      });
+    });
+
+    describe("non-scaling-stroke", () => {
+      const setup = () => {
+        render(<ConfigPanel />);
+        const container = within(
+          screen.getByTestId("control-non-scaling-stroke")
+        );
+        const element = container.getByRole<HTMLInputElement>("checkbox");
+        const { result } = renderHook(() => useAppActions());
+        return { container, element, state: result.current };
+      };
+
+      it("has default value", () => {
+        const { container, element } = setup();
+        expect(container.getByLabelText(/non-scaling stroke/i)).toBeVisible();
+        expect(element.checked).toBe(true);
+      });
+
+      it("can be updated", async () => {
+        const { element, state } = setup();
+
+        await userEvent.click(element);
+        expect(element.checked).toBe(false);
+        expect(state.getConfig().nonScalingStroke).toBe(false);
+
+        await userEvent.click(element);
+        expect(element.checked).toBe(true);
+        expect(state.getConfig().nonScalingStroke).toBe(true);
+      });
+    });
+  });
+
+  describe("fill mode", () => {
+    beforeEach(() => {
+      const { result } = renderHook(() => useAppActions());
+
+      result.current.setConfig(
+        { iconSetType: "filled" },
+        // GOTCHA: Prevent updating as that will change the iconSetType
+        false
       );
-      expect(element.getAttribute("aria-valuenow")).toBe("5");
 
-      // When blurred, value remains the same
-      element.blur();
-      expect(element).not.toHaveFocus();
-      expect(element.getAttribute("aria-valuenow")).toBe("5");
+      expect(result.current.getConfig().iconSetType).toBe("filled");
+    });
+
+    describe("fill color", () => {
+      const setup = () => {
+        render(<ConfigPanel />);
+        const container = within(screen.getByTestId("control-fill-color"));
+        const element = container.getByRole<HTMLInputElement>("textbox");
+        const { result } = renderHook(() => useAppActions());
+        return { container, element, state: result.current };
+      };
+
+      it("has default value", () => {
+        const { container, element } = setup();
+        expect(container.getByLabelText(/fill/i)).toBeVisible();
+        expect(element.value).toBe("currentColor");
+      });
+
+      it("can be updated", async () => {
+        const { element, state } = setup();
+
+        const { result } = renderHook(() => useAppActions());
+        console.log({ el: result.current.getConfig().iconSetType });
+
+        await userEvent.clear(element);
+        await userEvent.type(element, "yellow");
+        element.blur();
+
+        expect(element).not.toHaveFocus();
+        expect(element.value).toBe("yellow");
+        expect(state.getConfig().fill).toBe("yellow");
+      });
+
+      it("resets on invalid color", async () => {
+        const { element, state } = setup();
+
+        // Displays element value but state is not updated
+        await userEvent.clear(element);
+        await userEvent.type(element, "invalid");
+        expect(element.value).toBe("invalid");
+        expect(state.getConfig().fill).toBe("currentColor");
+
+        // On blur, element value is reset to default value
+        await userEvent.tab();
+        expect(element).not.toHaveFocus();
+        expect(element.value).toBe("currentColor");
+        expect(state.getConfig().fill).toBe("currentColor");
+      });
     });
   });
 
-  describe("stroke color", () => {
-    const setup = () => {
-      render(<ConfigPanel />);
-      const container = within(screen.getByTestId("input-1"));
-      const element = container.getByRole<HTMLInputElement>("textbox");
-      const { result } = renderHook(() => useAppActions());
-      return { container, element, state: result.current };
+  describe("common for all modes", () => {
+    const openDropdownByName = async (reg: RegExp) => {
+      const container = screen.getByRole<HTMLButtonElement>("combobox", {
+        name: reg,
+      });
+      expect(container).toHaveAttribute("aria-expanded", "false");
+      // A click event doesn't activate the dropdown for some reason - some JS trickery?
+      container.focus();
+      await userEvent.keyboard("[Space]");
+      expect(container).toHaveAttribute("aria-expanded", "true");
     };
 
-    it("has default value", () => {
-      const { container, element } = setup();
-      expect(container.getByLabelText(/stroke color/i)).toBeVisible();
-      expect(element.value).toBe("currentColor");
+    describe("stroke linecap", () => {
+      const setup = async () => {
+        render(<ConfigPanel />);
+        await openDropdownByName(/stroke options/i);
+
+        const container = within(screen.getByTestId("control-stroke-linecap"));
+        const element = container.getByRole<HTMLButtonElement>("combobox");
+        const { result } = renderHook(() => useAppActions());
+        return { container, element, state: result.current };
+      };
+
+      it("has default value", async () => {
+        const { container, element, state } = await setup();
+
+        expect(container.getByLabelText(/stroke-linecap/i)).toBeVisible();
+        expect(element).toHaveTextContent("round");
+        expect(element.getAttribute("aria-expanded")).toBe("false");
+        expect(state.getConfig().strokeLinecap).toBe("round");
+      });
+
+      it("can be updated", async () => {
+        const { element, state } = await setup();
+
+        expect(element.getAttribute("aria-expanded")).toBe("false");
+
+        expect(element.getAttribute("aria-expanded")).toBe("false");
+        expect(element).not.toHaveFocus();
+        expect(state.getConfig().strokeLinecap).toBe("round");
+
+        // Focus menu and hits arrow down to "open the menu"
+        element.focus();
+        await userEvent.keyboard("[ArrowDown]");
+        expect(element.getAttribute("aria-expanded")).toBe("true");
+        expect(state.getConfig().strokeLinecap).toBe("round");
+
+        // Select the menu item at the bottom
+        await userEvent.keyboard("[ArrowDown][ArrowDown][ArrowDown][Enter]");
+        expect(element.getAttribute("aria-expanded")).toBe("false");
+        expect(element.textContent).toBe("square");
+        expect(state.getConfig().strokeLinecap).toBe("square");
+      });
     });
 
-    it("can be updated", async () => {
-      const { element, state } = setup();
+    describe("stroke linejoin", () => {
+      const setup = async () => {
+        render(<ConfigPanel />);
+        await openDropdownByName(/stroke options/i);
 
-      await userEvent.clear(element);
-      await userEvent.type(element, "red");
-      element.blur();
+        const container = within(screen.getByTestId("control-stroke-linejoin"));
+        const element = container.getByRole<HTMLButtonElement>("combobox");
+        const { result } = renderHook(() => useAppActions());
+        return { container, element, state: result.current };
+      };
 
-      expect(element).not.toHaveFocus();
-      expect(element.value).toBe("red");
-      expect(state.getConfig().stroke).toBe("red");
-    });
+      it("has default value", async () => {
+        const { container, element, state } = await setup();
+        expect(container.getByLabelText(/stroke-linejoin/i)).toBeVisible();
+        expect(element.textContent).toBe("round");
+        expect(element.getAttribute("aria-expanded")).toBe("false");
+        expect(state.getConfig().strokeLinejoin).toBe("round");
+      });
 
-    it("resets on invalid color", async () => {
-      const { element, state } = setup();
+      it("can be updated", async () => {
+        const { element, state } = await setup();
 
-      // Displays element value but state is not updated
-      await userEvent.clear(element);
-      await userEvent.type(element, "invalid");
-      expect(element.value).toBe("invalid");
-      expect(state.getConfig().stroke).toBe("currentColor");
+        expect(element.getAttribute("aria-expanded")).toBe("false");
 
-      // On blur, element value is reset to default value
-      await userEvent.tab();
-      expect(element).not.toHaveFocus();
-      expect(element.value).toBe("currentColor");
-      expect(state.getConfig().stroke).toBe("currentColor");
-    });
-  });
+        // Focus menu then un-focus doesn't update state
+        expect(element.getAttribute("aria-expanded")).toBe("false");
+        expect(element).not.toHaveFocus();
+        expect(state.getConfig().strokeLinejoin).toBe("round");
 
-  describe("fill color", () => {
-    const setup = () => {
-      render(<ConfigPanel />);
-      const container = within(screen.getByTestId("input-2"));
-      const element = container.getByRole<HTMLInputElement>("textbox");
-      const { result } = renderHook(() => useAppActions());
-      return { container, element, state: result.current };
-    };
+        // Focus menu and hits arrow down to "open the menu"
+        element.focus();
+        await userEvent.keyboard("[ArrowUp]");
+        expect(element.getAttribute("aria-expanded")).toBe("true");
+        expect(state.getConfig().strokeLinejoin).toBe("round");
 
-    it("has default value", () => {
-      const { container, element } = setup();
-      expect(container.getByLabelText(/fill color/i)).toBeVisible();
-      expect(element.value).toBe("currentColor");
-    });
-
-    it("can be updated", async () => {
-      const { element, state } = setup();
-
-      await userEvent.clear(element);
-      await userEvent.type(element, "yellow");
-      element.blur();
-
-      expect(element).not.toHaveFocus();
-      expect(element.value).toBe("yellow");
-      expect(state.getConfig().fill).toBe("yellow");
-    });
-
-    it("resets on invalid color", async () => {
-      const { element, state } = setup();
-
-      // Displays element value but state is not updated
-      await userEvent.clear(element);
-      await userEvent.type(element, "invalid");
-      expect(element.value).toBe("invalid");
-      expect(state.getConfig().fill).toBe("currentColor");
-
-      // On blur, element value is reset to default value
-      await userEvent.tab();
-      expect(element).not.toHaveFocus();
-      expect(element.value).toBe("currentColor");
-      expect(state.getConfig().fill).toBe("currentColor");
-    });
-  });
-
-  describe("stroke linecap", () => {
-    const setup = () => {
-      render(<ConfigPanel />);
-      const container = within(screen.getByTestId("select-3"));
-      const element = container.getByRole<HTMLButtonElement>("combobox");
-      const { result } = renderHook(() => useAppActions());
-      return { container, element, state: result.current };
-    };
-
-    it("has default value", () => {
-      const { container, element, state } = setup();
-      expect(container.getByLabelText(/stroke-linecap/i)).toBeVisible();
-      expect(element.textContent).toBe("round");
-      expect(element.getAttribute("aria-expanded")).toBe("false");
-      expect(state.getConfig().strokeLinecap).toBe("round");
-    });
-
-    it("can be updated", async () => {
-      const { element, state } = setup();
-
-      expect(element.getAttribute("aria-expanded")).toBe("false");
-
-      // Focus menu then un-focus doesn't update state
-      element.focus();
-      element.blur();
-      expect(element.getAttribute("aria-expanded")).toBe("false");
-      expect(element).not.toHaveFocus();
-      expect(state.getConfig().strokeLinecap).toBe("round");
-
-      // Focus menu and hits arrow down to "open the menu"
-      element.focus();
-      await userEvent.keyboard("[ArrowDown]");
-      expect(element.getAttribute("aria-expanded")).toBe("true");
-      expect(state.getConfig().strokeLinecap).toBe("round");
-
-      // Select the menu item at the bottom
-      await userEvent.keyboard("[ArrowDown][ArrowDown][ArrowDown][Enter]");
-      expect(element.getAttribute("aria-expanded")).toBe("false");
-      expect(element.textContent).toBe("square");
-      expect(state.getConfig().strokeLinecap).toBe("square");
-    });
-  });
-
-  describe("stroke linejoin", () => {
-    const setup = () => {
-      render(<ConfigPanel />);
-      const container = within(screen.getByTestId("select-4"));
-      const element = container.getByRole<HTMLButtonElement>("combobox");
-      const { result } = renderHook(() => useAppActions());
-      return { container, element, state: result.current };
-    };
-
-    it("has default value", () => {
-      const { container, element, state } = setup();
-      expect(container.getByLabelText(/stroke-linejoin/i)).toBeVisible();
-      expect(element.textContent).toBe("round");
-      expect(element.getAttribute("aria-expanded")).toBe("false");
-      expect(state.getConfig().strokeLinejoin).toBe("round");
-    });
-
-    it("can be updated", async () => {
-      const { element, state } = setup();
-
-      expect(element.getAttribute("aria-expanded")).toBe("false");
-
-      // Focus menu then un-focus doesn't update state
-      element.focus();
-      element.blur();
-      expect(element.getAttribute("aria-expanded")).toBe("false");
-      expect(element).not.toHaveFocus();
-      expect(state.getConfig().strokeLinejoin).toBe("round");
-
-      // Focus menu and hits arrow down to "open the menu"
-      element.focus();
-      await userEvent.keyboard("[ArrowUp]");
-      expect(element.getAttribute("aria-expanded")).toBe("true");
-      expect(state.getConfig().strokeLinejoin).toBe("round");
-
-      // Select the menu item at the bottom
-      await userEvent.keyboard("[ArrowUp][ArrowUp][ArrowUp][Enter]");
-      expect(element.getAttribute("aria-expanded")).toBe("false");
-      expect(element.textContent).toBe("bevel");
-      expect(state.getConfig().strokeLinejoin).toBe("bevel");
+        // Select the menu item at the bottom
+        await userEvent.keyboard("[ArrowUp][ArrowUp][ArrowUp][Enter]");
+        expect(element.getAttribute("aria-expanded")).toBe("false");
+        expect(element.textContent).toBe("bevel");
+        expect(state.getConfig().strokeLinejoin).toBe("bevel");
+      });
     });
   });
 });

@@ -1,8 +1,6 @@
 import { optimize } from "svgo";
 import { sanitizeTransforms } from "@/feature/svg/transforms";
-import { transformSvg } from "@/feature/svg/transformSvg";
 import { parseSvg } from "@/feature/svg/parseSvg";
-import type { Config } from "@/feature/config/types";
 
 export const optimizeAll = (svg: string) => {
   try {
@@ -19,7 +17,7 @@ export const optimizeAll = (svg: string) => {
         },
         { name: "sortAttrs", params: { xmlnsOrder: "alphabetical" } },
         { name: "removeAttrs", params: { attrs: ["data-*", "data.*"] } },
-        { name: "removeDimensions" }, // ??
+        // { name: "removeDimensions" }, // Remove width/height and add viewBox if it's missing
         { name: "convertStyleToAttrs", params: { keepImportant: true } },
       ],
     });
@@ -29,13 +27,6 @@ export const optimizeAll = (svg: string) => {
     throw new Error(msg);
   }
 };
-
-export const doTransformSvg =
-  (config: Config) =>
-  (title = "", svg = "", originalSvg = "") => ({
-    ...transformSvg(svg, title, config),
-    original: originalSvg,
-  });
 
 export const doSanitizeSvg = (svgInput: string) =>
   sanitizeTransforms.reduce((a, t) => t(a), parseSvg(svgInput)).toString();

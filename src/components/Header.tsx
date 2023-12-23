@@ -10,7 +10,7 @@ export function Header() {
         {logoIcon}
         <div>Iconish</div>
       </Link>
-      <h1>Shape your svg icons into consistent sets</h1>
+      <h1>align and minify svg icon sets</h1>
       {/* <button
         className="flex items-center gap-2 text-[--text-muted] hover:text-[--text]"
         onClick={addGroup}

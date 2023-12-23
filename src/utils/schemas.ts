@@ -17,17 +17,24 @@ const viewSchema = z.object({
     .optional(),
 });
 
+const svgLogItem = z.object({
+  msg: z.string(),
+  type: z.enum(["success", "error", "debug", "info", "data.type"]),
+});
+
 const svgSchema = z.object({
   // symbolReference: z.string(),
   // symbol: z.string(),
   output: z.string(),
   original: z.string(),
+  log: z.array(svgLogItem).optional(),
 });
 
 const editorSchema = z.tuple([
   z.string(),
   z.object({
     title: z.string(),
+    isDeleted: z.boolean().default(false),
     svg: svgSchema,
     view: z.union([viewSchema, z.null()]),
   }),
@@ -54,6 +61,7 @@ export {
   editorSchema,
   viewSchema,
   svgSchema,
+  svgLogItem,
   groupSchema,
   activeGroupIdSchema,
   groupsSchema,

@@ -3,6 +3,7 @@ import { LayoutDefault } from "@/components/LayoutDefault";
 import { Detail } from "@/components/Detail";
 import { List } from "@/components/List";
 import { useAppStore } from "@/hooks/appState";
+import { WithMobileSidebar } from "@/components/Sidebar";
 
 const Home = () => {
   const hasHydrated = useAppStore((s) => s._hasHydrated);
@@ -12,14 +13,15 @@ const Home = () => {
   }
 
   return (
-    <div>
-      <LayoutDefault>
-        <div className="grid gap-y-20">
-          <Detail />
-          <List />
-        </div>
-      </LayoutDefault>
-    </div>
+    <WithMobileSidebar sidebarContent={List}>
+      <div>
+        <LayoutDefault>
+          <div className="grid gap-y-20">
+            <Detail />
+          </div>
+        </LayoutDefault>
+      </div>
+    </WithMobileSidebar>
   );
 };
 

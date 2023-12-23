@@ -40,7 +40,7 @@ test("a svg can be added via paste", async ({ page }) => {
   const preview = page.getByRole("article", { name: "preview" }).first();
   await preview.getByPlaceholder("Untitled icon…").fill("My test icon");
 
-  const input = preview.getByPlaceholder("Paste a <svg> here…");
+  const input = preview.getByPlaceholder("Paste svg");
   await input.fill(icon);
   await input.press("Enter");
 

@@ -1,5 +1,19 @@
 import { type Config } from "@/feature/config/types";
+import { type LogHelper } from "@/feature/svg/transformSvg";
+import { run } from "@/utils/run";
 import { type HTMLElement } from "node-html-parser";
+
+export type Transform = (
+  doc: HTMLElement,
+  options: TransformOptions
+) => HTMLElement;
+
+export type TransformOptions = {
+  config: Config;
+  log: LogHelper;
+  title?: string;
+  editorId?: string;
+};
 
 // const viewBoxTransform = (doc: HTMLElement) => {
 //   const svg = doc.querySelector("svg");
@@ -19,94 +33,123 @@ const ELEMENT_COMMON_IGNORE_VALUES = [
   "0",
 ];
 
-export const fillColorTransform = (doc: HTMLElement, config: Config) => {
+export const fillColorTransform: Transform = (doc, options) => {
+  if (options.config.iconSetType === "stroked") return doc;
+
   const paths = doc.querySelectorAll(
     "path[fill], line[fill], polygon[fill], polyline[fill], ellipse[fill], rect[fill], circle[fill]"
   );
 
-  const targetPaths = [...paths]
-    .map((path) => {
-      const value = path.getAttribute("fill") ?? "";
+  const fillPaths = new Set<HTMLElement>();
+  const tagNames: Array<HTMLElement["tagName"]> = [];
 
-      if (ELEMENT_COMMON_IGNORE_VALUES.includes(value)) return null;
-      return path;
-    })
-    .filter(Boolean);
+  for (const path of paths) {
+    if (!path.hasAttribute("fill")) continue;
 
-  // Check for a colored svg to avoid applying fill
-  if (targetPaths.length > 1) {
-    console.warn(`Multiple fill colors found, avoiding fill change.`);
-    return doc;
+    const value = path.getAttribute("fill") ?? "";
+    if (ELEMENT_COMMON_IGNORE_VALUES.includes(value)) continue;
+
+    fillPaths.add(path);
+    tagNames.push(path.tagName.toLowerCase());
+
+    if (fillPaths.size > 1) {
+      options.log.add(
+        `the custom fill of “${
+          options.config.fill
+        }” wasn’t applied as multiple fill colors were found (${getCounts(
+          [...fillPaths].map((p) => p.getAttribute("fill") ?? "")
+        )})`,
+        "error"
+      );
+      return doc;
+    }
   }
 
-  for (const path of targetPaths) {
-    // const value = path.getAttribute("fill") as string;
-
-    // if (ELEMENT_COMMON_IGNORE_VALUES.includes(value)) continue;
-
-    // if (value === "" || value === "0") {
-    //   path.removeAttribute("stroke");
-    //   continue;
-    // }
-
-    // if (value !== fillColorConfig)
-    //   console.warn(
-    //     `Inconsistent fill. Found: ${value}, Updated to ${fillColorConfig}`
-    //   );
-
-    path?.setAttribute("fill", config.fill);
+  // Split into two loops to avoid modifying the DOM while performing the color checks
+  for (const path of fillPaths) {
+    path.setAttribute("fill", options.config.fill);
   }
 
-  return doc;
-};
+  fillPaths.size > 0 &&
+    options.log.add(
+      `updated fill to “${options.config.fill}” on ${getCounts(
+        [...fillPaths].map((p) => p.tagName.toLowerCase())
+      )}`
+    );
 
-export const vectorEffectTransform = (doc: HTMLElement) => {
-  const svg = doc.querySelector("svg");
-  const hasSvgStrokeWidth =
-    // svg?.getAttribute("stroke") ??
-    svg?.getAttribute("stroke-width") ??
-    svg?.getAttribute("strokewidth") ??
-    svg?.getAttribute("strokeWidth");
+  run(() => {
+    if (fillPaths.size > 0) return;
+    const svg = doc.querySelector("svg");
+    if (!svg) return;
 
-  if (!hasSvgStrokeWidth) return doc;
+    const value = svg.getAttribute("fill") ?? "";
+    if (value.length === 0) return;
 
-  const paths = doc.querySelectorAll(
-    "path, line, polygon, polyline, ellipse, rect, circle"
-  );
-
-  paths.forEach((path) => {
-    if (
-      path.hasAttribute("vector-effect") ||
-      path.hasAttribute("vectoreffect") ||
-      path.hasAttribute("vectorEffect")
-      // (!hasSvgStroke && !path.hasAttribute("stroke"))
-    )
-      return;
-
-    path.removeAttribute("vectoreffect");
-    path.removeAttribute("vectorEffect");
-    path.setAttribute("vector-effect", "non-scaling-stroke");
+    svg.setAttribute("fill", options.config.fill);
+    options.log.add(`updated fill to “${options.config.fill}” on svg`);
   });
+
   return doc;
 };
 
-export const strokeLineCapTransform = (doc: HTMLElement, config: Config) => {
+export const strokeLineCapTransform: Transform = (doc, options) => {
   const paths = doc.querySelectorAll("*[stroke-linecap]");
-  paths.forEach((path) => {
-    path.setAttribute("stroke-linecap", config.strokeLinecap);
-  });
+  if (paths.length === 0) return doc;
+
+  const tagNames: Array<HTMLElement["tagName"]> = [];
+  for (const path of paths) {
+    if (path.getAttribute("stroke-linecap") === options.config.strokeLinecap)
+      continue;
+    path.setAttribute("stroke-linecap", options.config.strokeLinecap);
+    tagNames.push(path.tagName.toLowerCase());
+  }
+
+  tagNames.length > 0 &&
+    options.log.add(
+      `updated stroke-linecap to "${
+        options.config.strokeLinecap
+      }" on ${getCounts(tagNames)}`
+    );
+
   return doc;
 };
 
-export const strokeLineJoinTransform = (doc: HTMLElement, config: Config) => {
+export const strokeLineJoinTransform: Transform = (doc, options) => {
   const paths = doc.querySelectorAll("*[stroke-linejoin]");
-  paths.forEach((path) => {
-    path.setAttribute("stroke-linejoin", config.strokeLinejoin);
-  });
+  if (paths.length === 0) return doc;
+
+  const tagNames: Array<HTMLElement["tagName"]> = [];
+  for (const path of paths) {
+    if (path.getAttribute("stroke-linejoin") === options.config.strokeLinejoin)
+      continue;
+    path.setAttribute("stroke-linejoin", options.config.strokeLinejoin);
+    tagNames.push(path.tagName.toLowerCase());
+  }
+
+  tagNames.length > 0 &&
+    options.log.add(
+      `updated stroke-linejoin to "${
+        options.config.strokeLinejoin
+      }" on ${getCounts(tagNames)}`
+    );
+
   return doc;
 };
 
-export const strokeWidthTransform = (doc: HTMLElement, config: Config) => {
+const getCounts = (tagNames: Array<HTMLElement["tagName"]>) =>
+  Object.entries(
+    tagNames.reduce<Record<string, number>>((acc, name) => {
+      acc[name] = (acc[name] || 0) + 1;
+      return acc;
+    }, {})
+  )
+    .map(([key, value]) => `${key}${value > 1 ? ` (${value}x)` : ""}`)
+    .join(", ");
+
+export const strokeWidthTransform: Transform = (doc, options) => {
+  // Avoid applying stroke width to filled icons
+  if (options.config.iconSetType === "filled") return doc;
+
   const elementTargets = [
     "svg",
     "path",
@@ -122,143 +165,31 @@ export const strokeWidthTransform = (doc: HTMLElement, config: Config) => {
     .join(", ");
   const paths = doc.querySelectorAll(elementTargetsString);
 
-  paths.forEach((path) => {
-    // let value = null;
-    // // Use strokeWidth attribute if happens to be set
-    // if (path.hasAttribute("strokeWidth")) {
-    //   value = path.getAttribute("strokeWidth");
-    // }
-    // const value =
-    //   path.getAttribute("strokeWidth") ?? path.getAttribute("stroke-width");
+  if (paths.length === 0) return doc;
 
+  const tagNames: Array<HTMLElement["tagName"]> = [];
+  for (const path of paths) {
     path.removeAttribute("strokewidth");
     path.removeAttribute("strokeWidth");
     path.removeAttribute("stroke-width");
 
-    // if (value && value !== strokeWidthConfig)
-    //   console.warn(
-    //     `Inconsistent stroke width. Found: ${path.getAttribute(
-    //       "stroke-width"
-    //     )}, Updated: ${strokeWidthConfig}`
-    //   );
-
-    path.setAttribute("stroke-width", config.strokeWidth);
-  });
-  return doc;
-};
-
-export const svgAttributesTransform = (doc: HTMLElement, config: Config) => {
-  const svg = doc.querySelector("svg");
-  if (!svg) return doc;
-
-  if (!svg.hasAttribute("viewBox")) {
-    const width = svg.getAttribute("width");
-    const height = svg.getAttribute("height");
-
-    if (
-      width &&
-      height &&
-      Number.isInteger(Number(width)) &&
-      Number.isInteger(Number(height))
-    ) {
-      // console.warn(
-      //   `ViewBox not found on the svg element. Adding from width and height.`
-      // );
-      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-    }
-    // else {
-    // if (!width || !height) {
-    //   console.warn(`ViewBox not found on the svg element.`);
-    // }
-    // }
+    path.setAttribute("stroke-width", options.config.strokeWidth);
+    tagNames.push(path.tagName.toLowerCase());
   }
 
-  if (svg.getAttribute("width")) {
-    // console.warn(
-    //   `Width found on the svg element. Found: ${svg.getAttribute(
-    //     "width"
-    //   )}, Removed width attribute`
-    // );
-    svg.removeAttribute("width");
-  }
-
-  if (svg.hasAttribute("height")) {
-    // console.warn(
-    //   `Height found on the svg element. Found: ${svg.getAttribute(
-    //     "height"
-    //   )}, Removed height attribute`
-    // );
-    svg.removeAttribute("height");
-  }
-
-  if (svg.hasAttribute("fill")) {
-    const value = svg.getAttribute("fill");
-    if (value !== "none") {
-      // console.warn(
-      //   `Fill found on the svg element. Found: ${value}, Removed fill attribute. Set it to 'none' to keep it.`
-      // );
-      svg.removeAttribute("fill");
-    }
-  }
-
-  if (svg.hasAttribute("stroke")) {
-    const strokeConfig = config.stroke;
-    const value = svg.getAttribute("stroke") ?? "";
-
-    if (value.length > 0 && value !== strokeConfig) {
-      // console.warn(
-      //   `Stroke found on the svg element. Found: ${value}, Updated to ${strokeConfig}`
-      // );
-      svg.setAttribute("stroke", strokeConfig);
-    }
-  }
+  options.log.add(
+    `updated stroke-width to “${options.config.strokeWidth}” on ${getCounts(
+      tagNames
+    )}`
+  );
 
   return doc;
 };
 
-const svgAttributesSanitizeTransform = (doc: HTMLElement) => {
-  const svg = doc.querySelector("svg");
-  if (!svg) return doc;
+export const strokeColorTransform: Transform = (doc, options) => {
+  // Avoid applying stroke color to filled icons
+  if (options.config.iconSetType === "filled") return doc;
 
-  if (svg.getAttribute("width")) {
-    // console.warn(
-    //   `Width found on the svg element. Found: ${svg.getAttribute(
-    //     "width"
-    //   )}, Removed width attribute`
-    // );
-    svg.removeAttribute("width");
-  }
-
-  if (svg.hasAttribute("height")) {
-    // console.warn(
-    //   `Height found on the svg element. Found: ${svg.getAttribute(
-    //     "height"
-    //   )}, Removed height attribute`
-    // );
-    svg.removeAttribute("height");
-  }
-
-  return doc;
-};
-
-export const addId = (doc: HTMLElement, title: string) => {
-  const svg = doc.querySelector("svg");
-  if (!svg) return doc;
-  if (!title) return doc;
-
-  svg.setAttribute("id", title);
-
-  return doc;
-
-  // console.log({ id: svg.getAttribute("id") });
-  // if (svg.hasAttribute("id")) return doc;
-  // const ID = Math.random().toString(36).slice(2);
-  // console.warn(`No ID found on the svg element - generating a new one: ${ID}`);
-  // svg.setAttribute("id", ID);
-  // return doc;
-};
-
-export const strokeColorTransform = (doc: HTMLElement, config: Config) => {
   const paths = doc.querySelectorAll(
     "path[stroke], line[stroke], polygon[stroke], polyline[stroke], ellipse[stroke], rect[stroke], circle[stroke]"
   );
@@ -274,40 +205,213 @@ export const strokeColorTransform = (doc: HTMLElement, config: Config) => {
   }
 
   if (valueSet.size > 1) {
-    // console.warn(
-    //   `Multiple stroke colors found, avoiding applying stroke color.`
-    // );
+    options.log.add(
+      `multiple stroke colors found (${[...valueSet].join(
+        ", "
+      )}) so not applying stroke color`,
+      "error"
+    );
     return doc;
   }
 
+  const tagNames: Array<HTMLElement["tagName"]> = [];
   for (const path of paths) {
     if (!path.hasAttribute("stroke")) continue;
 
-    // const value = path.getAttribute("stroke") ?? "";
+    path.setAttribute("stroke", options.config.stroke);
+    tagNames.push(path.tagName.toLowerCase());
+  }
 
-    // if (value === "" || value === "0") {
-    //   path.removeAttribute("stroke");
-    //   continue;
-    // }
+  tagNames.length > 0 &&
+    options.log.add(
+      `updated stroke to “${options.config.stroke}” on ${getCounts(tagNames)}`
+    );
 
-    // if (ELEMENT_COMMON_IGNORE_VALUES.includes(value)) continue;
+  run(() => {
+    const svg = doc.querySelector("svg");
+    if (!svg) return;
 
-    // if (value !== strokeColorConfig)
+    const value = svg.getAttribute("stroke") ?? "";
+    if (value.length === 0) return;
+
+    svg.setAttribute("stroke", options.config.stroke);
+    options.log.add(`updated stroke to “${options.config.stroke}” on svg`);
+  });
+
+  return doc;
+};
+
+export const vectorEffectTransform: Transform = (doc, options) => {
+  // Avoid applying the stroke changes to filled icons
+  if (options.config.iconSetType === "filled") return doc;
+
+  const svg = doc.querySelector("svg");
+  const hasSvgStrokeWidth =
+    svg?.getAttribute("stroke-width") ??
+    svg?.getAttribute("strokewidth") ??
+    svg?.getAttribute("strokeWidth");
+
+  if (!hasSvgStrokeWidth) return doc;
+
+  const paths = doc.querySelectorAll(
+    "path, line, polygon, polyline, ellipse, rect, circle"
+  );
+
+  const tagNames: Array<HTMLElement["tagName"]> = [];
+  const tagNamesRemoved: Array<HTMLElement["tagName"]> = [];
+  paths.forEach((path) => {
+    if (!options.config.nonScalingStroke) {
+      if (path.getAttribute("vector-effect") === "non-scaling-stroke") {
+        tagNamesRemoved.push(path.tagName.toLowerCase());
+        path.removeAttribute("vector-effect");
+      }
+      if (path.getAttribute("vectoreffect") === "non-scaling-stroke") {
+        tagNamesRemoved.push(path.tagName.toLowerCase());
+        path.removeAttribute("vectoreffect");
+      }
+      if (path.getAttribute("vectorEffect") === "non-scaling-stroke") {
+        tagNamesRemoved.push(path.tagName.toLowerCase());
+        path.removeAttribute("vectorEffect");
+      }
+
+      tagNamesRemoved.push(path.tagName.toLowerCase());
+      return;
+    }
+
+    if (
+      path.hasAttribute("vector-effect") ||
+      path.hasAttribute("vectoreffect") ||
+      path.hasAttribute("vectorEffect")
+    )
+      return;
+
+    path.removeAttribute("vectoreffect");
+    path.removeAttribute("vectorEffect");
+
+    path.setAttribute("vector-effect", "non-scaling-stroke");
+    tagNames.push(path.tagName.toLowerCase());
+  });
+
+  if (options.config.nonScalingStroke && tagNames.length > 0) {
+    options.log.add(
+      `updated vector-effect to “non-scaling-stroke” on ${getCounts(tagNames)}`
+    );
+    // Finish by making sure there's no value set on the svg tag
+    if (svg?.getAttribute("vector-effect")) {
+      svg.removeAttribute("vector-effect");
+      options.log.add(
+        `removed vector-effect from svg (added on inner elements)`
+      );
+    }
+  }
+
+  tagNamesRemoved.length > 0 &&
+    options.log.add(
+      `removed vector-effect attribute from ${getCounts(tagNamesRemoved)}`
+    );
+
+  return doc;
+};
+
+export const svgAttributesTransform: Transform = (doc, options) => {
+  const svg = doc.querySelector("svg");
+  if (!svg) return doc;
+
+  run(() => {
+    if (svg.hasAttribute("viewBox")) return;
+
+    const width = svg.getAttribute("width");
+    const height = svg.getAttribute("height");
+
+    if (
+      width &&
+      height &&
+      Number.isInteger(Number(width)) &&
+      Number.isInteger(Number(height))
+    ) {
+      options.log.add(
+        'created and added the "viewBox" attribute from the svg width and height attributes'
+      );
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      return;
+    }
+
+    if (!width || !height) {
+      options.log.add(
+        `svg has no viewBox (+ no width/height fallbacks) so fake one added`,
+        "error"
+      );
+      svg.setAttribute("viewBox", `0 0 1 1`);
+    }
+  });
+
+  run(() => {
+    if (!svg.getAttribute("width")) return;
+
+    options.log.add(`svg width=“${svg.getAttribute("width")}” was removed`);
+
+    svg.removeAttribute("width");
+  });
+
+  if (svg.hasAttribute("height")) {
+    options.log.add(`svg height=“${svg.getAttribute("height")}” was removed`);
     // console.warn(
-    //   `Inconsistent stroke color. Found: ${path.getAttribute(
-    //     "stroke"
-    //   )}, Updated: ${strokeColorConfig}`
+    //   `Height found on the svg element. Found: ${svg.getAttribute(
+    //     "height"
+    //   )}, Removed height attribute`
     // );
+    svg.removeAttribute("height");
+  }
 
-    path.setAttribute("stroke", config.stroke);
+  if (svg.hasAttribute("fill") && options.config.iconSetType === "stroked") {
+    const value = svg.getAttribute("fill");
+    if (value !== "none") {
+      options.log.add(
+        `fill on <svg>: “${value}” was removed (set it to 'none' to keep it)`
+      );
+
+      svg.removeAttribute("fill");
+    }
   }
 
   return doc;
 };
 
-export const transforms: Array<
-  (doc: HTMLElement, config: Config) => HTMLElement
-> = [
+// Run for the output
+const svgAttributesSanitizeTransform = (doc: HTMLElement) => {
+  const svg = doc.querySelector("svg");
+  if (!svg) return doc;
+
+  if (svg.getAttribute("width")) {
+    svg.removeAttribute("width");
+  }
+
+  if (svg.hasAttribute("height")) {
+    svg.removeAttribute("height");
+  }
+
+  return doc;
+};
+
+export const addId: Transform = (doc, options) => {
+  if (!options.title) return doc;
+
+  const svg = doc.querySelector("svg");
+  if (!svg) return doc;
+
+  svg.setAttribute("id", options.title);
+
+  return doc;
+
+  // if (svg.hasAttribute("id")) return doc;
+  // const ID = Math.random().toString(36).slice(2);
+  // console.warn(`No ID found on the svg element - generating a new one: ${ID}`);
+  // svg.setAttribute("id", ID);
+  // return doc;
+};
+
+export const transforms: Transform[] = [
+  // addId,
   svgAttributesTransform,
   // viewBoxTransform,
   strokeWidthTransform,
@@ -316,7 +420,7 @@ export const transforms: Array<
   strokeLineJoinTransform,
   strokeColorTransform,
   fillColorTransform,
-];
+] satisfies Transform[];
 
 export const sanitizeTransforms: Array<(doc: HTMLElement) => HTMLElement> = [
   svgAttributesSanitizeTransform,

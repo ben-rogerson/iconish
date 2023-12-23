@@ -1,9 +1,7 @@
 import { Button } from "@/components/Button";
 import { AddEditor } from "@/components/Detail";
 import { RemoveButton } from "@/components/RemoveButton";
-import { Alerts } from "@/feature/editor/components/Alerts";
 import { Title } from "@/feature/editor/components/Title";
-import { useEditorWrap } from "@/feature/editor/editor.hooks";
 import { doSanitizeSvg } from "@/feature/svg/svgTasks";
 import { useAppActions } from "@/hooks/appState";
 import { iconBarrier } from "@/lib/icons";
@@ -15,6 +13,8 @@ import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import CodeMirror from "@uiw/react-codemirror";
 import { useMemo } from "react";
 import { useCopyToClipboard } from "usehooks-ts";
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 type EditorProps = {
   id: string;
@@ -23,9 +23,10 @@ type EditorProps = {
 };
 
 const Editor = (props: EditorProps) => {
-  const { removeEditor, updateEditorSvg } = useAppActions();
-  const [hasWordWrapIn, WordWrapIn] = useEditorWrap(false);
-  const [hasWordWrapOut, WordWrapOut] = useEditorWrap(true);
+  const { toast } = useToast();
+  const { removeEditor, undoRemoveEditor, updateEditorSvg } = useAppActions();
+  // const [hasWordWrapIn, WordWrapIn] = useEditorWrap(false);
+  // const [hasWordWrapOut, WordWrapOut] = useEditorWrap(true);
   const [copied, copy] = useCopyToClipboard();
   const sanitizedSvg = useMemo(
     () => doSanitizeSvg(props.data.view?.doc ?? ""),
@@ -41,6 +42,10 @@ const Editor = (props: EditorProps) => {
     updateEditorSvg(props.id, value);
   };
 
+  const handleUndo = () => {
+    undoRemoveEditor(props.id);
+  };
+
   return (
     <div className="relative grid gap-3">
       <div className="grid grid-cols-2">
@@ -48,6 +53,19 @@ const Editor = (props: EditorProps) => {
           <RemoveButton
             onClick={() => {
               removeEditor(props.id);
+
+              if (!props.showOutput) return;
+              toast({
+                itemID: props.id,
+                title: `Removed icon${
+                  props.data.title ? ` “${props.data.title}”` : ""
+                }`,
+                action: (
+                  <ToastAction altText="Undo" onClick={handleUndo}>
+                    Undo
+                  </ToastAction>
+                ),
+              });
             }}
           />
         </div>
@@ -58,7 +76,6 @@ const Editor = (props: EditorProps) => {
           {Boolean(props.showOutput && sanitizedSvg) && (
             <>
               <div dangerouslySetInnerHTML={{ __html: sanitizedSvg }} />
-              <Alerts svg={props.data.view?.doc ?? ""} />
               <div className="absolute left-2 top-2 hidden text-xs text-[--text-muted] group-focus-within/editor:block group-hover/editor:block">
                 {sized.before}
               </div>
@@ -72,17 +89,14 @@ const Editor = (props: EditorProps) => {
           )}
         </div>
         <div className="relative rounded-r border border-l-0 p-6">
-          {(props.data.view?.doc.length ?? 0) > 30 && (
+          {/* {(props.data.view?.doc.length ?? 0) > 30 && (
             <div className="absolute right-6 top-0 -mt-2.5 flex justify-end bg-[--page-bg] px-1.5 group-focus-within/editor:block group-hover/editor:block md:hidden">
               <WordWrapIn />
             </div>
-          )}
+          )} */}
           {props.showOutput ? (
             <CodeMirror
-              extensions={[
-                javascript({ jsx: true }),
-                [...[hasWordWrapIn ? EditorView.lineWrapping : []]],
-              ]}
+              extensions={[javascript({ jsx: true }), EditorView.lineWrapping]}
               onChange={handleOnChange}
               theme={vscodeDark}
               value={props.data.view?.doc ?? ""}
@@ -101,16 +115,16 @@ const Editor = (props: EditorProps) => {
             </div>
           </div>
           <div className="relative rounded-r border border-l-0 p-6">
-            {props.data.svg.output.length > 30 && (
+            {/* {props.data.svg.output.length > 30 && (
               <div className="absolute right-6 top-0 -mt-2.5 flex justify-end bg-[--page-bg] px-1.5 group-focus-within/editor:block group-hover/editor:block md:hidden">
                 <WordWrapOut />
               </div>
-            )}
+            )} */}
             <CodeMirror
               extensions={[
                 javascript({ jsx: true }),
                 EditorView.editable.of(false),
-                [...[hasWordWrapOut ? EditorView.lineWrapping : []]],
+                EditorView.lineWrapping,
               ]}
               theme={vscodeDark}
               value={props.data.svg.output}
@@ -128,9 +142,12 @@ const Editor = (props: EditorProps) => {
                   </span>
                 </Button>
               </div>
-              <div className="-ml-2 bg-[--page-bg] px-2 text-[--text-muted]">
-                Minified {sized.savingsPercent} &middot; Saved {sized.savings}
-              </div>
+              {Boolean(sized.savingsPercent) && (
+                <div className="-ml-2 bg-[--page-bg] px-2 text-[--text-muted]">
+                  {sized.savingsPercent}
+                  {/* &middot; Saved {sized.savings} */}
+                </div>
+              )}
             </div>
           </div>
         </div>

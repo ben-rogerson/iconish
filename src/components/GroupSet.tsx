@@ -1,5 +1,6 @@
 import { useAppActions } from "@/hooks/appState";
-import { tw } from "@/lib/utils";
+import { cn, tw } from "@/lib/utils";
+import type { RefObject } from "react";
 import {
   useEffect,
   type FunctionComponent,
@@ -8,8 +9,7 @@ import {
   memo,
 } from "react";
 import { type Group } from "@/utils/types";
-import { intlFormatDistance } from "date-fns";
-import { Copy, Layers, MoreVertical, Trash } from "lucide-react";
+import { AlertOctagon, Copy, Layers, MoreVertical, Trash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,6 +36,8 @@ import {
   rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import { SortableItem } from "@/components/SortableItem";
+import type { VirtuosoHandle } from "react-virtuoso";
+import { relativeTime } from "@/utils/relativeTime";
 
 export function Menu(props: {
   title: string;
@@ -68,7 +70,7 @@ export function Menu(props: {
           {!!props.createdAt && (
             <>
               <br />
-              Added {relativeTime(props.createdAt)}
+              Added <time>{relativeTime(props.createdAt)}</time>
             </>
           )}
         </DropdownMenuLabel>
@@ -95,43 +97,6 @@ export function Menu(props: {
   );
 }
 
-// const Menu = () => {
-//   return (
-//     <DropdownMenu>
-//       <DropdownMenuTrigger>Open</DropdownMenuTrigger>
-//       <DropdownMenuContent>
-//         <DropdownMenuLabel>My Account</DropdownMenuLabel>
-//         <DropdownMenuSeparator />
-//         <DropdownMenuItem>Profile</DropdownMenuItem>
-//         <DropdownMenuItem>Billing</DropdownMenuItem>
-//         <DropdownMenuItem>Team</DropdownMenuItem>
-//         <DropdownMenuItem>Subscription</DropdownMenuItem>
-//       </DropdownMenuContent>
-//     </DropdownMenu>
-//   );
-// };
-
-// const Guides = () => {
-//   return (
-//     <div className={tw("pointer-events-none absolute top-1/2 w-[3440px]")}>
-//       <div
-//         className={tw("absolute mt-4 h-px w-full bg-[--line-border-dark]")}
-//       />
-//       <div
-//         className={tw("absolute -mt-4 h-px w-full bg-[--line-border-dark]")}
-//       />
-//     </div>
-//   );
-// };
-
-// const Fade = () => {
-//   return (
-//     <div className="absolute inset-0 bg-gradient-to-r from-[--page-bg] to-transparent w-36" />
-//   );
-// };
-
-const relativeTime = (date: number) => intlFormatDistance(date, new Date());
-
 const Header: FunctionComponent<{
   id: string;
   title: string;
@@ -140,10 +105,11 @@ const Header: FunctionComponent<{
   createdAt: number;
   updateGroupTitle: (groupId: string, title: string) => void;
 }> = (props) => {
+  // Perf: Local title state, with updates on input blur / enter
   const [title, setTitle] = useState(props.title);
   useEffect(() => {
     setTitle(props.title);
-  }, [props.title]);
+  }, [props.title, props.id]);
 
   return (
     <header
@@ -155,8 +121,14 @@ const Header: FunctionComponent<{
           value={title}
           placeholder={title ? "" : "Untitled set…"}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            props.updateGroupTitle(props.id, e.currentTarget.value);
             setTitle(e.currentTarget.value);
+          }}
+          onBlur={() => {
+            props.updateGroupTitle(props.id, title);
+          }}
+          onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (e.key !== "Enter") return;
+            props.updateGroupTitle(props.id, title);
           }}
           className={tw(
             `w-[inherit] bg-transparent text-xl text-[--text-muted]`,
@@ -189,11 +161,12 @@ type GroupSetBlock = {
   count?: number;
   isCurrent?: boolean;
   isHeader?: boolean;
+  virtualListRef?: RefObject<VirtuosoHandle>;
 };
 
 export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
   const { updateGroupTitle, setActiveGroup } = useAppActions();
-  const { toast } = useToast();
+  // const { toast } = useToast();
 
   const iconCount = props.count ?? props.icons.length;
   const hasIcons = props.icons.length > 0;
@@ -202,14 +175,10 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
       ? props.count - props.icons.length
       : 0;
 
-  const handleUpdateGroupTitle = (groupId: string, title: string) => {
-    updateGroupTitle(groupId, title);
-  };
-
   const handleSelectGroup = (groupId: string) => {
     const { hasSwitched } = setActiveGroup(groupId);
     if (!hasSwitched) return;
-    toast({ title: `Switched to ‘${props.title || "Untitled set"}’ icon set` });
+    // toast({ title: `Switched to ‘${props.title || "Untitled set"}’ icon set` });
 
     setTimeout(() => {
       document.querySelector(`#sets`)?.scrollIntoView();
@@ -226,22 +195,23 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
       <Header
         id={props.id}
         title={props.title}
-        updateGroupTitle={handleUpdateGroupTitle}
+        updateGroupTitle={updateGroupTitle}
         isCurrent={props.isCurrent ?? false}
         isLarge={props.isHeader ?? false}
         createdAt={props.createdAt}
       />
-      <div className="group relative">
-        <div className="pointer-events-none grid grid-cols-4 sm:grid-cols-6 md:grid-cols-7 lg:grid-cols-9 xl:grid-cols-12">
-          <div className="z-10 grid place-content-center text-center">
-            <div className="-mb-1 block text-lg">
-              {hasIcons ? iconCount : "no"}
+      {Boolean(hasIcons) && (
+        <div className="group relative @container">
+          <div className="pointer-events-none grid grid-cols-2 @xs:grid-cols-4 @xl:grid-cols-5 @2xl:grid-cols-6 @3xl:grid-cols-12 @4xl:grid-cols-15 p-3.5">
+            <div className="z-10 grid place-content-center text-center">
+              <div className="-mb-1 block text-lg">{iconCount}</div>
+              <div className="text-md">
+                {iconCount === 1 ? "icon" : "icons"}
+              </div>
             </div>
-            <div className="text-md">{iconCount === 1 ? "icon" : "icons"}</div>
-          </div>
-          {/* <Guides /> */}
+            {/* <Guides /> */}
 
-          {/* {props.icons.map(([id, data], i) => (
+            {/* {props.icons.map(([id, data], i) => (
             <button
               // eslint-disable-next-line react/no-array-index-key
               key={`${i}-${id}`}
@@ -259,41 +229,59 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
             </button>
           ))} */}
 
-          {props.isHeader ? (
-            <IconListDraggable
-              id={props.id}
-              icons={props.icons}
-              title={props.title}
-            />
-          ) : (
-            <IconList icons={props.icons} />
-          )}
+            {props.isHeader && props.virtualListRef ? (
+              <IconListDraggable
+                id={props.id}
+                icons={props.icons}
+                title={props.title}
+                virtualListRef={props.virtualListRef}
+              />
+            ) : (
+              <IconList icons={props.icons} />
+            )}
 
-          {hiddenCount > 0 && (
-            <div className="-mb-1 block text-lg">+{hiddenCount}</div>
-          )}
-          {/* <button
+            {hiddenCount > 0 && (
+              <div className="-mb-1 block text-lg">+{hiddenCount}</div>
+            )}
+            {/* <button
                 type="button"
                 className="pointer-events-auto"
                 onClick={() => handleAddEditor(g.id, "")}
               >
                 Add icon
               </button> */}
+          </div>
+          {!props.isHeader && (
+            <button
+              type="button"
+              onClick={() => {
+                handleSelectGroup(props.id);
+              }}
+              className={tw(
+                "absolute inset-0 z-0 cursor-pointer rounded-lg border opacity-0",
+                "hover:opacity-50 group-focus-within:opacity-50 group-hover:opacity-50",
+                props.isCurrent && "opacity-50"
+              )}
+            />
+          )}
         </div>
-        {!props.isHeader && (
+      )}
+      {!props.isHeader && Boolean(!hasIcons) && (
+        <div className="z-10 grid place-content-center text-center relative p-10">
+          <div className="text-sm">No icons yet</div>
           <button
             type="button"
             onClick={() => {
               handleSelectGroup(props.id);
             }}
             className={tw(
-              "absolute inset-0 z-0 cursor-pointer rounded-lg border opacity-0",
-              "hover:opacity-50 group-focus-within:opacity-50 group-hover:opacity-50",
+              "absolute inset-0 z-0 cursor-pointer rounded-lg border border-dashed",
+              "",
               props.isCurrent && "opacity-50"
             )}
           />
-        )}
-      </div>
+        </div>
+      )}
     </article>
   );
 });
@@ -302,6 +290,7 @@ const IconListDraggable = (props: {
   id: string;
   icons: Group["editors"];
   title: string;
+  virtualListRef: RefObject<VirtuosoHandle>;
 }) => {
   const { setEditorOrderByIds } = useAppActions();
   const { setActiveGroup } = useAppActions();
@@ -312,33 +301,47 @@ const IconListDraggable = (props: {
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   );
 
-  const setActiveIcon = (groupId: string, title: string, editorId: string) => {
+  const setActiveIcon = (
+    groupId: string,
+    // title: string,
+    // editorId: string,
+    index: number
+  ) => {
     setActiveGroup(groupId);
 
-    setTimeout(() => {
-      document
-        .querySelector(`#${editorId}`)
-        ?.scrollIntoView({ behavior: "smooth" });
-    }, 0);
+    props.virtualListRef.current?.scrollToIndex({
+      index,
+      align: "center",
+      behavior: "smooth",
+    });
   };
 
   const idList = useRef<string[]>([]);
   const componentList = props.icons.map(([id, data], i) => {
     idList.current.push(id);
 
+    const hasError = data.svg.log?.some((l) => l.type === "error");
     return (
       <SortableItem
         // eslint-disable-next-line react/no-array-index-key
         key={`${i}-${id}`}
         id={id}
         handleOnClick={() => {
-          setActiveIcon(props.id, data.title, id);
+          setActiveIcon(props.id, i);
         }}
       >
-        <div
-          dangerouslySetInnerHTML={{ __html: data.svg.output }}
-          className="relative z-10 rounded border border-transparent p-5 hover:border-[--text-muted] hover:shadow-sm"
-        />
+        <div className="grid">
+          <div
+            dangerouslySetInnerHTML={{ __html: data.svg.output }}
+            className={cn(
+              "relative z-10 rounded border border-transparent p-5 hover:border-[--text-muted] hover:shadow-sm",
+              { "border-red-800": hasError }
+            )}
+          />
+          {Boolean(hasError) && (
+            <AlertOctagon className="absolute self-end justify-self-center -mb-3 text-red-800" />
+          )}
+        </div>
         {/* <Guides /> */}
       </SortableItem>
     );
@@ -385,7 +388,7 @@ const IconList = (props: { icons: Group["editors"] }) => {
       // eslint-disable-next-line react/no-array-index-key
       key={`${i}-${id}`}
       dangerouslySetInnerHTML={{ __html: data.svg.output }}
-      className="relative z-10 rounded border border-transparent p-5 hover:border-[--text-muted] hover:shadow-sm"
+      className="relative z-10 rounded border border-transparent p-3 hover:border-[--text-muted] hover:shadow-sm"
     />
   ));
 };

@@ -3,7 +3,7 @@ import { type EditorState, type Group } from "@/utils/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { type Config } from "../feature/config/types";
-import { transformSvg } from "@/feature/svg/transformSvg";
+import { type LogItem, transformSvg } from "@/feature/svg/transformSvg";
 import { subscribeWithSelector } from "zustand/middleware";
 import { hashCode } from "@/utils/hash";
 import { produce } from "immer";
@@ -13,16 +13,19 @@ type SVGData = {
   original?: string;
   output: string;
   id?: string;
+  log: LogItem[];
 };
 
 interface AppStoreActions {
   setHydrated: () => void;
 
-  setConfig: (configItem: ConfigItem) => void;
+  setConfig: (configItem: ConfigItem, shouldUpdate?: boolean) => void;
   getConfig: () => Config;
+  resetConfig: () => void;
 
   updateGroupTitle: (groupId: string, title: string) => void;
   getGroup: () => Group | undefined;
+  getGroups: () => Group[];
   addGroup: (title?: string) => void;
   removeGroup: (id: string) => { hasSwitched: boolean; hasRemoved: boolean };
   getSvgsFromGroupId: (groupId: string) => string;
@@ -34,9 +37,12 @@ interface AppStoreActions {
   getEditorIndexById: (editorId: string) => number | undefined;
   updateEditorTitle: (id: string, title: string) => void;
   updateEditorSvg: (editorId: string, svgCode?: string) => void;
-  refreshEditors: () => void;
+  refreshGroup: () => void;
+  autoSetIconType: () => void;
   setEditorOrderByIds: (editorKeys: string[]) => void;
   removeEditor: (id: string, shouldRefresh?: boolean) => void;
+  clearEditors: () => void;
+  undoRemoveEditor: (id: string) => void;
   addEditor: (
     input: string,
     title?: string,
@@ -56,6 +62,7 @@ interface AppStoreState {
 }
 
 export const initialConfig = {
+  iconSetType: "stroked",
   strokeWidth: "2",
   stroke: "currentColor",
   fill: "currentColor",
@@ -64,11 +71,11 @@ export const initialConfig = {
   nonScalingStroke: true,
 } as const satisfies Config;
 
-const makeGroup = (config?: Config, title?: string, editors?: EditorState[]) =>
+const makeGroup = (config?: Config, editors?: EditorState[]) =>
   ({
     id: newId("g"),
     createdAt: Date.now(),
-    title: title ?? "",
+    title: "",
     config: config ?? initialConfig,
     editors: editors ?? [initialEditorData()],
   } satisfies Group);
@@ -78,9 +85,11 @@ const initialEditorData = (svgData?: SVGData, title?: string) => {
     newId("e"),
     {
       title: title ?? "",
+      isDeleted: false,
       svg: {
         output: svgData?.output ?? "",
         original: svgData?.original ?? "",
+        log: svgData?.log ?? [],
       },
       view: {
         doc: svgData?.original ?? "",
@@ -110,7 +119,7 @@ export const useAppStore = create<
           setHydrated() {
             set({ _hasHydrated: true });
           },
-          setConfig(configItem) {
+          setConfig(configItem, shouldRefresh = true) {
             const activeGroupId = get().activeGroupId;
 
             set({
@@ -122,7 +131,7 @@ export const useAppStore = create<
               }),
             });
 
-            get().actions.updateSvgOutputs();
+            shouldRefresh && get().actions.updateSvgOutputs();
           },
 
           getConfig() {
@@ -131,16 +140,28 @@ export const useAppStore = create<
             return group.config;
           },
 
+          resetConfig() {
+            get().actions.setConfig(initialConfig);
+            // get().actions.refreshConfig();
+          },
+
           // Groups
 
-          addGroup(title) {
+          getGroups() {
+            return get().groups.map((group) => ({
+              ...group,
+              editors: group.editors.filter((e) => !e[1].isDeleted),
+            }));
+          },
+
+          addGroup() {
             const config = get().actions.getConfig();
-            const newGroup = makeGroup(config, title);
+            const newGroup = makeGroup(config);
             set({
-              groups: [...get().groups, newGroup],
+              groups: [newGroup, ...get().groups],
               activeGroupId: newGroup.id,
             });
-            get().actions.refreshEditors();
+            get().actions.refreshGroup();
             document
               .querySelector(`#header`)
               ?.scrollIntoView({ behavior: "smooth" });
@@ -175,7 +196,7 @@ export const useAppStore = create<
               return { hasSwitched: false };
 
             set({ activeGroupId });
-            get().actions.refreshEditors();
+            get().actions.refreshGroup();
 
             return { hasSwitched: true };
           },
@@ -191,13 +212,14 @@ export const useAppStore = create<
 
                   const svg = transformSvg(
                     svgCode ?? editorData.svg.original,
-                    editorData.title,
-                    config
+                    config,
+                    { title: editorData.title }
                   );
 
                   editorData.svg = {
                     ...editorData.svg,
                     ...svg,
+                    log: svg.log,
                     original: editorData.svg.original || (svgCode ?? ""),
                   } satisfies SVGData;
 
@@ -212,7 +234,7 @@ export const useAppStore = create<
             }) satisfies Group[];
 
             set({ groups });
-            get().actions.refreshEditors();
+            get().actions.refreshGroup();
           },
 
           updateSvgOutputs() {
@@ -228,16 +250,17 @@ export const useAppStore = create<
                       const editorData = editor[1];
                       const svg = transformSvg(
                         editorData.view?.doc ?? editorData.svg.original,
-                        editorData.title,
-                        config
+                        config,
+                        { title: editorData.title }
                       );
                       return [
                         editor[0],
                         {
                           ...editorData,
                           svg: {
-                            ...editorData.svg,
-                            ...svg,
+                            output: svg.output,
+                            original: editorData.svg.original,
+                            log: svg.log,
                           },
                         },
                       ] satisfies EditorState;
@@ -247,7 +270,7 @@ export const useAppStore = create<
             );
 
             set({ groups });
-            get().actions.refreshEditors();
+            get().actions.refreshGroup();
           },
 
           updateGroupTitle(groupId, title) {
@@ -256,16 +279,47 @@ export const useAppStore = create<
                 groupId !== group.id ? group : { ...group, title: title.trim() }
               ),
             });
+
+            get().actions.refreshGroup();
           },
 
-          refreshEditors: () => {
+          autoSetIconType: () => {
+            const editors = get()
+              .actions.getEditors()
+              .filter((e) => e[1].svg.output.includes("<svg"));
+
+            const isOutlined =
+              editors.filter(([, data]) =>
+                (data.svg.log ?? []).some(
+                  (l) => l.type === "data.type" && l.msg === "outlined"
+                )
+              ).length >=
+              editors.length / 2;
+
+            const currentValue = get().actions.getConfig().iconSetType;
+            if (isOutlined) {
+              if (currentValue === "stroked") return;
+              get().actions.setConfig({ iconSetType: "stroked" });
+            }
+            if (!isOutlined) {
+              if (currentValue === "filled") return;
+              get().actions.setConfig({ iconSetType: "filled" });
+            }
+          },
+
+          refreshGroup: () => {
+            // On refresh change the hash and update the type config
+            get().actions.autoSetIconType();
             set({ updateListHash: hashCode(newId()) });
           },
 
           getEditors: () => {
             const activeGroupId = get().activeGroupId;
+
             return (
-              get().groups.find((g) => g.id === activeGroupId)?.editors ?? []
+              get()
+                .groups.find((g) => g.id === activeGroupId)
+                ?.editors.filter((e) => Boolean(!e[1].isDeleted)) ?? []
             );
           },
 
@@ -288,12 +342,9 @@ export const useAppStore = create<
 
           getGroup() {
             const activeGroupId = get().activeGroupId;
-            const group = get().groups.find((g) => g.id === activeGroupId);
-
-            // if ((group?.editors.length ?? 0) > 0) {
-            //   get().actions.addEditor("", "", activeGroupId);
-            // }
-            return group;
+            return get()
+              .actions.getGroups()
+              .find((g) => g.id === activeGroupId);
           },
 
           addEditor: (input, title, toGroupId) => {
@@ -307,11 +358,9 @@ export const useAppStore = create<
             const newEditor = isSvg
               ? initialEditorData(
                   {
-                    ...transformSvg(
-                      input,
-                      title ?? "",
-                      get().actions.getConfig()
-                    ),
+                    ...transformSvg(input, get().actions.getConfig(), {
+                      title: title ?? "",
+                    }),
                     original: input,
                   },
                   title
@@ -329,7 +378,6 @@ export const useAppStore = create<
 
             //   const newGroup = makeGroup(
             //     get().actions.getConfig(),
-            //     undefined,
             //     editors
             //   );
             //   newGroups.push(newGroup);
@@ -337,7 +385,7 @@ export const useAppStore = create<
             //   get().actions.setActiveGroup(newGroup.id);
 
             //   set({ groups: newGroups });
-            //   get().actions.refreshEditors();
+            //   get().actions.refreshGroup();
 
             //   return {
             //     scrollTo: () => {},
@@ -363,7 +411,7 @@ export const useAppStore = create<
             }
 
             set({ groups: newGroups });
-            get().actions.refreshEditors();
+            get().actions.refreshGroup();
 
             return {
               scrollTo: () => {
@@ -397,7 +445,7 @@ export const useAppStore = create<
             }
 
             set({ groups: newGroups });
-            get().actions.refreshEditors();
+            get().actions.refreshGroup();
 
             return {
               scrollTo: () => {
@@ -412,17 +460,73 @@ export const useAppStore = create<
 
           removeEditor: (id, shouldRefresh = true) => {
             const activeGroupId = get().activeGroupId;
+
+            const newGroups = produce(get().groups, (group) => {
+              const groupIndex = group.findIndex((g) => g.id === activeGroupId);
+              group[groupIndex].editors = produce(
+                group[groupIndex].editors,
+                (editor) => {
+                  const editorIndex = editor.findIndex((e) => e[0] === id);
+                  editor[editorIndex][1].isDeleted = true;
+                }
+              );
+            });
+
+            set({ groups: newGroups });
+
+            shouldRefresh && get().actions.refreshGroup();
+          },
+
+          clearEditors: () => {
+            const activeGroupId = get().activeGroupId;
+
+            const newGroups = produce(get().groups, (group) => {
+              const groupIndex = group.findIndex((g) => g.id === activeGroupId);
+              group[groupIndex].editors = [];
+            });
+
+            set({ groups: newGroups });
+
+            get().actions.refreshGroup();
+          },
+
+          undoRemoveEditor: (id) => {
+            const activeGroupId = get().activeGroupId;
+
+            const newGroups = produce(get().groups, (group) => {
+              const groupIndex = group.findIndex((g) => g.id === activeGroupId);
+              group[groupIndex].editors = produce(
+                group[groupIndex].editors,
+                (editor) => {
+                  const editorIndex = editor.findIndex((e) => e[0] === id);
+                  editor[editorIndex][1].isDeleted = false;
+                }
+              );
+            });
+
+            set({ groups: newGroups });
+
+            get().actions.refreshGroup();
+          },
+
+          cleanEditors: () => {
+            const activeGroupId = get().activeGroupId;
             const newGroups = get().groups.map((group) => {
               if (activeGroupId !== group.id) return group;
               const newGroup = {
                 ...group,
-                editors: group.editors.filter((editor) => editor[0] !== id),
+                editors: group.editors.filter(
+                  (editor) =>
+                    (editor[1].svg.output !== "" &&
+                      editor[1].svg.output.includes("<svg")) ||
+                    editor[1].isDeleted
+                ),
               };
               return newGroup;
             });
             set({ groups: newGroups });
 
-            shouldRefresh && get().actions.refreshEditors();
+            get().actions.refreshGroup();
           },
 
           getEditorIndexById(editorId) {
@@ -454,10 +558,6 @@ export const useAppStore = create<
               const resorted = group.editors
                 .slice()
                 .sort(sortEditorsByEditorKeys);
-              // console.log({
-              //   origOrder: group.editors.map((e) => e[0]),
-              //   resorted: resorted.map((e) => e[0]),
-              // });
 
               const newGroup = { ...group, editors: resorted };
               return newGroup;
@@ -465,7 +565,7 @@ export const useAppStore = create<
 
             set({ groups });
             setTimeout(() => {
-              get().actions.refreshEditors();
+              get().actions.refreshGroup();
             }, 0);
           },
 

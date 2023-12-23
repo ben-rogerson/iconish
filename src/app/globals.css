@@ -72,7 +72,12 @@ html {
   font-family: "Chivo";
   font-weight: 250;
 
-  scroll-margin-top: 8rem;
+  overflow-y: scroll; /* Always show scrollbar to avoid layout shift */
+  /* scroll-margin-top: 8rem; */
+}
+
+body {
+  overflow-y: none; /* Always show scrollbar to avoid layout shift */
 }
 
 ::-webkit-scrollbar {

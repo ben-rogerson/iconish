@@ -6,9 +6,14 @@ export const calculateSizeSavings = (codeBefore: string, codeAfter: string) => {
   const savingsPercent = (1 - codeAfter.length / codeBefore.length) * 100;
 
   return {
-    before: `${sizeBefore.toFixed(2)} KB`,
-    after: `${sizeAfter.toFixed(2)} KB`,
-    savings: `${savingsNumber > 0 ? `${savingsNumber.toFixed(2)}` : 0} KB`,
-    savingsPercent: `${savingsPercent > 0 ? savingsPercent.toFixed(2) : 0} %`,
+    before: `${sizeBefore.toFixed(2)}KB`,
+    after: `${sizeAfter.toFixed(2)}KB`,
+    // savings: `${savingsNumber > 0 ? `${savingsNumber.toFixed(2)}` : 0} KB`,
+    savingsPercent:
+      savingsPercent > 0
+        ? `${savingsPercent.toFixed(2)} % saved (${`${
+            savingsNumber > 0 ? `-${savingsNumber.toFixed(2)}` : 0
+          } KB`})${savingsPercent > 15 ? " 🏆" : ""}`
+        : "",
   };
 };

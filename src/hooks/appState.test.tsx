@@ -1,4 +1,4 @@
-import { describe, expect, test, it } from "vitest";
+import { describe, expect, test, it, beforeEach } from "vitest";
 import { act, waitFor } from "@testing-library/react";
 import { renderHook } from "@testing-library/react";
 import { initialConfig, useAppActions, useAppStore } from "@/hooks/appState";
@@ -80,11 +80,11 @@ describe("actions", () => {
       expect(result.current.groups).toHaveLength(1);
 
       act(() => {
-        result.current.actions.addGroup("Group");
+        result.current.actions.addGroup();
       });
 
       expect(result.current.groups).toHaveLength(2);
-      expect(result.current.groups[1].title).toBe("Group");
+      expect(result.current.groups[1].title).toBe("");
     });
   });
 
@@ -304,6 +304,95 @@ describe("actions", () => {
         expect(result.current.actions.getEditors()[0][1].title).toBe("title");
         expect(result.current.groups.length).toBe(1);
       });
+    });
+  });
+
+  describe("autoSetIconType", () => {
+    beforeEach(() => {
+      const { result } = renderHook(() => useAppActions());
+      result.current.clearEditors();
+    });
+
+    it("sets the icon type to filled when a filled svg is added", () => {
+      const { result } = renderHook(() => useAppActions());
+
+      act(() => {
+        result.current.addEditor("<svg></svg>");
+      });
+
+      expect(result.current.getEditors()).toHaveLength(1);
+      expect(result.current.getConfig().iconSetType).toBe("filled");
+    });
+
+    it("sets the icon type to outlined when an outlined svg is added", () => {
+      const { result } = renderHook(() => useAppActions());
+
+      act(() => {
+        result.current.addEditor('<svg stroke-width="anything"></svg>');
+      });
+
+      expect(result.current.getEditors()).toHaveLength(1);
+      expect(result.current.getConfig().iconSetType).toBe("stroked");
+    });
+
+    it("sets the icon type to outlined when an outlined svg is added (alt strokeWidth casing)", () => {
+      const { result } = renderHook(() => useAppActions());
+
+      act(() => {
+        result.current.addEditor('<svg strokeWidth="anything"></svg>');
+      });
+
+      expect(result.current.getEditors()).toHaveLength(1);
+      expect(result.current.getConfig().iconSetType).toBe("stroked");
+    });
+
+    it("sets the icon type to outlined when an outlined svg is added (alt strokewidth casing)", () => {
+      const { result } = renderHook(() => useAppActions());
+
+      act(() => {
+        result.current.addEditor('<svg strokewidth="anything"></svg>');
+      });
+
+      expect(result.current.getEditors()).toHaveLength(1);
+      expect(result.current.getConfig().iconSetType).toBe("stroked");
+    });
+
+    it("sets the icon type to filled when a filled and an outlined svg are added", () => {
+      const { result } = renderHook(() => useAppActions());
+
+      act(() => {
+        result.current.addEditor("<svg></svg>");
+        result.current.addEditor('<svg stroke-width="strokedIcon"></svg>');
+      });
+
+      expect(result.current.getEditors()).toHaveLength(2);
+      expect(result.current.getConfig().iconSetType).toBe("stroked");
+    });
+
+    it("sets the icon type to stroked when two stroked icons and a filled are added", () => {
+      const { result } = renderHook(() => useAppActions());
+
+      act(() => {
+        result.current.addEditor("<svg></svg>");
+        result.current.addEditor('<svg stroke-width="strokedIcon"></svg>');
+        result.current.addEditor('<svg stroke-width="strokedIcon"></svg>');
+      });
+
+      expect(result.current.getEditors()).toHaveLength(3);
+      expect(result.current.getConfig().iconSetType).toBe("stroked");
+    });
+
+    it("sets the icon type to filled when two filled icons and a stroked are added", () => {
+      const { result } = renderHook(() => useAppActions());
+
+      act(() => {
+        result.current.addEditor("<svg></svg>");
+        result.current.addEditor("<svg></svg>");
+        result.current.addEditor('<svg stroke-width="strokedIcon"></svg>');
+      });
+
+      expect(result.current.getEditors()).toHaveLength(3);
+      expect(result.current.getConfig().iconSetType).toBe("filled");
     });
   });
 });

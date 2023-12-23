@@ -27,7 +27,7 @@ export default defineConfig({
     globals: true,
     environment: "jsdom",
     testTimeout: 2000,
-    setupFiles: "./vitest-setup.ts",
+    setupFiles: resolve(__dirname, "vitest-setup.ts"),
     include: ["**/*.test.tsx", "**/*.test.ts"],
     // coverage: {
     //   enabled: true,

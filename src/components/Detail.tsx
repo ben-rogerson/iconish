@@ -12,6 +12,7 @@ import { useAppActions, useAppStore } from "@/hooks/appState";
 import { GroupSet } from "@/components/GroupSet";
 import { ConfigPanel } from "@/feature/config/components/ConfigPanel";
 import { Upload } from "@/components/Upload";
+import { type VirtuosoHandle } from "react-virtuoso";
 
 const AddIconInput = forwardRef<
   HTMLInputElement,
@@ -22,17 +23,18 @@ const AddIconInput = forwardRef<
 >((props, ref) => {
   return (
     <div className="flex items-center gap-1">
+      <Upload onUpload={props.onUpload} />
+      <div className="px-8 text-[150%] text-[--text-muted]">/</div>
       <input
         ref={ref}
         type="text"
-        className="w-full border-b border-[--input-border] bg-transparent py-3 text-[170%] text-[--input-text] placeholder-[var(--text-muted)] focus:outline-0"
-        placeholder="Paste a <svg> here&hellip;"
+        className="w-full bg-transparent py-3 text-[170%] text-[--input-text] placeholder-[var(--text-muted)] focus:outline-0"
+        placeholder="Paste svg&hellip;"
         onKeyDown={(e) => {
           if (e.key !== "Enter") return;
           props.onEnterKey(e.currentTarget.value);
         }}
       />
-      <Upload onUpload={props.onUpload} />
     </div>
   );
 });
@@ -133,6 +135,8 @@ const useGroupRender = () => {
 
 const Detail = () => {
   const group = useGroupRender();
+  // TODO: Move this ref to a provider
+  const virtualListRef = useRef<VirtuosoHandle>(null);
 
   return (
     <>
@@ -142,7 +146,7 @@ const Detail = () => {
       >
         <ConfigPanel />
       </div>
-      <div className="grid gap-y-20">
+      <div className="grid gap-16">
         {!!group && (
           <GroupSet
             id={group.id}
@@ -154,10 +158,11 @@ const Detail = () => {
                 data.svg.output !==
                   '<html xmlns="http://www.w3.org/1999/xhtml"/>'
             )}
+            virtualListRef={virtualListRef}
             isHeader
           />
         )}
-        <Editors />
+        <Editors virtualListRef={virtualListRef} />
       </div>
     </>
   );
