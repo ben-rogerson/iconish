@@ -106,9 +106,9 @@ export const strokeLineCapTransform: Transform = (doc, options) => {
 
   tagNames.length > 0 &&
     options.log.add(
-      `updated stroke-linecap to "${
-        options.config.strokeLinecap
-      }" on ${getCounts(tagNames)}`
+      `set stroke-linecap="${options.config.strokeLinecap}" on ${getCounts(
+        tagNames
+      )}`
     );
 
   return doc;
@@ -128,9 +128,9 @@ export const strokeLineJoinTransform: Transform = (doc, options) => {
 
   tagNames.length > 0 &&
     options.log.add(
-      `updated stroke-linejoin to "${
-        options.config.strokeLinejoin
-      }" on ${getCounts(tagNames)}`
+      `set stroke-linejoin="${options.config.strokeLinejoin}" on ${getCounts(
+        tagNames
+      )}`
     );
 
   return doc;
@@ -178,9 +178,7 @@ export const strokeWidthTransform: Transform = (doc, options) => {
   }
 
   options.log.add(
-    `updated stroke-width to “${options.config.strokeWidth}” on ${getCounts(
-      tagNames
-    )}`
+    `set stroke-width=“${options.config.strokeWidth}” on ${getCounts(tagNames)}`
   );
 
   return doc;
@@ -224,7 +222,7 @@ export const strokeColorTransform: Transform = (doc, options) => {
 
   tagNames.length > 0 &&
     options.log.add(
-      `updated stroke to “${options.config.stroke}” on ${getCounts(tagNames)}`
+      `set stroke=“${options.config.stroke}” on ${getCounts(tagNames)}`
     );
 
   run(() => {
@@ -235,7 +233,7 @@ export const strokeColorTransform: Transform = (doc, options) => {
     if (value.length === 0) return;
 
     svg.setAttribute("stroke", options.config.stroke);
-    options.log.add(`updated stroke to “${options.config.stroke}” on svg`);
+    options.log.add(`set stroke=“${options.config.stroke}” on svg`);
   });
 
   return doc;
