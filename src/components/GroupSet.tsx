@@ -320,7 +320,10 @@ const IconListDraggable = (props: {
   const componentList = props.icons.map(([id, data], i) => {
     idList.current.push(id);
 
-    const hasError = data.svg.log?.some((l) => l.type === "error");
+    const hasError = data.svg.log?.some((l) =>
+      ["error", "info"].includes(l.type)
+    );
+
     return (
       <SortableItem
         // eslint-disable-next-line react/no-array-index-key
@@ -356,7 +359,9 @@ const IconListDraggable = (props: {
       const newIndex = idList.current.indexOf(String(over.id));
 
       if (active.id !== over.id) {
-        const newEditorOrder = arrayMove(componentList, oldIndex, newIndex).map(
+        const movedList = arrayMove(componentList, oldIndex, newIndex);
+
+        const newEditorOrder = movedList.filter(Boolean).map(
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
           (item) => item.props.id
         ) as string[];
@@ -382,8 +387,8 @@ const IconListDraggable = (props: {
   );
 };
 
-const IconList = (props: { icons: Group["editors"] }) => {
-  return props.icons.map(([id, data], i) => (
+const IconList = (props: { icons: Group["editors"] }) =>
+  props.icons.map(([id, data], i) => (
     <div
       // eslint-disable-next-line react/no-array-index-key
       key={`${i}-${id}`}
@@ -391,4 +396,3 @@ const IconList = (props: { icons: Group["editors"] }) => {
       className="relative z-10 rounded border border-transparent p-3 hover:border-[--text-muted] hover:shadow-sm"
     />
   ));
-};

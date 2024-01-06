@@ -12,8 +12,8 @@ export const RemoveButton: FunctionComponent<{
       aria-label="Remove editor"
       className={tw([
         "group/button",
-        "group-hover/editor:block group-hover/set:block",
-        "hidden h-6 w-6 p-2 place-items-center relative",
+        "group-hover/editor:grid group-hover/set:grid",
+        "h-10 w-10 hidden place-items-center relative z-30",
       ])}
     >
       <div
@@ -24,7 +24,8 @@ export const RemoveButton: FunctionComponent<{
       />
       <div
         className={tw([
-          "hover:text-[--button-text-hover]",
+          "text-[--button-text-hover]",
+          // "hover:text-[--button-text-hover]",
           "pointer-events-none relative z-0 text-md",
         ])}
       >

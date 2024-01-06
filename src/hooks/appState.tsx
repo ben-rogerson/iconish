@@ -62,7 +62,7 @@ interface AppStoreState {
 }
 
 export const initialConfig = {
-  iconSetType: "stroked",
+  iconSetType: "outlined",
   strokeWidth: "2",
   stroke: "currentColor",
   fill: "currentColor",
@@ -298,12 +298,12 @@ export const useAppStore = create<
 
             const currentValue = get().actions.getConfig().iconSetType;
             if (isOutlined) {
-              if (currentValue === "stroked") return;
-              get().actions.setConfig({ iconSetType: "stroked" });
+              if (currentValue === "outlined") return;
+              get().actions.setConfig({ iconSetType: "outlined" });
             }
             if (!isOutlined) {
-              if (currentValue === "filled") return;
-              get().actions.setConfig({ iconSetType: "filled" });
+              if (currentValue === "solid") return;
+              get().actions.setConfig({ iconSetType: "solid" });
             }
           },
 
@@ -591,7 +591,7 @@ export const useAppStore = create<
         },
       }),
       {
-        name: "data-storage",
+        name: "iconish",
         partialize: ({ actions: _, ...rest }) => rest,
         onRehydrateStorage: () => (state) => {
           state?.actions.setHydrated();

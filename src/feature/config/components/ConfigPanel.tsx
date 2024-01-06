@@ -142,37 +142,14 @@ const useMainItems = () => {
 
   const mainItems = useMemo(
     () => [
-      // {
-      //   id: "icon-type",
-      //   title: "",
-      //   defaultValue: config.iconSetType,
-      //   options: ["filled", "stroked"],
-      //   disabled: false,
-      //   onChange: (iconSetType) => {
-      //     setConfig({ iconSetType });
-      //   },
-      // } satisfies FormSelect,
-
-      // {
-      //   id: "icon-type",
-      //   title: "solid color",
-      //   defaultChecked: config.iconSetType === "filled",
-      //   disabled: false,
-      //   type: "checkbox",
-      //   onChange: (e) => {
-      //     setConfig({
-      //       iconSetType: e.target.checked ? "filled" : "stroked",
-      //     });
-      //   },
-      // } satisfies FormCheckbox,
       {
         id: "fill-color",
         title: "fill",
         defaultValue: config.fill,
         type: "text",
         theme: config.fill,
-        hidden: config.iconSetType === "stroked",
-        disabled: config.iconSetType === "stroked",
+        hidden: config.iconSetType === "outlined",
+        disabled: config.iconSetType === "outlined",
         onChange: (e) => {
           const fill =
             e.target.value &&
@@ -206,8 +183,8 @@ const useMainItems = () => {
         title: "stroke width",
         defaultValue: config.strokeWidth,
         type: "range",
-        disabled: config.iconSetType === "filled",
-        hidden: config.iconSetType === "filled",
+        disabled: config.iconSetType === "solid",
+        hidden: config.iconSetType === "solid",
         onChange: (val: number[]) => {
           debouncer(() => {
             setConfig({ strokeWidth: String(val[0]) });
@@ -220,8 +197,8 @@ const useMainItems = () => {
         defaultValue: config.stroke,
         type: "text",
         theme: config.stroke,
-        hidden: config.iconSetType === "filled",
-        disabled: config.iconSetType === "filled",
+        hidden: config.iconSetType === "solid",
+        disabled: config.iconSetType === "solid",
         onChange: (e) => {
           const stroke =
             e.target.value && isColor(e.target.value) ? e.target.value : null;
@@ -242,8 +219,8 @@ const useMainItems = () => {
         id: "non-scaling-stroke",
         title: "non-scaling stroke",
         defaultChecked: config.nonScalingStroke,
-        disabled: config.iconSetType === "filled",
-        hidden: config.iconSetType === "filled",
+        disabled: config.iconSetType === "solid",
+        hidden: config.iconSetType === "solid",
         type: "checkbox",
         onChange: (e) => {
           setConfig({ nonScalingStroke: e.target.checked });
@@ -355,7 +332,7 @@ export const FormItems = memo(function FormItems(props: {
                   {!!item.theme && (
                     <div
                       className={tw`h-3 w-3 rounded-sm`}
-                      style={{ backgroundColor: `${item.theme}` }}
+                      style={{ backgroundColor: item.theme }}
                     />
                   )}
                   <input
@@ -464,7 +441,7 @@ export const ConfigPanel = () => {
       className="group/config flex w-full grid-cols-4 items-center gap-10"
       key={`group-${activeGroupId}`}
     >
-      <div>{getConfig().iconSetType} icon set</div>
+      <div>{getConfig().iconSetType} set</div>
       <FormItems items={mainItems} />
       <FormItems items={moreItems} />
       <button type="button" onClick={resetConfig}>

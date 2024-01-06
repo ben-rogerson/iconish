@@ -3,6 +3,7 @@ import { type TransformOptions, transforms } from "@/feature/svg/transforms";
 import { optimizeAll } from "./svgTasks";
 import { type Config } from "@/feature/config/types";
 import { type SvgLogItem } from "@/utils/types";
+import { calculateSizeSavings } from "@/utils/calculateSizeSavings";
 
 export type LogItem = SvgLogItem;
 
@@ -18,7 +19,7 @@ export const transformSvg = (
   const logCache = new Set<LogItem>();
   const log: LogHelper = {
     add: (msg, type) => {
-      logCache.add({ msg, type: type ?? "info" });
+      logCache.add({ msg, type: type ?? "debug" });
     },
   };
 
@@ -35,21 +36,21 @@ export const transformSvg = (
     svgDoc.hasAttribute("strokeWidth") ||
     svgDoc.hasAttribute("strokewidth")
       ? "outlined"
-      : "filled";
+      : "solid";
 
   // Set the type
   log.add(type, "data.type");
-  console.log({ type: config.iconSetType });
-  if (type === "outlined" && config.iconSetType === "filled") {
+
+  if (type === "outlined" && config.iconSetType === "solid") {
     log.add(
       "This icon doesn’t match the set, it seems to be an outlined icon",
-      "error"
+      "info"
     );
   }
-  if (type === "filled" && config.iconSetType === "stroked") {
+  if (type === "solid" && config.iconSetType === "outlined") {
     log.add(
-      "This icon doesn’t match the set, it seems to be a filled icon",
-      "error"
+      "This icon doesn’t match the set, it seems to be a solid icon",
+      "info"
     );
   }
 
@@ -76,6 +77,10 @@ export const transformSvg = (
   try {
     const output = optimizeAll(svgDoc.toString());
     log.add("compressed with svgo");
+
+    const { savingsPercent } = calculateSizeSavings(svg, output);
+    savingsPercent && log.add(savingsPercent, "success");
+
     return { output, id, log: [...logCache.values()] };
   } catch (error) {
     log.add(error instanceof Error ? error.message : String(error), "error");

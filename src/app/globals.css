@@ -101,7 +101,7 @@ body {
 }
 
 .cm-content {
-  padding: 0 0.5em 0.5em 0 !important;
+  padding: 0 0.5em 0 0 !important;
 }
 .cm-gutters {
   display: none !important;

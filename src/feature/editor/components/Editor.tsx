@@ -1,25 +1,111 @@
-import { Button } from "@/components/Button";
-import { AddEditor } from "@/components/Detail";
+import { useMemo, useState } from "react";
+import { useCopyToClipboard } from "usehooks-ts";
+import { EditorView } from "@codemirror/view";
+import { javascript } from "@codemirror/lang-javascript";
+import CodeMirror from "@uiw/react-codemirror";
+import { vscodeDark } from "@uiw/codemirror-theme-vscode";
+import { Button } from "@/components/ui/button";
 import { RemoveButton } from "@/components/RemoveButton";
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 import { Title } from "@/feature/editor/components/Title";
 import { doSanitizeSvg } from "@/feature/svg/svgTasks";
 import { useAppActions } from "@/hooks/appState";
-import { iconBarrier } from "@/lib/icons";
 import { calculateSizeSavings } from "@/utils/calculateSizeSavings";
 import { type EditorState } from "@/utils/types";
-import { javascript } from "@codemirror/lang-javascript";
-import { EditorView } from "@codemirror/view";
-import { vscodeDark } from "@uiw/codemirror-theme-vscode";
-import CodeMirror from "@uiw/react-codemirror";
-import { useMemo } from "react";
-import { useCopyToClipboard } from "usehooks-ts";
-import { useToast } from "@/components/ui/use-toast";
-import { ToastAction } from "@/components/ui/toast";
+import { cn } from "@/lib/utils";
+import { Copy, Check, ChevronRightSquare, Lightbulb, X } from "lucide-react";
 
 type EditorProps = {
   id: string;
   data: EditorState[1];
-  showOutput: boolean;
+};
+
+const Log = (props: { logItems: EditorProps["data"]["svg"]["log"] }) => {
+  const [isOpened, setIsOpened] = useState(false);
+
+  const filtered = (type: string) =>
+    isOpened
+      ? !type.startsWith("data.")
+      : ["success", "error", "info"].includes(type);
+
+  const items = (props.logItems ?? [])
+    .filter((l) => filtered(l.type))
+    .map((l, i) => {
+      return (
+        <li
+          // eslint-disable-next-line react/no-array-index-key
+          key={i}
+          className={cn({
+            "text-red-500": l.type === "error",
+            "text-green-500": l.type === "success",
+            "text-gray-500": l.type === "debug",
+            "text-orange-300": l.type === "info",
+          })}
+        >
+          <div className="flex gap-2">
+            <div className="text-right flex-shrink-0">
+              {l.type === "error" && <X className="text-red-500" width="18" />}
+              {l.type === "debug" && (
+                <Lightbulb className="text-gray-500" width="18" />
+              )}
+              {l.type === "success" && (
+                <Check className="text-green-600" width="18" />
+              )}
+              {l.type === "info" && (
+                <Check className="text-orange-300" width="18" />
+              )}
+            </div>
+            <div>
+              {l.msg} <span className="text-xs opacity-50">{l.type}</span>
+            </div>
+          </div>
+        </li>
+      );
+    });
+
+  return (
+    <div className="justify-between grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] md:grid">
+      <div>
+        <button
+          type="button"
+          onClick={() => {
+            setIsOpened((o) => !o);
+          }}
+          className="cursor-ns-resize flex gap-2 py-3 px-4"
+        >
+          <ChevronRightSquare width="18" /> log
+        </button>
+      </div>
+      <div className="flex justify-between gap-2 py-3">
+        <ul className={cn({ "py-5": isOpened })}>{items}</ul>
+      </div>
+    </div>
+  );
+};
+
+const useExpandable = () => {
+  const [isCollapsed, setIsCollapsed] = useState(true);
+
+  return {
+    isCollapsed,
+    Expandable: (props: { children: React.ReactNode }) => (
+      <div className={cn({ "max-h-60 overflow-hidden": isCollapsed })}>
+        {props.children}
+      </div>
+    ),
+    Expander: (props: { className?: string }) => (
+      <button
+        type="button"
+        onClick={() => {
+          setIsCollapsed((c) => !c);
+        }}
+        className={props.className}
+      >
+        expand
+      </button>
+    ),
+  };
 };
 
 const Editor = (props: EditorProps) => {
@@ -27,7 +113,11 @@ const Editor = (props: EditorProps) => {
   const { removeEditor, undoRemoveEditor, updateEditorSvg } = useAppActions();
   // const [hasWordWrapIn, WordWrapIn] = useEditorWrap(false);
   // const [hasWordWrapOut, WordWrapOut] = useEditorWrap(true);
-  const [copied, copy] = useCopyToClipboard();
+  const [, copy] = useCopyToClipboard();
+
+  const { Expandable, Expander } = useExpandable();
+  const { Expandable: ExpandableOut, Expander: ExpanderOut } = useExpandable();
+
   const sanitizedSvg = useMemo(
     () => doSanitizeSvg(props.data.view?.doc ?? ""),
     [props.data.view?.doc]
@@ -47,111 +137,119 @@ const Editor = (props: EditorProps) => {
   };
 
   return (
-    <div className="relative grid gap-3">
-      <div className="grid grid-cols-2">
-        <div className="absolute right-0 top-3">
-          <RemoveButton
-            onClick={() => {
-              removeEditor(props.id);
-
-              if (!props.showOutput) return;
-              toast({
-                itemID: props.id,
-                title: `Removed icon${
-                  props.data.title ? ` “${props.data.title}”` : ""
-                }`,
-                action: (
-                  <ToastAction altText="Undo" onClick={handleUndo}>
-                    Undo
-                  </ToastAction>
-                ),
-              });
-            }}
-          />
-        </div>
-        <Title id={props.id} title={props.data.title} />
-      </div>
-      <div className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] md:grid">
-        <div className="relative rounded-l border bg-[--page-bg-dark] p-[25%]">
-          {Boolean(props.showOutput && sanitizedSvg) && (
-            <>
-              <div dangerouslySetInnerHTML={{ __html: sanitizedSvg }} />
-              <div className="absolute left-2 top-2 hidden text-xs text-[--text-muted] group-focus-within/editor:block group-hover/editor:block">
-                {sized.before}
-              </div>
-            </>
-          )}
-          {!props.showOutput && (
-            <div className="grid place-items-center h-full">{iconBarrier}</div>
-          )}
-          {Boolean(props.showOutput) && (
-            <div className="absolute -bottom-px left-1/2 top-full h-[50px] w-px origin-top-left bg-[--line-border] after:absolute after:bottom-px after:h-2 after:w-2 after:-translate-x-[50%] after:-rotate-45 after:border-b after:border-l after:border-b-[--line-border] after:border-l-[--line-border]" />
-          )}
-        </div>
-        <div className="relative rounded-r border border-l-0 p-6">
-          {/* {(props.data.view?.doc.length ?? 0) > 30 && (
-            <div className="absolute right-6 top-0 -mt-2.5 flex justify-end bg-[--page-bg] px-1.5 group-focus-within/editor:block group-hover/editor:block md:hidden">
-              <WordWrapIn />
-            </div>
-          )} */}
-          {props.showOutput ? (
-            <CodeMirror
-              extensions={[javascript({ jsx: true }), EditorView.lineWrapping]}
-              onChange={handleOnChange}
-              theme={vscodeDark}
-              value={props.data.view?.doc ?? ""}
+    <div className="relative">
+      <div className="grid gap-3">
+        <div className="grid grid-cols-2">
+          <div className="absolute right-0 top-3">
+            <RemoveButton
+              onClick={() => {
+                removeEditor(props.id);
+                toast({
+                  itemID: props.id,
+                  title: `Removed icon${
+                    props.data.title ? ` “${props.data.title}”` : ""
+                  }`,
+                  action: (
+                    <ToastAction altText="Undo" onClick={handleUndo}>
+                      Undo
+                    </ToastAction>
+                  ),
+                });
+              }}
             />
-          ) : (
-            <AddEditor editorId={props.id} />
-          )}
+          </div>
+          <Title id={props.id} title={props.data.title} />
+        </div>
+        <div
+          className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] md:grid border rounded-t"
+          style={{ borderBottomStyle: "dashed" }}
+        >
+          <div className={cn("relative bg-[--page-bg-dark] px-[25%] py-[15%]")}>
+            {Boolean(sanitizedSvg) && (
+              <>
+                <div dangerouslySetInnerHTML={{ __html: sanitizedSvg }} />
+                <div className="absolute left-2 top-2 hidden text-xs text-[--text-muted] group-focus-within/editor:block group-hover/editor:block">
+                  {sized.before}
+                </div>
+              </>
+            )}
+            <div className="absolute -bottom-px left-1/2 top-full h-[25px] w-px origin-top-left bg-[--line-border] after:absolute after:bottom-px after:h-2 after:w-2 after:-translate-x-[50%] after:-rotate-45 after:border-b after:border-l after:border-b-[--line-border] after:border-l-[--line-border]" />
+          </div>
+          <div className={cn("relative p-6 pl-0 grayscale")}>
+            {/* {(props.data.view?.doc.length ?? 0) > 30 && (
+              <div className="absolute right-6 top-0 -mt-2.5 flex justify-end bg-[--page-bg] px-1.5 group-focus-within/editor:block group-hover/editor:block md:hidden">
+                <WordWrapIn />
+              </div>
+            )} */}
+
+            <Expandable>
+              <CodeMirror
+                extensions={[
+                  javascript({ jsx: true }),
+                  EditorView.lineWrapping,
+                ]}
+                onChange={handleOnChange}
+                theme={vscodeDark}
+                value={props.data.view?.doc ?? ""}
+                editable={false}
+              />
+            </Expandable>
+            <Expander />
+          </div>
         </div>
       </div>
-      {Boolean(props.showOutput) && (
-        <div className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] md:grid">
-          <div className="relative rounded-l border bg-[--page-bg-dark] p-[25%]">
+      <div>
+        <div
+          className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] md:grid border border-t-0"
+          style={{ borderBottomStyle: "dashed" }}
+        >
+          <div className="relative bg-[--page-bg-dark] px-[25%] pt-[15%] pb-[25%]">
             <div dangerouslySetInnerHTML={{ __html: props.data.svg.output }} />
             <div className="absolute left-2 top-2 hidden text-xs text-[--text-muted] group-focus-within/editor:block group-hover/editor:block">
               {sized.after}
             </div>
-          </div>
-          <div className="relative rounded-r border border-l-0 p-6">
-            {/* {props.data.svg.output.length > 30 && (
-              <div className="absolute right-6 top-0 -mt-2.5 flex justify-end bg-[--page-bg] px-1.5 group-focus-within/editor:block group-hover/editor:block md:hidden">
-                <WordWrapOut />
-              </div>
-            )} */}
-            <CodeMirror
-              extensions={[
-                javascript({ jsx: true }),
-                EditorView.editable.of(false),
-                EditorView.lineWrapping,
-              ]}
-              theme={vscodeDark}
-              value={props.data.svg.output}
-              // onUpdate={handleOnUpdateOut}
-            />
-            <div className="text-md absolute -bottom-3 left-0 flex w-full justify-between px-6 uppercase">
-              <div className="flex gap-3">
-                <Button
-                  onClick={() => {
-                    copy(props.data.svg.output).catch(() => null);
-                  }}
-                >
-                  <span className="uppercase text-[--text-muted]">
-                    {copied ? "Copied" : "Copy SVG"}
-                  </span>
-                </Button>
-              </div>
-              {Boolean(sized.savingsPercent) && (
-                <div className="-ml-2 bg-[--page-bg] px-2 text-[--text-muted]">
-                  {sized.savingsPercent}
-                  {/* &middot; Saved {sized.savings} */}
-                </div>
-              )}
+            <div className="flex gap-2 bottom-2 left-2 absolute items-center">
+              <Button
+                type="button"
+                onClick={() => {
+                  copy(props.data.svg.output).catch(() => null);
+                  toast({
+                    itemID: `copied-${props.id}`,
+                    title: `Copied svg code to clipboard`,
+                  });
+                }}
+                variant="outline"
+                className=""
+              >
+                <Copy width={15} />
+              </Button>
             </div>
           </div>
+          <div className="relative p-6 pl-0">
+            {/* {props.data.svg.output.length > 30 && (
+                <div className="absolute right-6 top-0 -mt-2.5 flex justify-end bg-[--page-bg] px-1.5 group-focus-within/editor:block group-hover/editor:block md:hidden">
+                  <WordWrapOut />
+                </div>
+              )} */}
+            <ExpandableOut>
+              <CodeMirror
+                extensions={[
+                  javascript({ jsx: true }),
+                  EditorView.editable.of(false),
+                  EditorView.lineWrapping,
+                ]}
+                theme={vscodeDark}
+                value={props.data.svg.output}
+                // onUpdate={handleOnUpdateOut}
+              />
+            </ExpandableOut>
+            <ExpanderOut />
+          </div>
         </div>
-      )}
+        <div className="border border-t-0 rounded-b">
+          <Log logItems={props.data.svg.log} />
+        </div>
+      </div>
     </div>
   );
 };

@@ -11,22 +11,22 @@ import { useAppActions } from "@/hooks/appState";
 import { ConfigPanel } from "@/feature/config/components/ConfigPanel";
 
 describe("<ConfigPanel />", () => {
-  it("sets the default iconSetType as stroked", () => {
+  it("sets the default iconSetType as outlined", () => {
     const { result } = renderHook(() => useAppActions());
 
     // With the default single editor
-    expect(result.current.getConfig().iconSetType).toBe("stroked");
+    expect(result.current.getConfig().iconSetType).toBe("outlined");
 
     // With no editors
     result.current.clearEditors();
-    expect(result.current.getConfig().iconSetType).toBe("stroked");
+    expect(result.current.getConfig().iconSetType).toBe("outlined");
   });
 
-  describe("stroked mode", () => {
+  describe("outlined mode", () => {
     beforeEach(() => {
       const { result } = renderHook(() => useAppActions());
-      result.current.setConfig({ iconSetType: "stroked" }, true);
-      expect(result.current.getConfig().iconSetType).toBe("stroked");
+      result.current.setConfig({ iconSetType: "outlined" }, true);
+      expect(result.current.getConfig().iconSetType).toBe("outlined");
     });
 
     describe("stroke width", () => {
@@ -165,12 +165,12 @@ describe("<ConfigPanel />", () => {
       const { result } = renderHook(() => useAppActions());
 
       result.current.setConfig(
-        { iconSetType: "filled" },
+        { iconSetType: "solid" },
         // GOTCHA: Prevent updating as that will change the iconSetType
         false
       );
 
-      expect(result.current.getConfig().iconSetType).toBe("filled");
+      expect(result.current.getConfig().iconSetType).toBe("solid");
     });
 
     describe("fill color", () => {
@@ -191,8 +191,7 @@ describe("<ConfigPanel />", () => {
       it("can be updated", async () => {
         const { element, state } = setup();
 
-        const { result } = renderHook(() => useAppActions());
-        console.log({ el: result.current.getConfig().iconSetType });
+        // const { result } = renderHook(() => useAppActions());
 
         await userEvent.clear(element);
         await userEvent.type(element, "yellow");

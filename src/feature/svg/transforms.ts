@@ -34,7 +34,7 @@ const ELEMENT_COMMON_IGNORE_VALUES = [
 ];
 
 export const fillColorTransform: Transform = (doc, options) => {
-  if (options.config.iconSetType === "stroked") return doc;
+  if (options.config.iconSetType === "outlined") return doc;
 
   const paths = doc.querySelectorAll(
     "path[fill], line[fill], polygon[fill], polyline[fill], ellipse[fill], rect[fill], circle[fill]"
@@ -54,12 +54,12 @@ export const fillColorTransform: Transform = (doc, options) => {
 
     if (fillPaths.size > 1) {
       options.log.add(
-        `the custom fill of “${
-          options.config.fill
-        }” wasn’t applied as multiple fill colors were found (${getCounts(
+        `fill: “${options.config.fill}” wasn’t applied as ${
+          fillPaths.size
+        } colors were found (${getCounts(
           [...fillPaths].map((p) => p.getAttribute("fill") ?? "")
         )})`,
-        "error"
+        "info"
       );
       return doc;
     }
@@ -147,8 +147,8 @@ const getCounts = (tagNames: Array<HTMLElement["tagName"]>) =>
     .join(", ");
 
 export const strokeWidthTransform: Transform = (doc, options) => {
-  // Avoid applying stroke width to filled icons
-  if (options.config.iconSetType === "filled") return doc;
+  // Avoid applying stroke width to solid icons
+  if (options.config.iconSetType === "solid") return doc;
 
   const elementTargets = [
     "svg",
@@ -185,8 +185,8 @@ export const strokeWidthTransform: Transform = (doc, options) => {
 };
 
 export const strokeColorTransform: Transform = (doc, options) => {
-  // Avoid applying stroke color to filled icons
-  if (options.config.iconSetType === "filled") return doc;
+  // Avoid applying stroke color to solid icons
+  if (options.config.iconSetType === "solid") return doc;
 
   const paths = doc.querySelectorAll(
     "path[stroke], line[stroke], polygon[stroke], polyline[stroke], ellipse[stroke], rect[stroke], circle[stroke]"
@@ -240,8 +240,8 @@ export const strokeColorTransform: Transform = (doc, options) => {
 };
 
 export const vectorEffectTransform: Transform = (doc, options) => {
-  // Avoid applying the stroke changes to filled icons
-  if (options.config.iconSetType === "filled") return doc;
+  // Avoid applying the stroke changes to solid icons
+  if (options.config.iconSetType === "solid") return doc;
 
   const svg = doc.querySelector("svg");
   const hasSvgStrokeWidth =
@@ -336,7 +336,7 @@ export const svgAttributesTransform: Transform = (doc, options) => {
 
     if (!width || !height) {
       options.log.add(
-        `svg has no viewBox (+ no width/height fallbacks) so fake one added`,
+        `input svg has none of the following attributes: viewBox, width, height`,
         "error"
       );
       svg.setAttribute("viewBox", `0 0 1 1`);
@@ -361,7 +361,7 @@ export const svgAttributesTransform: Transform = (doc, options) => {
     svg.removeAttribute("height");
   }
 
-  if (svg.hasAttribute("fill") && options.config.iconSetType === "stroked") {
+  if (svg.hasAttribute("fill") && options.config.iconSetType === "outlined") {
     const value = svg.getAttribute("fill");
     if (value !== "none") {
       options.log.add(

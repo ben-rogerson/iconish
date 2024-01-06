@@ -1,12 +1,11 @@
 import type { RefObject } from "react";
 import { memo, useEffect, useState } from "react";
-
+import type { VirtuosoHandle } from "react-virtuoso";
 import { Editor } from "@/feature/editor/components/Editor";
+import { EditorList } from "@/feature/editor/components/EditorList";
 import { useAppActions, useAppStore } from "@/hooks/appState";
 import { cn, tw } from "@/lib/utils";
-import { EditorList } from "@/components/EditorList";
-import type { VirtuosoHandle } from "react-virtuoso";
-import { run } from "@/utils/run";
+import { Preview } from "@/feature/editor/components/Preview";
 
 const Add = memo(function Memo(props: {
   onClick: () => void;
@@ -68,19 +67,24 @@ const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
       </div>
     );
 
+  const editorCount = getEditors.filter(
+    (e) => e[1].svg.output !== "" && e[1].svg.output.includes("<svg")
+  ).length;
+
   return (
     <EditorList virtualListRef={props.virtualListRef}>
       {getEditors.map(([editorId, data], index) => {
         const showOutput =
           data.svg.output !== "" && data.svg.output.includes("<svg");
+        const showAdd = editorCount > 0;
         return (
           <article
             id={editorId}
             key={editorId}
-            className="group/editor relative pt-6 pb-14"
+            className={cn("group/editor relative pt-6 pb-14")}
             aria-label={showOutput ? "editor" : "preview"}
           >
-            {index === 0 && (
+            {Boolean(showAdd) && index === 0 && (
               <Add
                 onClick={() => {
                   addEditorAtIndex(index);
@@ -88,50 +92,18 @@ const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
                 isTop
               />
             )}
-            <Editor
-              key={editorId}
-              id={editorId}
-              data={data}
-              showOutput={showOutput}
-            />
-            {/* {JSON.stringify(data.svg.log)} */}
-            {run(() => {
-              return (
-                <ul className="p-10">
-                  {(data.svg.log ?? [])
-                    .filter((l) => !l.type.startsWith("data."))
-                    .map((l, i) => {
-                      return (
-                        <li
-                          // eslint-disable-next-line react/no-array-index-key
-                          key={i}
-                          className={cn({
-                            "text-red-500": l.type === "error",
-                            "text-green-500": l.type === "success",
-                            "text-gray-500": l.type === "debug",
-                            "text-[--text-normal]": l.type === "info",
-                          })}
-                        >
-                          <div className="grid grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] gap-2">
-                            <div className="text-right">-</div>
-                            <div>
-                              {l.msg}{" "}
-                              <span className="text-xs opacity-50">
-                                {l.type}
-                              </span>
-                            </div>
-                          </div>
-                        </li>
-                      );
-                    })}
-                </ul>
-              );
-            })}
-            <Add
-              onClick={() => {
-                addEditorAtIndex(index + 1);
-              }}
-            />
+            {showOutput ? (
+              <Editor key={editorId} id={editorId} data={data} />
+            ) : (
+              <Preview id={editorId} showRemove={getEditors.length > 1} />
+            )}
+            {Boolean(showAdd) && (
+              <Add
+                onClick={() => {
+                  addEditorAtIndex(index + 1);
+                }}
+              />
+            )}
           </article>
         );
       })}

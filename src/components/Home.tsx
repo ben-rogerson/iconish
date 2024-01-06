@@ -1,26 +1,29 @@
 "use client";
-import { LayoutDefault } from "@/components/LayoutDefault";
+import { useEffect, useState } from "react";
 import { Detail } from "@/components/Detail";
 import { List } from "@/components/List";
 import { useAppStore } from "@/hooks/appState";
-import { WithMobileSidebar } from "@/components/Sidebar";
+import { LayoutDefault } from "@/layouts/LayoutDefault";
+import { WithMobileSidebar } from "@/layouts/components/Sidebar";
 
 const Home = () => {
   const hasHydrated = useAppStore((s) => s._hasHydrated);
+  // https://nextjs.org/docs/messages/react-hydration-error#solution-1-using-useeffect-to-run-on-the-client-only
+  const [isClient, setIsClient] = useState(false);
 
-  if (!hasHydrated) {
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient || !hasHydrated) {
     return <div>Loading...</div>;
   }
 
   return (
     <WithMobileSidebar sidebarContent={List}>
-      <div>
-        <LayoutDefault>
-          <div className="grid gap-y-20">
-            <Detail />
-          </div>
-        </LayoutDefault>
-      </div>
+      <LayoutDefault>
+        <Detail />
+      </LayoutDefault>
     </WithMobileSidebar>
   );
 };

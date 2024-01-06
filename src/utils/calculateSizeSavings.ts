@@ -13,7 +13,7 @@ export const calculateSizeSavings = (codeBefore: string, codeAfter: string) => {
       savingsPercent > 0
         ? `${savingsPercent.toFixed(2)} % saved (${`${
             savingsNumber > 0 ? `-${savingsNumber.toFixed(2)}` : 0
-          } KB`})${savingsPercent > 15 ? " 🏆" : ""}`
+          } KB`})`
         : "",
   };
 };

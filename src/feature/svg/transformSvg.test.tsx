@@ -70,7 +70,7 @@ describe("transformSvg", () => {
   });
 
   describe("iconType", () => {
-    it("sets the icon type log to filled when a filled svg is added", () => {
+    it("sets the icon type log to solid when a solid svg is added", () => {
       const svg = "<svg></svg>";
       const { log } = transformSvg(svg, initialConfig);
 
