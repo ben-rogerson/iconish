@@ -22,23 +22,20 @@ const List = () => {
 
   return (
     <div id="sets" className="grid gap-9">
-      <h2 className="text-xl pt-4">Icon sets</h2>
-
-      <div>
-        <Button
-          onClick={() => {
-            addGroup();
-          }}
-          className="w-full"
-          variant="outline"
-          size="icon"
-          // className="flex items-center gap-2 py-10 text-[--text-muted] hover:text-[--text]"
-        >
-          {plusIcon} Add a set
-        </Button>
-        {/* <Button> */}
-        {/* <Mail className="mr-2 h-4 w-4" /> Login with Email */}
-        {/* </Button> */}
+      <div className="flex justify-between items-center pt-4">
+        <h2 className="text-xl">Icon sets</h2>
+        <div>
+          <Button
+            onClick={() => {
+              addGroup();
+            }}
+            className="w-full"
+            variant="ghost"
+            size="sm"
+          >
+            {plusIcon} New set
+          </Button>
+        </div>
       </div>
 
       {groups.length > 0 &&
