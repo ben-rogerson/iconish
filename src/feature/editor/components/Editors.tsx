@@ -25,11 +25,13 @@ const Add = memo(function Memo(props: {
     >
       <div
         className={cn(
-          "bg-[--line-border-dark] h-0.5 rounded text-4xl grid place-content-center",
+          "bg-[--line-border-dark] h-0.5 rounded grid place-content-center",
           { "invisible group-hover/add:visible": !isVisible }
         )}
       >
-        <div className="bg-[--page-bg] px-5 text-[--line-border]">+</div>
+        <div className="bg-[--page-bg] px-5 text-[--line-border] text-xl">
+          Add icon
+        </div>
       </div>
     </button>
   );

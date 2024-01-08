@@ -9,7 +9,7 @@
     "lint": "tsc && next lint",
     "test": "vitest run",
     "test:ui": "vitest --ui",
-    "test:e2e": "pnpm exec playwright test --ui",
+    "test:e2e": "bunx playwright test --ui",
     "coverage": "vitest run --coverage"
   },
   "dependencies": {

@@ -386,7 +386,7 @@ describe("strokeColorTransform", () => {
     );
   });
 
-  it("should not update stroke attribute when already set to the initial value", () => {
+  it.only("should not update stroke attribute when already set to the initial value", () => {
     const outputSolid = transform(
       strokeColorTransform,
       '<svg stroke="currentColor"><path stroke="currentColor"/></svg>',

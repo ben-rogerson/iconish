@@ -118,6 +118,7 @@ const Header: FunctionComponent<{
       <div className="grid w-full gap-2">
         <input
           type="text"
+          aria-label="Icon set title"
           value={title}
           placeholder={title ? "" : "Untitled set…"}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -188,7 +189,6 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
   return (
     <article
       className="group/set grid gap-3"
-      id="header"
       key={props.id}
       aria-label={props.isHeader ? "Current set" : "Icon set"}
     >

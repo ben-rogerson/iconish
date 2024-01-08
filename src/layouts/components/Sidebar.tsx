@@ -22,7 +22,11 @@ export const WithMobileSidebar = ({
             {groups.length}
           </div>
         </SheetTrigger>
-        <SheetContent side="right" className="overflow-y-auto">
+        <SheetContent
+          side="right"
+          className="overflow-y-auto"
+          data-testid="sidebar"
+        >
           <SidebarContent />
         </SheetContent>
       </Sheet>
