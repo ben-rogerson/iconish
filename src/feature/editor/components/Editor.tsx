@@ -175,7 +175,7 @@ const Editor = (props: EditorProps) => {
             )}
             <div className="absolute -bottom-px left-1/2 top-full h-[25px] w-px origin-top-left bg-[--line-border] after:absolute after:bottom-px after:h-2 after:w-2 after:-translate-x-[50%] after:-rotate-45 after:border-b after:border-l after:border-b-[--line-border] after:border-l-[--line-border]" />
           </div>
-          <div className={cn("relative p-6 pl-0 grayscale")}>
+          <div className="relative p-6 pl-0">
             {/* {(props.data.view?.doc.length ?? 0) > 30 && (
               <div className="absolute right-6 top-0 -mt-2.5 flex justify-end bg-[--page-bg] px-1.5 group-focus-within/editor:block group-hover/editor:block md:hidden">
                 <WordWrapIn />
