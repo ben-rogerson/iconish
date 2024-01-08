@@ -173,8 +173,16 @@ const useMainItems = () => {
                 e.target.value.endsWith(")")))
               ? e.target.value
               : null;
-          if (!fill) return;
-          e.target.value = config.fill;
+          if (!fill) {
+            // Reset to previous value
+            e.target.value = config.fill;
+            return;
+          }
+
+          // Allow the color to be added, then update the config
+          setTimeout(() => {
+            e.target.value = config.fill;
+          }, 0);
         },
       } satisfies FormInput,
 
@@ -202,7 +210,6 @@ const useMainItems = () => {
         onChange: (e) => {
           const stroke =
             e.target.value && isColor(e.target.value) ? e.target.value : null;
-
           if (!stroke) return;
 
           // Allow the color to be added, then update the config

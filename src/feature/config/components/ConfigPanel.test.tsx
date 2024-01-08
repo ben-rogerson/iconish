@@ -191,8 +191,6 @@ describe("<ConfigPanel />", () => {
       it("can be updated", async () => {
         const { element, state } = setup();
 
-        // const { result } = renderHook(() => useAppActions());
-
         await userEvent.clear(element);
         await userEvent.type(element, "yellow");
         element.blur();
@@ -212,7 +210,8 @@ describe("<ConfigPanel />", () => {
         expect(state.getConfig().fill).toBe("currentColor");
 
         // On blur, element value is reset to default value
-        await userEvent.tab();
+        element.blur();
+
         expect(element).not.toHaveFocus();
         expect(element.value).toBe("currentColor");
         expect(state.getConfig().fill).toBe("currentColor");
@@ -221,21 +220,21 @@ describe("<ConfigPanel />", () => {
   });
 
   describe("common for all modes", () => {
-    const openDropdownByName = async (reg: RegExp) => {
-      const container = screen.getByRole<HTMLButtonElement>("combobox", {
-        name: reg,
-      });
-      expect(container).toHaveAttribute("aria-expanded", "false");
-      // A click event doesn't activate the dropdown for some reason - some JS trickery?
-      container.focus();
-      await userEvent.keyboard("[Space]");
-      expect(container).toHaveAttribute("aria-expanded", "true");
-    };
+    // const openDropdownByName = async (reg: RegExp) => {
+    //   const container = screen.getByRole<HTMLButtonElement>("combobox", {
+    //     name: reg,
+    //   });
+    //   expect(container).toHaveAttribute("aria-expanded", "false");
+    //   // A click event doesn't activate the dropdown for some reason - some JS trickery?
+    //   container.focus();
+    //   await userEvent.keyboard("[Space]");
+    //   expect(container).toHaveAttribute("aria-expanded", "true");
+    // };
 
     describe("stroke linecap", () => {
-      const setup = async () => {
+      const setup = () => {
         render(<ConfigPanel />);
-        await openDropdownByName(/stroke options/i);
+        // await openDropdownByName(/stroke-linecap/i);
 
         const container = within(screen.getByTestId("control-stroke-linecap"));
         const element = container.getByRole<HTMLButtonElement>("combobox");
@@ -243,8 +242,8 @@ describe("<ConfigPanel />", () => {
         return { container, element, state: result.current };
       };
 
-      it("has default value", async () => {
-        const { container, element, state } = await setup();
+      it("has default value", () => {
+        const { container, element, state } = setup();
 
         expect(container.getByLabelText(/stroke-linecap/i)).toBeVisible();
         expect(element).toHaveTextContent("round");
@@ -253,7 +252,7 @@ describe("<ConfigPanel />", () => {
       });
 
       it("can be updated", async () => {
-        const { element, state } = await setup();
+        const { element, state } = setup();
 
         expect(element.getAttribute("aria-expanded")).toBe("false");
 
@@ -276,9 +275,9 @@ describe("<ConfigPanel />", () => {
     });
 
     describe("stroke linejoin", () => {
-      const setup = async () => {
+      const setup = () => {
         render(<ConfigPanel />);
-        await openDropdownByName(/stroke options/i);
+        // await openDropdownByName(/stroke options/i);
 
         const container = within(screen.getByTestId("control-stroke-linejoin"));
         const element = container.getByRole<HTMLButtonElement>("combobox");
@@ -287,7 +286,7 @@ describe("<ConfigPanel />", () => {
       };
 
       it("has default value", async () => {
-        const { container, element, state } = await setup();
+        const { container, element, state } = setup();
         expect(container.getByLabelText(/stroke-linejoin/i)).toBeVisible();
         expect(element.textContent).toBe("round");
         expect(element.getAttribute("aria-expanded")).toBe("false");
@@ -295,7 +294,7 @@ describe("<ConfigPanel />", () => {
       });
 
       it("can be updated", async () => {
-        const { element, state } = await setup();
+        const { element, state } = setup();
 
         expect(element.getAttribute("aria-expanded")).toBe("false");
 

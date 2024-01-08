@@ -83,10 +83,13 @@ export const fillColorTransform: Transform = (doc, options) => {
     if (!svg) return;
 
     const value = svg.getAttribute("fill") ?? "";
-    if (value.length === 0) return;
 
     svg.setAttribute("fill", options.config.fill);
-    options.log.add(`updated fill to “${options.config.fill}” on svg`);
+    options.log.add(
+      `svg fill=“${options.config.fill}” was ${
+        value.length === 0 ? "added" : "updated"
+      }`
+    );
   });
 
   return doc;
