@@ -276,7 +276,6 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
             }}
             className={tw(
               "absolute inset-0 z-0 cursor-pointer rounded-lg border border-dashed",
-              "",
               props.isCurrent && "opacity-50"
             )}
           />

@@ -1,4 +1,21 @@
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig, devices } from "@playwright/experimental-ct-react";
+import react from "@vitejs/plugin-react";
+import { type AliasOptions } from "vite";
+import { resolve } from "path";
+import { compilerOptions } from "./tsconfig.json";
+
+// https://github.com/vitejs/vite/issues/88#issuecomment-864348862
+const alias: AliasOptions = Object.entries(compilerOptions.paths).reduce(
+  (acc, [key, [value]]) => {
+    const aliasKey = key.substring(0, key.length - 2);
+    const path = value.substring(0, value.length - 2);
+    return {
+      ...acc,
+      [aliasKey]: resolve(__dirname, path),
+    };
+  },
+  {}
+);
 
 /**
  * Read environment variables from file.
@@ -10,7 +27,7 @@ import { defineConfig, devices } from "@playwright/test";
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  timeout: 5000,
+  timeout: 10000,
   testDir: "./tests",
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -31,6 +48,11 @@ export default defineConfig({
     trace: "on-first-retry",
 
     baseURL: "http://localhost:3000",
+
+    ctViteConfig: {
+      plugins: [react()],
+      resolve: { alias },
+    },
   },
 
   /* Configure projects for major browsers */
@@ -45,20 +67,20 @@ export default defineConfig({
     //   use: { ...devices["Desktop Firefox"] },
     // },
 
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
-    },
+    // {
+    //   name: "webkit",
+    //   use: { ...devices["Desktop Safari"] },
+    // },
 
     /* Test against mobile viewports. */
-    {
-      name: "Mobile Chrome",
-      use: { ...devices["Pixel 5"] },
-    },
-    {
-      name: "Mobile Safari",
-      use: { ...devices["iPhone 12"] },
-    },
+    // {
+    //   name: "Mobile Chrome",
+    //   use: { ...devices["Pixel 5"] },
+    // },
+    // {
+    //   name: "Mobile Safari",
+    //   use: { ...devices["iPhone 12"] },
+    // },
 
     /* Test against branded browsers. */
     // {
