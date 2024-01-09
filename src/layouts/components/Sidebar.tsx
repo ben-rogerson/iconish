@@ -18,9 +18,11 @@ export const WithMobileSidebar = ({
           aria-label="View icon sets"
         >
           <MenuIcon size={24} />
-          <div className="text-xs absolute -right-1.5 -top-1.5 rounded-full bg-[--page-bg] px-1">
-            {groups.length}
-          </div>
+          {groups.length > 1 && (
+            <div className="text-xs absolute -right-1.5 -top-1.5 rounded-full bg-[--page-bg] px-1">
+              {groups.length}
+            </div>
+          )}
         </SheetTrigger>
         <SheetContent
           side="right"
