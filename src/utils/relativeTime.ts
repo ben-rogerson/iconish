@@ -1,4 +1,4 @@
-import { intlFormatDistance } from "date-fns";
+import { intlFormatDistance } from 'date-fns'
 
 export const relativeTime = (date: number) =>
-  intlFormatDistance(date, new Date());
+  intlFormatDistance(date, new Date())

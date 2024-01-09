@@ -17,7 +17,7 @@
   "lint-staged": {
     "*.{js,ts,tsx}": [
       "eslint --ext .ts,.tsx,.js --fix",
-      "prettier --cache --write"
+      "prettier --write"
     ]
   },
   "dependencies": {
@@ -90,12 +90,15 @@
     "eslint": "8.49.0",
     "eslint-config-next": "13.5.2",
     "eslint-plugin-vitest": "^0.3.10",
+    "husky": "^8.0.0",
     "jsdom": "^22.1.0",
+    "lint-staged": "^15.2.0",
     "postcss": "8.4.30",
+    "prettier": "^3.1.1",
+    "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.2.2",
     "vite": "^5.0.8",
-    "vitest": "^1.0.4",
-    "husky": "^8.0.0"
+    "vitest": "^1.0.4"
   }
 }

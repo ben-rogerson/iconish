@@ -1,8 +1,8 @@
-import { forwardRef, memo, useRef } from "react";
-import { RemoveButton } from "@/components/RemoveButton";
-import { useAppActions } from "@/hooks/appState";
-import { iconBarrier } from "@/lib/icons";
-import { cn } from "@/lib/utils";
+import { forwardRef, memo, useRef } from 'react'
+import { RemoveButton } from '@/components/RemoveButton'
+import { useAppActions } from '@/hooks/appState'
+import { iconBarrier } from '@/lib/icons'
+import { cn } from '@/lib/utils'
 import {
   bugIcon,
   bugItemDisplay,
@@ -10,19 +10,19 @@ import {
   flyawayIconDisplay,
   cookie,
   cookieIconDisplay,
-} from "@/lib/icons";
-import { Upload } from "@/components/Upload";
+} from '@/lib/icons'
+import { Upload } from '@/components/Upload'
 
 type PreviewProps = {
-  id: string;
-  showRemove: boolean;
-};
+  id: string
+  showRemove: boolean
+}
 
 const AddIconInput = forwardRef<
   HTMLInputElement,
   {
-    onEnterKey: (value: string) => void;
-    onUpload: (value: Set<[string, string]>) => void;
+    onEnterKey: (value: string) => void
+    onUpload: (value: Set<[string, string]>) => void
   }
 >((props, ref) => {
   return (
@@ -34,28 +34,28 @@ const AddIconInput = forwardRef<
         type="text"
         className="w-full bg-transparent py-3 text-[170%] text-[--input-text] placeholder-[var(--text-muted)] focus:outline-0"
         placeholder="Paste svg&hellip;"
-        onKeyDown={(e) => {
-          if (e.key !== "Enter") return;
-          props.onEnterKey(e.currentTarget.value);
+        onKeyDown={e => {
+          if (e.key !== 'Enter') return
+          props.onEnterKey(e.currentTarget.value)
         }}
       />
     </div>
-  );
-});
+  )
+})
 
-AddIconInput.displayName = "AddIconInput";
+AddIconInput.displayName = 'AddIconInput'
 
 const examples = [
-  ["bug", { code: bugIcon, display: bugItemDisplay }],
-  ["burd", { code: flyaway, display: flyawayIconDisplay }],
-  ["cookie", { code: cookie, display: cookieIconDisplay }],
-] as const;
+  ['bug', { code: bugIcon, display: bugItemDisplay }],
+  ['burd', { code: flyaway, display: flyawayIconDisplay }],
+  ['cookie', { code: cookie, display: cookieIconDisplay }],
+] as const
 
 type ExampleItem = {
-  onClick: () => void;
-  svg: JSX.Element;
-  title: string;
-};
+  onClick: () => void
+  svg: JSX.Element
+  title: string
+}
 
 function ExampleItem(props: ExampleItem) {
   return (
@@ -67,22 +67,22 @@ function ExampleItem(props: ExampleItem) {
       {props.svg}
       <span>{props.title}</span>
     </button>
-  );
+  )
 }
 
 const Preview = memo(function Preview(props: PreviewProps) {
-  const { removeEditor, updateEditorSvg, addEditor } = useAppActions();
-  const ref = useRef<HTMLInputElement>(null);
+  const { removeEditor, updateEditorSvg, addEditor } = useAppActions()
+  const ref = useRef<HTMLInputElement>(null)
 
   const handleUpdateEditor = (value: string) => {
-    updateEditorSvg(props.id, value);
-  };
+    updateEditorSvg(props.id, value)
+  }
 
   const handleOnUpload = (values: Set<[string, string]>) => {
-    [...values].forEach(([fileName, svgCode]) => {
-      addEditor(svgCode, fileName);
-    });
-  };
+    ;[...values].forEach(([fileName, svgCode]) => {
+      addEditor(svgCode, fileName)
+    })
+  }
 
   return (
     <div className="relative">
@@ -92,21 +92,21 @@ const Preview = memo(function Preview(props: PreviewProps) {
             <div className="absolute right-2 top-5">
               <RemoveButton
                 onClick={() => {
-                  removeEditor(props.id);
+                  removeEditor(props.id)
                 }}
               />
             </div>
           </div>
         )}
-        <div className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] md:grid border rounded">
+        <div className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] rounded border md:grid">
           <div
             className={cn(
-              "relative bg-[--page-bg-dark] px-[25%] py-[15%] hidden md:block"
+              'relative hidden bg-[--page-bg-dark] px-[25%] py-[15%] md:block'
             )}
           >
-            <div className="grid place-items-center h-full">{iconBarrier}</div>
+            <div className="grid h-full place-items-center">{iconBarrier}</div>
           </div>
-          <div className={cn("relative py-5 px-8 md:pl-0")}>
+          <div className={cn('relative px-8 py-5 md:pl-0')}>
             <div className="flex items-center">
               <div>
                 <AddIconInput
@@ -116,10 +116,10 @@ const Preview = memo(function Preview(props: PreviewProps) {
                 />
                 <div className="inline-flex items-center">
                   <div className="mr-3">Or add a</div>
-                  {examples.map((item) => (
+                  {examples.map(item => (
                     <ExampleItem
                       onClick={() => {
-                        handleUpdateEditor(item[1].code);
+                        handleUpdateEditor(item[1].code)
                       }}
                       key={item[0]}
                       svg={item[1].display}
@@ -133,7 +133,7 @@ const Preview = memo(function Preview(props: PreviewProps) {
         </div>
       </div>
     </div>
-  );
-});
+  )
+})
 
-export { Preview };
+export { Preview }

@@ -1,5 +1,5 @@
-import { logoIcon } from "@/lib/icons";
-import Link from "next/link";
+import { logoIcon } from '@/lib/icons'
+import Link from 'next/link'
 
 export function Header() {
   // const { addGroup } = useAppActions();
@@ -19,5 +19,5 @@ export function Header() {
         Add a set {setIcon}
       </button> */}
     </div>
-  );
+  )
 }

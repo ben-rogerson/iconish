@@ -1,9 +1,9 @@
-import { useRef } from "react";
-import { Editors } from "@/feature/editor/components/Editors";
-import { useAppActions } from "@/hooks/appState";
-import { GroupSet } from "@/components/GroupSet";
-import { ConfigPanel } from "@/feature/config/components/ConfigPanel";
-import { type VirtuosoHandle } from "react-virtuoso";
+import { useRef } from 'react'
+import { Editors } from '@/feature/editor/components/Editors'
+import { useAppActions } from '@/hooks/appState'
+import { GroupSet } from '@/components/GroupSet'
+import { ConfigPanel } from '@/feature/config/components/ConfigPanel'
+import { type VirtuosoHandle } from 'react-virtuoso'
 
 /**
  * Update the group list when the hash changes.
@@ -20,17 +20,17 @@ import { type VirtuosoHandle } from "react-virtuoso";
 // };
 
 const Detail = () => {
-  const { getGroup } = useAppActions();
-  const group = getGroup();
+  const { getGroup } = useAppActions()
+  const group = getGroup()
   // TODO: Move this ref to a provider?
-  const virtualListRef = useRef<VirtuosoHandle>(null);
+  const virtualListRef = useRef<VirtuosoHandle>(null)
 
   const activeEditors =
     group?.editors.filter(
       ([, data]) =>
         data.svg.output &&
         data.svg.output !== '<html xmlns="http://www.w3.org/1999/xhtml"/>'
-    ) ?? [];
+    ) ?? []
 
   return (
     <div className="grid gap-20">
@@ -55,7 +55,7 @@ const Detail = () => {
         <Editors virtualListRef={virtualListRef} />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export { Detail };
+export { Detail }

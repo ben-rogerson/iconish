@@ -58,9 +58,9 @@
 }
 
 @font-face {
-  font-family: "Chivo";
-  src: url("./../../public/ChivoMono.woff2") format("woff2-variations");
-  src: url("./../../public/ChivoMono.woff2") format("woff2") tech("variations");
+  font-family: 'Chivo';
+  src: url('./../../public/ChivoMono.woff2') format('woff2-variations');
+  src: url('./../../public/ChivoMono.woff2') format('woff2') tech('variations');
   font-weight: 100 900;
   /* font-stretch: 25% 151%; */
 }
@@ -69,7 +69,7 @@ html {
   color: var(--text-normal);
   background: var(--page-bg);
   /* font-family: "Space Mono", monospace; */
-  font-family: "Chivo";
+  font-family: 'Chivo';
   font-weight: 250;
 
   overflow-y: scroll; /* Always show scrollbar to avoid layout shift */

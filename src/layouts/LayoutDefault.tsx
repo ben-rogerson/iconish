@@ -1,11 +1,11 @@
-import { Header } from "@/layouts/components/Header";
+import { Header } from '@/layouts/components/Header'
 // import { Footer } from "@/components/Footer";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from '@/components/ui/toaster'
 
 const LayoutDefault = ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
-      <div className="px-4 md:px-20 w-full max-w-[1200px]">
+      <div className="w-full max-w-[1200px] px-4 md:px-20">
         <header>
           <Header />
         </header>
@@ -16,7 +16,7 @@ const LayoutDefault = ({ children }: { children: React.ReactNode }) => {
       </footer> */}
       <Toaster />
     </div>
-  );
-};
+  )
+}
 
-export { LayoutDefault };
+export { LayoutDefault }

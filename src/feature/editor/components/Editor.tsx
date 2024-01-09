@@ -1,58 +1,58 @@
-import { useMemo, useState } from "react";
-import { useCopyToClipboard } from "usehooks-ts";
-import { EditorView } from "@codemirror/view";
-import { javascript } from "@codemirror/lang-javascript";
-import CodeMirror from "@uiw/react-codemirror";
-import { vscodeDark } from "@uiw/codemirror-theme-vscode";
-import { Button } from "@/components/ui/button";
-import { RemoveButton } from "@/components/RemoveButton";
-import { useToast } from "@/components/ui/use-toast";
-import { ToastAction } from "@/components/ui/toast";
-import { Title } from "@/feature/editor/components/Title";
-import { doSanitizeSvg } from "@/feature/svg/svgTasks";
-import { useAppActions } from "@/hooks/appState";
-import { calculateSizeSavings } from "@/utils/calculateSizeSavings";
-import { type EditorState } from "@/utils/types";
-import { cn } from "@/lib/utils";
-import { Copy, Check, ChevronRightSquare, Lightbulb, X } from "lucide-react";
+import { useMemo, useState } from 'react'
+import { useCopyToClipboard } from 'usehooks-ts'
+import { EditorView } from '@codemirror/view'
+import { javascript } from '@codemirror/lang-javascript'
+import CodeMirror from '@uiw/react-codemirror'
+import { vscodeDark } from '@uiw/codemirror-theme-vscode'
+import { Button } from '@/components/ui/button'
+import { RemoveButton } from '@/components/RemoveButton'
+import { useToast } from '@/components/ui/use-toast'
+import { ToastAction } from '@/components/ui/toast'
+import { Title } from '@/feature/editor/components/Title'
+import { doSanitizeSvg } from '@/feature/svg/svgTasks'
+import { useAppActions } from '@/hooks/appState'
+import { calculateSizeSavings } from '@/utils/calculateSizeSavings'
+import { type EditorState } from '@/utils/types'
+import { cn } from '@/lib/utils'
+import { Copy, Check, ChevronRightSquare, Lightbulb, X } from 'lucide-react'
 
 type EditorProps = {
-  id: string;
-  data: EditorState[1];
-};
+  id: string
+  data: EditorState[1]
+}
 
-const Log = (props: { logItems: EditorProps["data"]["svg"]["log"] }) => {
-  const [isOpened, setIsOpened] = useState(false);
+const Log = (props: { logItems: EditorProps['data']['svg']['log'] }) => {
+  const [isOpened, setIsOpened] = useState(false)
 
   const filtered = (type: string) =>
     isOpened
-      ? !type.startsWith("data.")
-      : ["success", "error", "info"].includes(type);
+      ? !type.startsWith('data.')
+      : ['success', 'error', 'info'].includes(type)
 
   const items = (props.logItems ?? [])
-    .filter((l) => filtered(l.type))
+    .filter(l => filtered(l.type))
     .map((l, i) => {
       return (
         <li
           // eslint-disable-next-line react/no-array-index-key
           key={i}
           className={cn({
-            "text-red-500": l.type === "error",
-            "text-green-500": l.type === "success",
-            "text-gray-500": l.type === "debug",
-            "text-orange-300": l.type === "info",
+            'text-red-500': l.type === 'error',
+            'text-green-500': l.type === 'success',
+            'text-gray-500': l.type === 'debug',
+            'text-orange-300': l.type === 'info',
           })}
         >
           <div className="flex gap-2">
-            <div className="text-right flex-shrink-0">
-              {l.type === "error" && <X className="text-red-500" width="18" />}
-              {l.type === "debug" && (
+            <div className="flex-shrink-0 text-right">
+              {l.type === 'error' && <X className="text-red-500" width="18" />}
+              {l.type === 'debug' && (
                 <Lightbulb className="text-gray-500" width="18" />
               )}
-              {l.type === "success" && (
+              {l.type === 'success' && (
                 <Check className="text-green-600" width="18" />
               )}
-              {l.type === "info" && (
+              {l.type === 'info' && (
                 <Check className="text-orange-300" width="18" />
               )}
             </div>
@@ -61,36 +61,36 @@ const Log = (props: { logItems: EditorProps["data"]["svg"]["log"] }) => {
             </div>
           </div>
         </li>
-      );
-    });
+      )
+    })
 
   return (
-    <div className="justify-between grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] md:grid">
+    <div className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] justify-between md:grid">
       <div>
         <button
           type="button"
           onClick={() => {
-            setIsOpened((o) => !o);
+            setIsOpened(o => !o)
           }}
-          className="cursor-ns-resize flex gap-2 py-3 px-4"
+          className="flex cursor-ns-resize gap-2 px-4 py-3"
         >
           <ChevronRightSquare width="18" /> log
         </button>
       </div>
       <div className="flex justify-between gap-2 py-3">
-        <ul className={cn({ "py-5": isOpened })}>{items}</ul>
+        <ul className={cn({ 'py-5': isOpened })}>{items}</ul>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const useExpandable = () => {
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(true)
 
   return {
     isCollapsed,
     Expandable: (props: { children: React.ReactNode }) => (
-      <div className={cn({ "max-h-60 overflow-hidden": isCollapsed })}>
+      <div className={cn({ 'max-h-60 overflow-hidden': isCollapsed })}>
         {props.children}
       </div>
     ),
@@ -98,43 +98,43 @@ const useExpandable = () => {
       <button
         type="button"
         onClick={() => {
-          setIsCollapsed((c) => !c);
+          setIsCollapsed(c => !c)
         }}
         className={props.className}
       >
         expand
       </button>
     ),
-  };
-};
+  }
+}
 
 const Editor = (props: EditorProps) => {
-  const { toast } = useToast();
-  const { removeEditor, undoRemoveEditor, updateEditorSvg } = useAppActions();
+  const { toast } = useToast()
+  const { removeEditor, undoRemoveEditor, updateEditorSvg } = useAppActions()
   // const [hasWordWrapIn, WordWrapIn] = useEditorWrap(false);
   // const [hasWordWrapOut, WordWrapOut] = useEditorWrap(true);
-  const [, copy] = useCopyToClipboard();
+  const [, copy] = useCopyToClipboard()
 
-  const { Expandable, Expander } = useExpandable();
-  const { Expandable: ExpandableOut, Expander: ExpanderOut } = useExpandable();
+  const { Expandable, Expander } = useExpandable()
+  const { Expandable: ExpandableOut, Expander: ExpanderOut } = useExpandable()
 
   const sanitizedSvg = useMemo(
-    () => doSanitizeSvg(props.data.view?.doc ?? ""),
+    () => doSanitizeSvg(props.data.view?.doc ?? ''),
     [props.data.view?.doc]
-  );
+  )
   const sized = useMemo(
     () =>
-      calculateSizeSavings(props.data.view?.doc ?? "", props.data.svg.output),
+      calculateSizeSavings(props.data.view?.doc ?? '', props.data.svg.output),
     [props.data.view?.doc, props.data.svg.output]
-  );
+  )
 
   const handleOnChange = (value: string) => {
-    updateEditorSvg(props.id, value);
-  };
+    updateEditorSvg(props.id, value)
+  }
 
   const handleUndo = () => {
-    undoRemoveEditor(props.id);
-  };
+    undoRemoveEditor(props.id)
+  }
 
   return (
     <div className="relative">
@@ -143,28 +143,28 @@ const Editor = (props: EditorProps) => {
           <div className="absolute right-0 top-3">
             <RemoveButton
               onClick={() => {
-                removeEditor(props.id);
+                removeEditor(props.id)
                 toast({
                   itemID: props.id,
                   title: `Removed icon${
-                    props.data.title ? ` “${props.data.title}”` : ""
+                    props.data.title ? ` “${props.data.title}”` : ''
                   }`,
                   action: (
                     <ToastAction altText="Undo" onClick={handleUndo}>
                       Undo
                     </ToastAction>
                   ),
-                });
+                })
               }}
             />
           </div>
           <Title id={props.id} title={props.data.title} />
         </div>
         <div
-          className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] md:grid border rounded-t"
-          style={{ borderBottomStyle: "dashed" }}
+          className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] rounded-t border md:grid"
+          style={{ borderBottomStyle: 'dashed' }}
         >
-          <div className={cn("relative bg-[--page-bg-dark] px-[25%] py-[15%]")}>
+          <div className={cn('relative bg-[--page-bg-dark] px-[25%] py-[15%]')}>
             {Boolean(sanitizedSvg) && (
               <>
                 <div dangerouslySetInnerHTML={{ __html: sanitizedSvg }} />
@@ -190,7 +190,7 @@ const Editor = (props: EditorProps) => {
                 ]}
                 onChange={handleOnChange}
                 theme={vscodeDark}
-                value={props.data.view?.doc ?? ""}
+                value={props.data.view?.doc ?? ''}
                 editable={false}
               />
             </Expandable>
@@ -200,23 +200,23 @@ const Editor = (props: EditorProps) => {
       </div>
       <div>
         <div
-          className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] md:grid border border-t-0"
-          style={{ borderBottomStyle: "dashed" }}
+          className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] border border-t-0 md:grid"
+          style={{ borderBottomStyle: 'dashed' }}
         >
-          <div className="relative bg-[--page-bg-dark] px-[25%] pt-[15%] pb-[25%]">
+          <div className="relative bg-[--page-bg-dark] px-[25%] pb-[25%] pt-[15%]">
             <div dangerouslySetInnerHTML={{ __html: props.data.svg.output }} />
             <div className="absolute left-2 top-2 hidden text-xs text-[--text-muted] group-focus-within/editor:block group-hover/editor:block">
               {sized.after}
             </div>
-            <div className="flex gap-2 bottom-2 left-2 absolute items-center">
+            <div className="absolute bottom-2 left-2 flex items-center gap-2">
               <Button
                 type="button"
                 onClick={() => {
-                  copy(props.data.svg.output).catch(() => null);
+                  copy(props.data.svg.output).catch(() => null)
                   toast({
                     itemID: `copied-${props.id}`,
                     title: `Copied svg code to clipboard`,
-                  });
+                  })
                 }}
                 variant="outline"
                 className=""
@@ -246,12 +246,12 @@ const Editor = (props: EditorProps) => {
             <ExpanderOut />
           </div>
         </div>
-        <div className="border border-t-0 rounded-b">
+        <div className="rounded-b border border-t-0">
           <Log logItems={props.data.svg.log} />
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export { Editor };
+export { Editor }

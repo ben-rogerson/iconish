@@ -31,4 +31,4 @@
  * @param fn The function to run.
  * @returns The return value of the function.
  */
-export const run = <T>(fn: () => T): T => fn();
+export const run = <T>(fn: () => T): T => fn()

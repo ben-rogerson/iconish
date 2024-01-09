@@ -1,6 +1,6 @@
 /* v8 ignore start */
 
-import type z from "zod";
+import type z from 'zod'
 import type {
   appStateSchema,
   editorSchema,
@@ -8,13 +8,13 @@ import type {
   svgSchema,
   svgLogItem,
   viewSchema,
-} from "./schemas";
+} from './schemas'
 
-type AppState = z.infer<typeof appStateSchema>;
-type EditorState = z.infer<typeof editorSchema>;
-type View = z.infer<typeof viewSchema>;
-type Svg = z.infer<typeof svgSchema>;
-type SvgLogItem = z.infer<typeof svgLogItem>;
-type Group = z.infer<typeof groupSchema>;
+type AppState = z.infer<typeof appStateSchema>
+type EditorState = z.infer<typeof editorSchema>
+type View = z.infer<typeof viewSchema>
+type Svg = z.infer<typeof svgSchema>
+type SvgLogItem = z.infer<typeof svgLogItem>
+type Group = z.infer<typeof groupSchema>
 
-export type { AppState, EditorState, View, Svg, SvgLogItem, Group };
+export type { AppState, EditorState, View, Svg, SvgLogItem, Group }

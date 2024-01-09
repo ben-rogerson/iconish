@@ -1,112 +1,112 @@
-import type { Page } from "@playwright/test";
-import { test, expect } from "@playwright/test";
+import type { Page } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 
 const setupFirstEditor = async (page: Page) => {
   // Set a large height to avoid the windowing removing the editor/preview from the DOM
-  await page.setViewportSize({ width: 1200, height: 1200 });
+  await page.setViewportSize({ width: 1200, height: 1200 })
 
   // Assert no add button when starting
-  const addButton = page.getByRole("button", { name: /Add SVG/i });
-  await expect(addButton).toHaveCount(0);
+  const addButton = page.getByRole('button', { name: /Add SVG/i })
+  await expect(addButton).toHaveCount(0)
 
   // Add an editor to enable the add buttons
-  const addSvgButton = page.getByRole("button", { name: "Bug" });
-  await addSvgButton.click();
-  await expect(page.getByRole("article", { name: "editor" })).toHaveCount(1);
-};
+  const addSvgButton = page.getByRole('button', { name: 'Bug' })
+  await addSvgButton.click()
+  await expect(page.getByRole('article', { name: 'editor' })).toHaveCount(1)
+}
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/");
-});
+  await page.goto('/')
+})
 
-test("should have a preview area and not a code editor by default", async ({
+test('should have a preview area and not a code editor by default', async ({
   page,
 }) => {
-  await expect(page.getByRole("article", { name: "preview" })).toHaveCount(1);
-  await expect(page.getByRole("article", { name: "editor" })).toHaveCount(0);
-});
+  await expect(page.getByRole('article', { name: 'preview' })).toHaveCount(1)
+  await expect(page.getByRole('article', { name: 'editor' })).toHaveCount(0)
+})
 
 const getEditorTypes = async (page: Page) => {
-  type EditorType = ["editor", "preview"][number];
-  const editors: EditorType[] = [];
+  type EditorType = ['editor', 'preview'][number]
+  const editors: EditorType[] = []
   for (const listItem of await page
-    .locator("[data-test-id=virtuoso-item-list]")
-    .getByRole("article")
+    .locator('[data-test-id=virtuoso-item-list]')
+    .getByRole('article')
     .all()) {
     const value = (await listItem.getAttribute(
-      "aria-label"
-    )) as EditorType | null;
-    value && editors.push(value);
+      'aria-label'
+    )) as EditorType | null
+    value && editors.push(value)
   }
-  return editors;
-};
+  return editors
+}
 
-test("should add an editor after clicking the add buttons", async ({
+test('should add an editor after clicking the add buttons', async ({
   page,
 }) => {
-  await setupFirstEditor(page);
+  await setupFirstEditor(page)
 
-  const initialItems = await getEditorTypes(page);
-  expect(initialItems).toEqual(["editor"]);
+  const initialItems = await getEditorTypes(page)
+  expect(initialItems).toEqual(['editor'])
 
   // Virtuoso uses data-test-id and the project uses data-testid so we need to use this custom locator
-  const contentList = page.locator("[data-test-id=virtuoso-item-list]");
+  const contentList = page.locator('[data-test-id=virtuoso-item-list]')
   await contentList
-    .getByRole("button", { name: /Add SVG/i })
+    .getByRole('button', { name: /Add SVG/i })
     .first()
-    .click();
+    .click()
 
-  const itemsAfterAdd = await getEditorTypes(page);
-  expect(itemsAfterAdd).toEqual(["preview", "editor"]);
+  const itemsAfterAdd = await getEditorTypes(page)
+  expect(itemsAfterAdd).toEqual(['preview', 'editor'])
 
   await contentList
-    .getByRole("button", { name: /Add SVG/i })
+    .getByRole('button', { name: /Add SVG/i })
     .last()
-    .click();
+    .click()
 
-  const itemsAfterSecondAdd = await getEditorTypes(page);
-  expect(itemsAfterSecondAdd).toEqual(["preview", "editor", "preview"]);
-});
+  const itemsAfterSecondAdd = await getEditorTypes(page)
+  expect(itemsAfterSecondAdd).toEqual(['preview', 'editor', 'preview'])
+})
 
-test("should remove an editor after clicking the remove button", async ({
+test('should remove an editor after clicking the remove button', async ({
   page,
 }) => {
-  await setupFirstEditor(page);
+  await setupFirstEditor(page)
 
-  const editor = page.getByRole("article", { name: "editor" }).first();
+  const editor = page.getByRole('article', { name: 'editor' }).first()
 
-  await editor.hover(); // Hover to reveal the remove button
-  await editor.getByLabel("Remove editor").click();
+  await editor.hover() // Hover to reveal the remove button
+  await editor.getByLabel('Remove editor').click()
 
-  await expect(page.getByRole("article", { name: "editor" })).toHaveCount(0);
-});
+  await expect(page.getByRole('article', { name: 'editor' })).toHaveCount(0)
+})
 
-test("a svg can be added via paste", async ({ page }) => {
-  const icon = '<svg><circle cx="50" cy="50" r="40"/></svg>';
+test('a svg can be added via paste', async ({ page }) => {
+  const icon = '<svg><circle cx="50" cy="50" r="40"/></svg>'
 
   const item = page
-    .locator("[data-test-id=virtuoso-item-list]")
-    .getByRole("article");
+    .locator('[data-test-id=virtuoso-item-list]')
+    .getByRole('article')
 
-  const input = item.getByPlaceholder(/Paste svg/i);
-  await expect(input).toHaveCount(1);
+  const input = item.getByPlaceholder(/Paste svg/i)
+  await expect(input).toHaveCount(1)
 
-  await input.fill(icon);
-  await input.press("Enter");
+  await input.fill(icon)
+  await input.press('Enter')
 
-  const itemsAfter = await getEditorTypes(page);
-  expect(itemsAfter).toEqual(["editor"]);
+  const itemsAfter = await getEditorTypes(page)
+  expect(itemsAfter).toEqual(['editor'])
 
-  await expect(item).toContainText(icon);
-});
+  await expect(item).toContainText(icon)
+})
 
-test("a svg can be added via the test buttons", async ({ page }) => {
+test('a svg can be added via the test buttons', async ({ page }) => {
   await page
-    .getByRole("article", { name: "preview" })
+    .getByRole('article', { name: 'preview' })
     .first()
-    .getByRole("button", { name: "Bug" })
+    .getByRole('button', { name: 'Bug' })
     .first()
-    .click();
+    .click()
 
-  await expect(page.getByRole("article", { name: "editor" })).toHaveCount(1);
-});
+  await expect(page.getByRole('article', { name: 'editor' })).toHaveCount(1)
+})

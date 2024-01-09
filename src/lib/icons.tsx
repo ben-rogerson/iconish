@@ -7,7 +7,7 @@ export const iconBarrier = (
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="inline-block text-[500%] w-[1em] h-[1em] text-[--text-muted]"
+    className="inline-block h-[1em] w-[1em] text-[500%] text-[--text-muted]"
   >
     <rect
       x="2"
@@ -61,7 +61,7 @@ export const iconBarrier = (
       stroke="currentColor"
     />
   </svg>
-);
+)
 export const plusIcon = (
   <svg
     fill="none"
@@ -69,13 +69,13 @@ export const plusIcon = (
     strokeLinecap="round"
     strokeLinejoin="round"
     strokeWidth="2"
-    className="w-[1em] h-[1em] inline-block mr-1 -mt-1"
+    className="-mt-1 mr-1 inline-block h-[1em] w-[1em]"
     viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg"
   >
     <path d="M5 12h14m-7-7v14" vectorEffect="non-scaling-stroke" />
   </svg>
-);
+)
 export const setIcon = (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -85,7 +85,7 @@ export const setIcon = (
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="w-[1.5em] h-[1.5em] inline-block text-md"
+    className="text-md inline-block h-[1.5em] w-[1.5em]"
     aria-hidden="true"
   >
     <rect
@@ -110,7 +110,7 @@ export const setIcon = (
       stroke="currentColor"
     />
   </svg>
-);
+)
 export const logoIcon = (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -120,7 +120,7 @@ export const logoIcon = (
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="w-[1.5em] h-[1.5em] inline-block text-xl"
+    className="inline-block h-[1.5em] w-[1.5em] text-xl"
     aria-hidden="true"
   >
     <path
@@ -138,11 +138,11 @@ export const logoIcon = (
       fill="none"
     />
   </svg>
-);
+)
 
-export const bugIcon = `<svg id="bug" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 2 1.88 1.88" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M14.12 3.88 16 2" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M9 7.13v-1a3.003 3.003 0 1 1 6 0v1" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M12 20v-9" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M6.53 9C4.6 8.8 3 7.1 3 5" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M6 13H2" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M3 21c0-2.1 1.7-3.9 3.8-4" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M20.97 5c0 2.1-1.6 3.8-3.5 4" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M22 13h-4" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M17.2 17c2.1.1 3.8 1.9 3.8 4" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/></svg>`;
-export const flyaway = `<svg id="burd" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>`;
-export const cookie = `<svg id="cookie" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" className="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M11 17v.01"/><path d="M7 14v.01"/></svg>`;
+export const bugIcon = `<svg id="bug" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 2 1.88 1.88" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M14.12 3.88 16 2" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M9 7.13v-1a3.003 3.003 0 1 1 6 0v1" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M12 20v-9" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M6.53 9C4.6 8.8 3 7.1 3 5" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M6 13H2" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M3 21c0-2.1 1.7-3.9 3.8-4" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M20.97 5c0 2.1-1.6 3.8-3.5 4" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M22 13h-4" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/><path d="M17.2 17c2.1.1 3.8 1.9 3.8 4" stroke-width="2" vector-effect="non-scaling-stroke" stroke="currentColor"/></svg>`
+export const flyaway = `<svg id="burd" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>`
+export const cookie = `<svg id="cookie" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" className="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M11 17v.01"/><path d="M7 14v.01"/></svg>`
 export const bugItemDisplay = (
   <svg
     fill="none"
@@ -152,7 +152,7 @@ export const bugItemDisplay = (
     strokeWidth="1.5"
     viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg"
-    className="w-[1.5em] h-[1.5em] inline-block mr-1 text-base"
+    className="mr-1 inline-block h-[1.5em] w-[1.5em] text-base"
   >
     <path
       d="m8 2 1.88 1.88m4.24 0L16 2M9 7.13v-1a3.003 3.003 0 1 1 6 0v1"
@@ -167,7 +167,7 @@ export const bugItemDisplay = (
       vectorEffect="non-scaling-stroke"
     />
   </svg>
-);
+)
 export const flyawayIconDisplay = (
   <svg
     fill="none"
@@ -177,14 +177,14 @@ export const flyawayIconDisplay = (
     strokeWidth="1.5"
     viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg"
-    className="w-[1.5em] h-[1.5em] inline-block mr-1 text-base"
+    className="mr-1 inline-block h-[1.5em] w-[1.5em] text-base"
   >
     <path
       d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"
       vectorEffect="non-scaling-stroke"
     />
   </svg>
-);
+)
 export const cookieIconDisplay = (
   <svg
     fill="none"
@@ -194,14 +194,14 @@ export const cookieIconDisplay = (
     strokeWidth="1.5"
     viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg"
-    className="w-[1.5em] h-[1.5em] inline-block mr-1 text-base"
+    className="mr-1 inline-block h-[1.5em] w-[1.5em] text-base"
   >
     <path
       d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5M8.5 8.5v.01M16 15.5v.01M12 12v.01M11 17v.01M7 14v.01"
       vectorEffect="non-scaling-stroke"
     />
   </svg>
-);
+)
 
 export const crossIcon = (
   <svg
@@ -212,9 +212,9 @@ export const crossIcon = (
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="w-[1em] h-[1em]"
+    className="h-[1em] w-[1em]"
   >
     <path d="M18 6 6 18" />
     <path d="m6 6 12 12" />
   </svg>
-);
+)

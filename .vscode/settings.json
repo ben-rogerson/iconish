@@ -1,24 +1,24 @@
 {
-    "cSpell.words": [
-        "burd",
-        "clsx",
-        "codemirror",
-        "debouncer",
-        "downloadurl",
-        "Iconish",
-        "immer",
-        "lucide",
-        "multipass",
-        "partialize",
-        "spritesheet",
-        "Svgs",
-        "testid",
-        "textbox",
-        "Uncurried",
-        "usehooks",
-        "vectoreffect",
-        "viewbox",
-        "zustand"
-    ],
-    "testing.automaticallyOpenPeekView": "never"
+  "cSpell.words": [
+    "burd",
+    "clsx",
+    "codemirror",
+    "debouncer",
+    "downloadurl",
+    "Iconish",
+    "immer",
+    "lucide",
+    "multipass",
+    "partialize",
+    "spritesheet",
+    "Svgs",
+    "testid",
+    "textbox",
+    "Uncurried",
+    "usehooks",
+    "vectoreffect",
+    "viewbox",
+    "zustand"
+  ],
+  "testing.automaticallyOpenPeekView": "never"
 }

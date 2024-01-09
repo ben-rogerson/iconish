@@ -5,27 +5,19 @@ import {
   SelectTrigger,
   SelectValue,
   SelectMainLabel,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { useAppActions, useAppStore } from "@/hooks/appState";
-import { cn, tw } from "@/lib/utils";
-import { run } from "@/utils/run";
-import type { MutableRefObject } from "react";
-import {
-  Fragment,
-  memo,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
-import validateColor from "validate-color";
-import debounce from "lodash/debounce";
-import type { DebouncedFunc } from "lodash";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { RotateCw } from "lucide-react";
+} from '@/components/ui/select'
+import { Slider } from '@/components/ui/slider'
+import { useAppActions, useAppStore } from '@/hooks/appState'
+import { cn, tw } from '@/lib/utils'
+import { run } from '@/utils/run'
+import type { MutableRefObject } from 'react'
+import { Fragment, memo, useMemo, useRef, useState } from 'react'
+import validateColor from 'validate-color'
+import debounce from 'lodash/debounce'
+import type { DebouncedFunc } from 'lodash'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Label } from '@/components/ui/label'
+import { RotateCw } from 'lucide-react'
 
 // const saveTemplateAsFile = (
 //   filename: string,
@@ -52,237 +44,237 @@ import { RotateCw } from "lucide-react";
 // };
 
 type FormRange = {
-  id: string;
-  title: string;
-  defaultValue: string;
-  type: "range";
-  hidden?: boolean;
-  disabled: boolean;
-  onChange: (value: number[]) => void;
-};
+  id: string
+  title: string
+  defaultValue: string
+  type: 'range'
+  hidden?: boolean
+  disabled: boolean
+  onChange: (value: number[]) => void
+}
 
 type FormInput = {
-  id: string;
-  title: string;
-  defaultValue: string;
-  type: "text";
-  theme?: string;
-  hidden?: boolean;
-  disabled: boolean;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
-  onClick?: (e: React.MouseEvent<HTMLInputElement>) => void;
-};
+  id: string
+  title: string
+  defaultValue: string
+  type: 'text'
+  theme?: string
+  hidden?: boolean
+  disabled: boolean
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onBlur: (e: React.FocusEvent<HTMLInputElement>) => void
+  onClick?: (e: React.MouseEvent<HTMLInputElement>) => void
+}
 
 type FormRadioGroup = {
-  id: string;
-  title: string;
-  type: "radio-group";
-  defaultValue: string;
-  options: Array<[string, string]>;
-  hidden?: boolean;
-  disabled: boolean;
-  onChange: (val: string) => void;
-};
+  id: string
+  title: string
+  type: 'radio-group'
+  defaultValue: string
+  options: Array<[string, string]>
+  hidden?: boolean
+  disabled: boolean
+  onChange: (val: string) => void
+}
 
 type FormSelect = {
-  id: string;
-  title: string;
-  defaultValue: string;
-  options: string[];
-  hidden?: boolean;
-  disabled: boolean;
-  onChange: (val: string) => void;
-};
+  id: string
+  title: string
+  defaultValue: string
+  options: string[]
+  hidden?: boolean
+  disabled: boolean
+  onChange: (val: string) => void
+}
 
 type FormCheckbox = {
-  id: string;
-  title: string;
-  defaultChecked: boolean;
-  type: "checkbox";
-  hidden?: boolean;
-  disabled: boolean;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-};
+  id: string
+  title: string
+  defaultChecked: boolean
+  type: 'checkbox'
+  hidden?: boolean
+  disabled: boolean
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+}
 
 type FormItemType =
   | FormRange
   | FormInput
   | FormRadioGroup
   | FormSelect
-  | FormCheckbox;
+  | FormCheckbox
 
 const isColor = (value: string) => {
   // if (value.startsWith("--")) return true;
   // if (value.startsWith("var(--") && value.endsWith(")")) return true;
-  return validateColor(value);
-};
+  return validateColor(value)
+}
 
 const isRadioGroup = (item: FormItemType): item is FormRadioGroup =>
-  "type" in item && item.type === "radio-group";
+  'type' in item && item.type === 'radio-group'
 
 const isRange = (item: FormItemType): item is FormRange =>
-  "type" in item && item.type === "range";
+  'type' in item && item.type === 'range'
 
 const isInput = (item: FormItemType): item is FormInput =>
-  "type" in item && item.type === "text";
+  'type' in item && item.type === 'text'
 
-const isSelect = (item: FormItemType): item is FormSelect => !("type" in item);
+const isSelect = (item: FormItemType): item is FormSelect => !('type' in item)
 
 const isCheckbox = (item: FormItemType): item is FormCheckbox =>
-  "type" in item && item.type === "checkbox";
+  'type' in item && item.type === 'checkbox'
 
 // Debounce for config items that update their values often (eg: a draggable slider)
 const debouncer = (
   fn: () => void,
   ref: MutableRefObject<DebouncedFunc<() => void> | null>
 ) => {
-  ref.current?.cancel();
-  ref.current = debounce(fn, 200, { trailing: true });
-  ref.current();
-};
+  ref.current?.cancel()
+  ref.current = debounce(fn, 200, { trailing: true })
+  ref.current()
+}
 
 const useMainItems = () => {
-  const { getConfig, setConfig } = useAppActions();
+  const { getConfig, setConfig } = useAppActions()
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const debounceRef = useRef<DebouncedFunc<() => void>>(null);
-  const config = getConfig();
+  const debounceRef = useRef<DebouncedFunc<() => void>>(null)
+  const config = getConfig()
 
   const mainItems = useMemo(
     () => [
       {
-        id: "fill-color",
-        title: "fill",
+        id: 'fill-color',
+        title: 'fill',
         defaultValue: config.fill,
-        type: "text",
+        type: 'text',
         theme: config.fill,
-        hidden: config.iconSetType === "outlined",
-        disabled: config.iconSetType === "outlined",
-        onChange: (e) => {
+        hidden: config.iconSetType === 'outlined',
+        disabled: config.iconSetType === 'outlined',
+        onChange: e => {
           const fill =
             e.target.value &&
             (validateColor(e.target.value) ||
-              (e.target.value.startsWith("var(--") &&
-                e.target.value.endsWith(")")))
+              (e.target.value.startsWith('var(--') &&
+                e.target.value.endsWith(')')))
               ? e.target.value
-              : null;
-          if (!fill) return;
+              : null
+          if (!fill) return
 
           // Allow the color to be added, then update the config
           setTimeout(() => {
-            setConfig({ fill });
-          }, 0);
+            setConfig({ fill })
+          }, 0)
         },
-        onBlur: (e) => {
+        onBlur: e => {
           const fill =
             e.target.value &&
             (validateColor(e.target.value) ||
-              (e.target.value.startsWith("var(--") &&
-                e.target.value.endsWith(")")))
+              (e.target.value.startsWith('var(--') &&
+                e.target.value.endsWith(')')))
               ? e.target.value
-              : null;
+              : null
           if (!fill) {
             // Reset to previous value
-            e.target.value = config.fill;
-            return;
+            e.target.value = config.fill
+            return
           }
 
           // Allow the color to be added, then update the config
           setTimeout(() => {
-            e.target.value = config.fill;
-          }, 0);
+            e.target.value = config.fill
+          }, 0)
         },
       } satisfies FormInput,
 
       {
-        id: "stroke-width",
-        title: "stroke width",
+        id: 'stroke-width',
+        title: 'stroke width',
         defaultValue: config.strokeWidth,
-        type: "range",
-        disabled: config.iconSetType === "solid",
-        hidden: config.iconSetType === "solid",
+        type: 'range',
+        disabled: config.iconSetType === 'solid',
+        hidden: config.iconSetType === 'solid',
         onChange: (val: number[]) => {
           debouncer(() => {
-            setConfig({ strokeWidth: String(val[0]) });
-          }, debounceRef);
+            setConfig({ strokeWidth: String(val[0]) })
+          }, debounceRef)
         },
       } satisfies FormRange,
       {
-        id: "stroke-color",
-        title: "stroke color",
+        id: 'stroke-color',
+        title: 'stroke color',
         defaultValue: config.stroke,
-        type: "text",
+        type: 'text',
         theme: config.stroke,
-        hidden: config.iconSetType === "solid",
-        disabled: config.iconSetType === "solid",
-        onChange: (e) => {
+        hidden: config.iconSetType === 'solid',
+        disabled: config.iconSetType === 'solid',
+        onChange: e => {
           const stroke =
-            e.target.value && isColor(e.target.value) ? e.target.value : null;
-          if (!stroke) return;
+            e.target.value && isColor(e.target.value) ? e.target.value : null
+          if (!stroke) return
 
           // Allow the color to be added, then update the config
           setTimeout(() => {
-            setConfig({ stroke });
-          }, 0);
+            setConfig({ stroke })
+          }, 0)
         },
-        onBlur: (e) => {
-          if (isColor(e.target.value)) return;
-          e.target.value = config.stroke;
+        onBlur: e => {
+          if (isColor(e.target.value)) return
+          e.target.value = config.stroke
         },
       } satisfies FormInput,
       {
-        id: "non-scaling-stroke",
-        title: "non-scaling stroke",
+        id: 'non-scaling-stroke',
+        title: 'non-scaling stroke',
         defaultChecked: config.nonScalingStroke,
-        disabled: config.iconSetType === "solid",
-        hidden: config.iconSetType === "solid",
-        type: "checkbox",
-        onChange: (e) => {
-          setConfig({ nonScalingStroke: e.target.checked });
+        disabled: config.iconSetType === 'solid',
+        hidden: config.iconSetType === 'solid',
+        type: 'checkbox',
+        onChange: e => {
+          setConfig({ nonScalingStroke: e.target.checked })
         },
       } satisfies FormCheckbox,
     ],
     [setConfig, config]
-  );
+  )
 
-  return mainItems;
-};
+  return mainItems
+}
 
 const useMoreItems = () => {
-  const { getConfig, setConfig } = useAppActions();
-  const config = getConfig();
+  const { getConfig, setConfig } = useAppActions()
+  const config = getConfig()
 
   const moreItems = useMemo(
     () => [
       {
-        id: "stroke-linecap",
-        title: "stroke-linecap",
+        id: 'stroke-linecap',
+        title: 'stroke-linecap',
         defaultValue: config.strokeLinecap,
         disabled: false,
-        options: ["butt", "round", "square"],
-        onChange: (strokeLinecap) => {
-          setConfig({ strokeLinecap });
+        options: ['butt', 'round', 'square'],
+        onChange: strokeLinecap => {
+          setConfig({ strokeLinecap })
         },
       } satisfies FormSelect,
       {
-        id: "stroke-linejoin",
-        title: "stroke-linejoin",
+        id: 'stroke-linejoin',
+        title: 'stroke-linejoin',
         defaultValue: config.strokeLinejoin,
         disabled: false,
-        options: ["arcs", "bevel", "miter", "miter-clip", "round"],
-        onChange: (strokeLinejoin) => {
-          setConfig({ strokeLinejoin });
+        options: ['arcs', 'bevel', 'miter', 'miter-clip', 'round'],
+        onChange: strokeLinejoin => {
+          setConfig({ strokeLinejoin })
         },
       } satisfies FormSelect,
     ],
     [setConfig, config]
-  );
+  )
 
-  return moreItems;
-};
+  return moreItems
+}
 
 export const FormItems = memo(function FormItems(props: {
-  items: FormItemType[];
+  items: FormItemType[]
 }) {
   return props.items.map((item, i) => (
     <Fragment key={item.id}>
@@ -301,14 +293,14 @@ export const FormItems = memo(function FormItems(props: {
                 </div>
               ))}
             </RadioGroup>
-          );
+          )
 
         if (isRange(item))
           return (
             <div
               data-testid={`control-${item.id}`}
               className={cn({
-                "opacity-25": item.disabled,
+                'opacity-25': item.disabled,
                 hidden: item.hidden,
               })}
             >
@@ -330,14 +322,14 @@ export const FormItems = memo(function FormItems(props: {
                 </div>
               </div>
             </div>
-          );
+          )
 
         if (isInput(item))
           return (
             <div
               data-testid={`control-${item.id}`}
               className={cn({
-                "opacity-25": item.disabled,
+                'opacity-25': item.disabled,
                 hidden: item.hidden,
               })}
             >
@@ -357,20 +349,20 @@ export const FormItems = memo(function FormItems(props: {
                     onBlur={item.onBlur}
                     disabled={item.disabled}
                     spellCheck={false}
-                    className="border-b border-b-transparent bg-transparent text-[--text-muted] focus:border-b-[--line-border] focus:text-[--text] focus:outline-none w-full max-w-[6rem]"
+                    className="w-full max-w-[6rem] border-b border-b-transparent bg-transparent text-[--text-muted] focus:border-b-[--line-border] focus:text-[--text] focus:outline-none"
                     id={`input-${i}`}
                   />
                 </div>
               </div>
             </div>
-          );
+          )
 
         if (isSelect(item))
           return (
             <div
               data-testid={`control-${item.id}`}
               className={cn({
-                "opacity-25": item.disabled,
+                'opacity-25': item.disabled,
                 hidden: item.hidden,
               })}
             >
@@ -387,7 +379,7 @@ export const FormItems = memo(function FormItems(props: {
                       <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {item.options.map((o) => (
+                      {item.options.map(o => (
                         <SelectItem key={o} value={o}>
                           {o}
                         </SelectItem>
@@ -397,14 +389,14 @@ export const FormItems = memo(function FormItems(props: {
                 </div>
               </div>
             </div>
-          );
+          )
 
         if (isCheckbox(item))
           return (
             <div
               data-testid={`control-${item.id}`}
-              className={cn("flex gap-x-1.5", {
-                "opacity-25": item.disabled,
+              className={cn('flex gap-x-1.5', {
+                'opacity-25': item.disabled,
                 hidden: item.hidden,
               })}
             >
@@ -416,18 +408,18 @@ export const FormItems = memo(function FormItems(props: {
               />
               <label htmlFor={`checkbox-${i}`}>{item.title}</label>
             </div>
-          );
+          )
       })}
     </Fragment>
-  ));
-});
+  ))
+})
 
 export const ConfigPanel = () => {
-  const activeGroupId = useAppStore((s) => s.activeGroupId);
-  const mainItems = useMainItems();
-  const moreItems = useMoreItems();
-  const { getConfig, resetConfig } = useAppActions();
-  const [key, setKey] = useState(Date.now());
+  const activeGroupId = useAppStore(s => s.activeGroupId)
+  const mainItems = useMainItems()
+  const moreItems = useMoreItems()
+  const { getConfig, resetConfig } = useAppActions()
+  const [key, setKey] = useState(Date.now())
 
   // const handleSaveConfig = () => {
   //   let theDate = new Date();
@@ -453,9 +445,9 @@ export const ConfigPanel = () => {
   // };
 
   const handleResetConfig = () => {
-    resetConfig();
-    setKey(Date.now());
-  };
+    resetConfig()
+    setKey(Date.now())
+  }
 
   return (
     <div
@@ -489,5 +481,5 @@ export const ConfigPanel = () => {
         Save
       </button> */}
     </div>
-  );
-};
+  )
+}

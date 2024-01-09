@@ -1,107 +1,107 @@
-import { newId } from "@/utils/newId";
-import { type EditorState, type Group } from "@/utils/types";
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { type Config } from "../feature/config/types";
-import { type LogItem, transformSvg } from "@/feature/svg/transformSvg";
-import { subscribeWithSelector } from "zustand/middleware";
-import { hashCode } from "@/utils/hash";
-import { produce } from "immer";
+import { newId } from '@/utils/newId'
+import { type EditorState, type Group } from '@/utils/types'
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import { type Config } from '../feature/config/types'
+import { type LogItem, transformSvg } from '@/feature/svg/transformSvg'
+import { subscribeWithSelector } from 'zustand/middleware'
+import { hashCode } from '@/utils/hash'
+import { produce } from 'immer'
 
-type ConfigItem = Partial<Config>;
+type ConfigItem = Partial<Config>
 type SVGData = {
-  original?: string;
-  output: string;
-  id?: string;
-  log: LogItem[];
-};
+  original?: string
+  output: string
+  id?: string
+  log: LogItem[]
+}
 
 interface AppStoreActions {
-  setHydrated: () => void;
+  setHydrated: () => void
 
-  setConfig: (configItem: ConfigItem, shouldUpdate?: boolean) => void;
-  getConfig: () => Config;
-  resetConfig: () => void;
+  setConfig: (configItem: ConfigItem, shouldUpdate?: boolean) => void
+  getConfig: () => Config
+  resetConfig: () => void
 
-  updateGroupTitle: (groupId: string, title: string) => void;
-  getGroup: () => Group | undefined;
-  getGroups: () => Group[];
-  addGroup: (title?: string) => void;
-  removeGroup: (id: string) => { hasSwitched: boolean; hasRemoved: boolean };
-  getSvgsFromGroupId: (groupId: string) => string;
-  setActiveGroup: (id: string) => { hasSwitched: boolean };
-  updateSvgOutputs: (config?: Config) => void;
+  updateGroupTitle: (groupId: string, title: string) => void
+  getGroup: () => Group | undefined
+  getGroups: () => Group[]
+  addGroup: (title?: string) => void
+  removeGroup: (id: string) => { hasSwitched: boolean; hasRemoved: boolean }
+  getSvgsFromGroupId: (groupId: string) => string
+  setActiveGroup: (id: string) => { hasSwitched: boolean }
+  updateSvgOutputs: (config?: Config) => void
 
-  getEditors: () => EditorState[];
-  getEditorById: (editorId: string) => EditorState | undefined;
-  getEditorIndexById: (editorId: string) => number | undefined;
-  updateEditorTitle: (id: string, title: string) => void;
-  updateEditorSvg: (editorId: string, svgCode?: string) => void;
-  refreshGroup: () => void;
-  autoSetIconType: () => void;
-  setEditorOrderByIds: (editorKeys: string[]) => void;
-  removeEditor: (id: string, shouldRefresh?: boolean) => void;
-  clearEditors: () => void;
-  undoRemoveEditor: (id: string) => void;
+  getEditors: () => EditorState[]
+  getEditorById: (editorId: string) => EditorState | undefined
+  getEditorIndexById: (editorId: string) => number | undefined
+  updateEditorTitle: (id: string, title: string) => void
+  updateEditorSvg: (editorId: string, svgCode?: string) => void
+  refreshGroup: () => void
+  autoSetIconType: () => void
+  setEditorOrderByIds: (editorKeys: string[]) => void
+  removeEditor: (id: string, shouldRefresh?: boolean) => void
+  clearEditors: () => void
+  undoRemoveEditor: (id: string) => void
   addEditor: (
     input: string,
     title?: string,
     toGroupId?: string
-  ) => { scrollTo: () => void };
+  ) => { scrollTo: () => void }
   addEditorAtIndex: (
     index: number,
     editor?: EditorState
-  ) => { scrollTo: () => void };
+  ) => { scrollTo: () => void }
 }
 
 interface AppStoreState {
-  _hasHydrated: boolean;
-  updateListHash: number;
-  groups: Group[];
-  activeGroupId: Group["id"];
+  _hasHydrated: boolean
+  updateListHash: number
+  groups: Group[]
+  activeGroupId: Group['id']
 }
 
 export const initialConfig = {
-  iconSetType: "outlined",
-  strokeWidth: "2",
-  stroke: "currentColor",
-  fill: "currentColor",
-  strokeLinecap: "round",
-  strokeLinejoin: "round",
+  iconSetType: 'outlined',
+  strokeWidth: '2',
+  stroke: 'currentColor',
+  fill: 'currentColor',
+  strokeLinecap: 'round',
+  strokeLinejoin: 'round',
   nonScalingStroke: true,
-} as const satisfies Config;
+} as const satisfies Config
 
 const makeGroup = (config?: Config, editors?: EditorState[]) =>
   ({
-    id: newId("g"),
+    id: newId('g'),
     createdAt: Date.now(),
-    title: "",
+    title: '',
     config: config ?? initialConfig,
     editors: editors ?? [initialEditorData()],
-  } satisfies Group);
+  }) satisfies Group
 
 const initialEditorData = (svgData?: SVGData, title?: string) => {
   return [
-    newId("e"),
+    newId('e'),
     {
-      title: title ?? "",
+      title: title ?? '',
       isDeleted: false,
       svg: {
-        output: svgData?.output ?? "",
-        original: svgData?.original ?? "",
+        output: svgData?.output ?? '',
+        original: svgData?.original ?? '',
         log: svgData?.log ?? [],
       },
       view: {
-        doc: svgData?.original ?? "",
+        doc: svgData?.original ?? '',
         selection: null,
       },
     },
-  ] satisfies EditorState;
-};
+  ] satisfies EditorState
+}
 
-const initialGroup = makeGroup();
+const initialGroup = makeGroup()
 
-export const useAppActions = () => useAppStore((state) => state.actions);
+export const useAppActions = () => useAppStore(state => state.actions)
 
 export const useAppStore = create<
   AppStoreState & { actions: AppStoreActions }
@@ -117,142 +117,141 @@ export const useAppStore = create<
 
         actions: {
           setHydrated() {
-            set({ _hasHydrated: true });
+            set({ _hasHydrated: true })
           },
           setConfig(configItem, shouldRefresh = true) {
-            const activeGroupId = get().activeGroupId;
+            const activeGroupId = get().activeGroupId
 
             set({
-              groups: produce(get().groups, (draft) => {
-                const group = draft.find((g) => g.id === activeGroupId);
-                if (!group) return;
+              groups: produce(get().groups, draft => {
+                const group = draft.find(g => g.id === activeGroupId)
+                if (!group) return
 
-                group.config = { ...group.config, ...configItem };
+                group.config = { ...group.config, ...configItem }
               }),
-            });
+            })
 
-            shouldRefresh && get().actions.updateSvgOutputs();
+            shouldRefresh && get().actions.updateSvgOutputs()
           },
 
           getConfig() {
-            const group = get().actions.getGroup();
-            if (!group?.config) return initialConfig;
-            return group.config;
+            const group = get().actions.getGroup()
+            if (!group?.config) return initialConfig
+            return group.config
           },
 
           resetConfig() {
-            get().actions.setConfig(initialConfig);
-            // get().actions.refreshConfig();
+            get().actions.setConfig(initialConfig)
           },
 
           // Groups
 
           getGroups() {
-            return get().groups.map((group) => ({
+            return get().groups.map(group => ({
               ...group,
-              editors: group.editors.filter((e) => !e[1].isDeleted),
-            }));
+              editors: group.editors.filter(e => !e[1].isDeleted),
+            }))
           },
 
           addGroup() {
-            const config = get().actions.getConfig();
-            const newGroup = makeGroup(config);
+            const config = get().actions.getConfig()
+            const newGroup = makeGroup(config)
             set({
               groups: [newGroup, ...get().groups],
               activeGroupId: newGroup.id,
-            });
-            get().actions.refreshGroup();
+            })
+            get().actions.refreshGroup()
             document
               .querySelector(`#header`)
-              ?.scrollIntoView({ behavior: "smooth" });
+              ?.scrollIntoView({ behavior: 'smooth' })
           },
 
           removeGroup(id) {
-            const groups = get().groups;
+            const groups = get().groups
             if (groups.length <= 1)
               return {
                 hasSwitched: false,
                 hasRemoved: false,
-              };
+              }
 
-            const newGroups = groups.filter((g) => g.id !== id);
-            set({ groups: newGroups });
+            const newGroups = groups.filter(g => g.id !== id)
+            set({ groups: newGroups })
 
             if (get().activeGroupId === id) {
               const { hasSwitched } = get().actions.setActiveGroup(
                 newGroups[0]?.id
-              );
-              return { hasSwitched, hasRemoved: true };
+              )
+              return { hasSwitched, hasRemoved: true }
             }
 
             return {
               hasSwitched: false,
               hasRemoved: newGroups.length < groups.length,
-            };
+            }
           },
 
           setActiveGroup(activeGroupId) {
             if (get().activeGroupId === activeGroupId)
-              return { hasSwitched: false };
+              return { hasSwitched: false }
 
-            set({ activeGroupId });
-            get().actions.refreshGroup();
+            set({ activeGroupId })
+            get().actions.refreshGroup()
 
-            return { hasSwitched: true };
+            return { hasSwitched: true }
           },
 
           // TODO: run updateSvgOutputs thru this
           updateEditorSvg(editorId, svgCode) {
-            const config = get().actions.getConfig();
+            const config = get().actions.getConfig()
 
-            const groups = produce(get().groups, (draft) => {
+            const groups = produce(get().groups, draft => {
               for (const group of draft) {
                 for (const [id, editorData] of group.editors) {
-                  if (id !== editorId) continue;
+                  if (id !== editorId) continue
 
                   const svg = transformSvg(
                     svgCode ?? editorData.svg.original,
                     config,
                     { title: editorData.title }
-                  );
+                  )
 
                   editorData.svg = {
                     ...editorData.svg,
                     ...svg,
                     log: svg.log,
-                    original: editorData.svg.original || (svgCode ?? ""),
-                  } satisfies SVGData;
+                    original: editorData.svg.original || (svgCode ?? ''),
+                  } satisfies SVGData
 
                   editorData.view = {
                     ...editorData.view,
-                    doc: svgCode ?? editorData.view?.doc ?? "",
-                  } satisfies EditorState[1]["view"];
+                    doc: svgCode ?? editorData.view?.doc ?? '',
+                  } satisfies EditorState[1]['view']
 
-                  return;
+                  return
                 }
               }
-            }) satisfies Group[];
+            }) satisfies Group[]
 
-            set({ groups });
-            get().actions.refreshGroup();
+            set({ groups })
+            get().actions.refreshGroup()
           },
 
           updateSvgOutputs() {
-            const activeGroupId = get().activeGroupId;
-            const config = get().actions.getConfig();
+            const activeGroupId = get().activeGroupId
+            const config = get().actions.getConfig()
 
             // const transformSvg = doTransformSvg(config ?? get().config);
-            const groups = get().groups.map((group) =>
+            const groups = get().groups.map(group =>
               group.id === activeGroupId
                 ? {
                     ...group,
-                    editors: group.editors.map((editor) => {
-                      const editorData = editor[1];
+                    editors: group.editors.map(editor => {
+                      const editorData = editor[1]
                       const svg = transformSvg(
                         editorData.view?.doc ?? editorData.svg.original,
                         config,
                         { title: editorData.title }
-                      );
+                      )
                       return [
                         editor[0],
                         {
@@ -263,113 +262,113 @@ export const useAppStore = create<
                             log: svg.log,
                           },
                         },
-                      ] satisfies EditorState;
+                      ] satisfies EditorState
                     }),
                   }
                 : group
-            );
+            )
 
-            set({ groups });
-            get().actions.refreshGroup();
+            set({ groups })
+            get().actions.refreshGroup()
           },
 
           updateGroupTitle(groupId, title) {
             set({
-              groups: get().groups.map((group) =>
+              groups: get().groups.map(group =>
                 groupId !== group.id ? group : { ...group, title: title.trim() }
               ),
-            });
+            })
 
-            get().actions.refreshGroup();
+            get().actions.refreshGroup()
           },
 
           autoSetIconType: () => {
             const editors = get()
               .actions.getEditors()
-              .filter((e) => e[1].svg.output.includes("<svg"));
+              .filter(e => e[1].svg.output.includes('<svg'))
 
             const isOutlined =
               editors.filter(([, data]) =>
                 (data.svg.log ?? []).some(
-                  (l) => l.type === "data.type" && l.msg === "outlined"
+                  l => l.type === 'data.type' && l.msg === 'outlined'
                 )
               ).length >=
-              editors.length / 2;
+              editors.length / 2
 
-            const currentValue = get().actions.getConfig().iconSetType;
+            const currentValue = get().actions.getConfig().iconSetType
             if (isOutlined) {
-              if (currentValue === "outlined") return;
-              get().actions.setConfig({ iconSetType: "outlined" });
+              if (currentValue === 'outlined') return
+              get().actions.setConfig({ iconSetType: 'outlined' })
             }
             if (!isOutlined) {
-              if (currentValue === "solid") return;
-              get().actions.setConfig({ iconSetType: "solid" });
+              if (currentValue === 'solid') return
+              get().actions.setConfig({ iconSetType: 'solid' })
             }
           },
 
           refreshGroup: () => {
             // On refresh change the hash and update the type config
-            get().actions.autoSetIconType();
-            set({ updateListHash: hashCode(newId()) });
+            get().actions.autoSetIconType()
+            set({ updateListHash: hashCode(newId()) })
           },
 
           getEditors: () => {
-            const activeGroupId = get().activeGroupId;
+            const activeGroupId = get().activeGroupId
 
             return (
               get()
-                .groups.find((g) => g.id === activeGroupId)
-                ?.editors.filter((e) => Boolean(!e[1].isDeleted)) ?? []
-            );
+                .groups.find(g => g.id === activeGroupId)
+                ?.editors.filter(e => Boolean(!e[1].isDeleted)) ?? []
+            )
           },
 
-          getEditorById: (editorId) =>
+          getEditorById: editorId =>
             get()
               .actions.getEditors()
-              .find((e) => e[0] === editorId),
+              .find(e => e[0] === editorId),
 
           getSvgsFromGroupId(groupId: string) {
             const svgs = (
-              get().groups.find((g) => g.id === groupId)?.editors ?? []
+              get().groups.find(g => g.id === groupId)?.editors ?? []
             )
               .map(([, data]) =>
-                data.svg.output.startsWith("<svg") ? data.svg.output : null
+                data.svg.output.startsWith('<svg') ? data.svg.output : null
               )
               .filter(Boolean)
-              .join("\n");
-            return svgs;
+              .join('\n')
+            return svgs
           },
 
           getGroup() {
-            const activeGroupId = get().activeGroupId;
+            const activeGroupId = get().activeGroupId
             return get()
               .actions.getGroups()
-              .find((g) => g.id === activeGroupId);
+              .find(g => g.id === activeGroupId)
           },
 
           addEditor: (input, title, toGroupId) => {
             const groupAddingTo =
               // (toGroupId ?? activeGroupId) === undefined
               // ? addGroup()?.id:
-              toGroupId ?? get().activeGroupId;
+              toGroupId ?? get().activeGroupId
 
-            const isSvg = input.includes("<svg");
+            const isSvg = input.includes('<svg')
 
             const newEditor = isSvg
               ? initialEditorData(
                   {
                     ...transformSvg(input, get().actions.getConfig(), {
-                      title: title ?? "",
+                      title: title ?? '',
                     }),
                     original: input,
                   },
                   title
                 )
-              : initialEditorData(undefined, input);
-            const newEditorId = newEditor[0]; // Get id for scroll use
+              : initialEditorData(undefined, input)
+            const newEditorId = newEditor[0] // Get id for scroll use
 
             // TODO: Rewrite this to use immer
-            const newGroups: Group[] = [];
+            const newGroups: Group[] = []
 
             // if (get().groups.length === 0) {
             //   // get current editors
@@ -394,8 +393,8 @@ export const useAppStore = create<
 
             for (const group of get().groups) {
               if (groupAddingTo !== group.id) {
-                newGroups.push(group);
-                continue;
+                newGroups.push(group)
+                continue
               }
 
               // const newEditor = isSvg
@@ -405,199 +404,199 @@ export const useAppStore = create<
               newGroups.push({
                 ...group,
                 editors: [...group.editors, newEditor],
-              });
+              })
 
-              break;
+              break
             }
 
-            set({ groups: newGroups });
-            get().actions.refreshGroup();
+            set({ groups: newGroups })
+            get().actions.refreshGroup()
 
             return {
               scrollTo: () => {
                 setTimeout(() => {
                   document
                     .querySelector(`#${newEditorId}`)
-                    ?.scrollIntoView({ behavior: "smooth" });
-                }, 0);
+                    ?.scrollIntoView({ behavior: 'smooth' })
+                }, 0)
               },
-            };
+            }
           },
 
           addEditorAtIndex: (index, editor) => {
-            const newEditor = editor ?? initialEditorData();
-            const newEditorId = newEditor[0]; // Get id for scroll use
+            const newEditor = editor ?? initialEditorData()
+            const newEditorId = newEditor[0] // Get id for scroll use
 
-            const newGroups: Group[] = [];
+            const newGroups: Group[] = []
 
-            const activeGroupId = get().activeGroupId;
+            const activeGroupId = get().activeGroupId
 
             for (const group of get().groups) {
               if (activeGroupId !== group.id) {
-                newGroups.push(group);
-                continue;
+                newGroups.push(group)
+                continue
               }
 
-              const newEditors = [...group.editors];
-              newEditors.splice(index, 0, newEditor);
+              const newEditors = [...group.editors]
+              newEditors.splice(index, 0, newEditor)
 
-              newGroups.push({ ...group, editors: newEditors });
+              newGroups.push({ ...group, editors: newEditors })
             }
 
-            set({ groups: newGroups });
-            get().actions.refreshGroup();
+            set({ groups: newGroups })
+            get().actions.refreshGroup()
 
             return {
               scrollTo: () => {
                 setTimeout(() => {
                   document
                     .querySelector(`#${newEditorId}`)
-                    ?.scrollIntoView({ behavior: "smooth" });
-                }, 0);
+                    ?.scrollIntoView({ behavior: 'smooth' })
+                }, 0)
               },
-            };
+            }
           },
 
           removeEditor: (id, shouldRefresh = true) => {
-            const activeGroupId = get().activeGroupId;
+            const activeGroupId = get().activeGroupId
 
-            const newGroups = produce(get().groups, (group) => {
-              const groupIndex = group.findIndex((g) => g.id === activeGroupId);
+            const newGroups = produce(get().groups, group => {
+              const groupIndex = group.findIndex(g => g.id === activeGroupId)
               group[groupIndex].editors = produce(
                 group[groupIndex].editors,
-                (editor) => {
-                  const editorIndex = editor.findIndex((e) => e[0] === id);
-                  editor[editorIndex][1].isDeleted = true;
+                editor => {
+                  const editorIndex = editor.findIndex(e => e[0] === id)
+                  editor[editorIndex][1].isDeleted = true
                 }
-              );
-            });
+              )
+            })
 
-            set({ groups: newGroups });
+            set({ groups: newGroups })
 
-            shouldRefresh && get().actions.refreshGroup();
+            shouldRefresh && get().actions.refreshGroup()
           },
 
           clearEditors: () => {
-            const activeGroupId = get().activeGroupId;
+            const activeGroupId = get().activeGroupId
 
-            const newGroups = produce(get().groups, (group) => {
-              const groupIndex = group.findIndex((g) => g.id === activeGroupId);
-              group[groupIndex].editors = [];
-            });
+            const newGroups = produce(get().groups, group => {
+              const groupIndex = group.findIndex(g => g.id === activeGroupId)
+              group[groupIndex].editors = []
+            })
 
-            set({ groups: newGroups });
+            set({ groups: newGroups })
 
-            get().actions.refreshGroup();
+            get().actions.refreshGroup()
           },
 
-          undoRemoveEditor: (id) => {
-            const activeGroupId = get().activeGroupId;
+          undoRemoveEditor: id => {
+            const activeGroupId = get().activeGroupId
 
-            const newGroups = produce(get().groups, (group) => {
-              const groupIndex = group.findIndex((g) => g.id === activeGroupId);
+            const newGroups = produce(get().groups, group => {
+              const groupIndex = group.findIndex(g => g.id === activeGroupId)
               group[groupIndex].editors = produce(
                 group[groupIndex].editors,
-                (editor) => {
-                  const editorIndex = editor.findIndex((e) => e[0] === id);
-                  editor[editorIndex][1].isDeleted = false;
+                editor => {
+                  const editorIndex = editor.findIndex(e => e[0] === id)
+                  editor[editorIndex][1].isDeleted = false
                 }
-              );
-            });
+              )
+            })
 
-            set({ groups: newGroups });
+            set({ groups: newGroups })
 
-            get().actions.refreshGroup();
+            get().actions.refreshGroup()
           },
 
           cleanEditors: () => {
-            const activeGroupId = get().activeGroupId;
-            const newGroups = get().groups.map((group) => {
-              if (activeGroupId !== group.id) return group;
+            const activeGroupId = get().activeGroupId
+            const newGroups = get().groups.map(group => {
+              if (activeGroupId !== group.id) return group
               const newGroup = {
                 ...group,
                 editors: group.editors.filter(
-                  (editor) =>
-                    (editor[1].svg.output !== "" &&
-                      editor[1].svg.output.includes("<svg")) ||
+                  editor =>
+                    (editor[1].svg.output !== '' &&
+                      editor[1].svg.output.includes('<svg')) ||
                     editor[1].isDeleted
                 ),
-              };
-              return newGroup;
-            });
-            set({ groups: newGroups });
+              }
+              return newGroup
+            })
+            set({ groups: newGroups })
 
-            get().actions.refreshGroup();
+            get().actions.refreshGroup()
           },
 
           getEditorIndexById(editorId) {
             const index = get()
               .actions.getEditors()
-              .findIndex((e) => e[0] === editorId);
+              .findIndex(e => e[0] === editorId)
 
-            if (index < 0) return;
-            return index;
+            if (index < 0) return
+            return index
           },
 
           setEditorOrderByIds(editorKeys) {
-            const activeGroupId = get().activeGroupId;
+            const activeGroupId = get().activeGroupId
 
             const sortEditorsByEditorKeys = (
               a: EditorState,
               b: EditorState
             ) => {
-              const x = editorKeys.indexOf(a[0]);
-              const y = editorKeys.indexOf(b[0]);
-              if (x > y) return 1;
-              if (x < y) return -1;
-              return 0;
-            };
+              const x = editorKeys.indexOf(a[0])
+              const y = editorKeys.indexOf(b[0])
+              if (x > y) return 1
+              if (x < y) return -1
+              return 0
+            }
 
-            const groups = get().groups.map((group) => {
-              if (activeGroupId !== group.id) return group;
+            const groups = get().groups.map(group => {
+              if (activeGroupId !== group.id) return group
 
               const resorted = group.editors
                 .slice()
-                .sort(sortEditorsByEditorKeys);
+                .sort(sortEditorsByEditorKeys)
 
-              const newGroup = { ...group, editors: resorted };
-              return newGroup;
-            });
+              const newGroup = { ...group, editors: resorted }
+              return newGroup
+            })
 
-            set({ groups });
+            set({ groups })
             setTimeout(() => {
-              get().actions.refreshGroup();
-            }, 0);
+              get().actions.refreshGroup()
+            }, 0)
           },
 
           updateEditorTitle: (id: string, title: string) => {
-            const activeGroupId = get().activeGroupId;
-            const groups = get().groups.map((group) => {
-              if (activeGroupId !== group.id) return group;
+            const activeGroupId = get().activeGroupId
+            const groups = get().groups.map(group => {
+              if (activeGroupId !== group.id) return group
               const newGroup = {
                 ...group,
-                editors: group.editors.map((editor) => {
+                editors: group.editors.map(editor => {
                   if (editor[0] === id)
                     return [
                       id,
                       { ...editor[1], title: title.toLowerCase().trim() },
-                    ] satisfies EditorState;
-                  return editor;
+                    ] satisfies EditorState
+                  return editor
                 }),
-              };
-              return newGroup;
-            });
-            set({ groups });
+              }
+              return newGroup
+            })
+            set({ groups })
           },
         },
       }),
       {
-        name: "iconish",
+        name: 'iconish',
         partialize: ({ actions: _, ...rest }) => rest,
-        onRehydrateStorage: () => (state) => {
-          state?.actions.setHydrated();
+        onRehydrateStorage: () => state => {
+          state?.actions.setHydrated()
         },
         // storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
       }
     )
   )
-);
+)

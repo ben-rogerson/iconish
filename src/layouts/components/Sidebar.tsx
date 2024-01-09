@@ -1,25 +1,25 @@
-import { MenuIcon } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useAppStore } from "@/hooks/appState";
+import { MenuIcon } from 'lucide-react'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { useAppStore } from '@/hooks/appState'
 
 export const WithMobileSidebar = ({
   children,
   sidebarContent: SidebarContent,
 }: {
-  children: React.ReactNode;
-  sidebarContent: () => JSX.Element;
+  children: React.ReactNode
+  sidebarContent: () => JSX.Element
 }) => {
-  const { groups } = useAppStore((s) => s);
+  const { groups } = useAppStore(s => s)
   return (
     <>
       <Sheet>
         <SheetTrigger
-          className="fixed top-7 right-5"
+          className="fixed right-5 top-7"
           aria-label="View icon sets"
         >
           <MenuIcon size={24} />
           {groups.length > 1 && (
-            <div className="text-xs absolute -right-1.5 -top-1.5 rounded-full bg-[--page-bg] px-1">
+            <div className="absolute -right-1.5 -top-1.5 rounded-full bg-[--page-bg] px-1 text-xs">
               {groups.length}
             </div>
           )}
@@ -34,8 +34,8 @@ export const WithMobileSidebar = ({
       </Sheet>
       {children}
     </>
-  );
-};
+  )
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -43,8 +43,8 @@ const WithDesktopSidebar = ({
   children,
   sidebarContent: SidebarContent,
 }: {
-  children: React.ReactNode;
-  sidebarContent: () => JSX.Element;
+  children: React.ReactNode
+  sidebarContent: () => JSX.Element
 }) => {
   return (
     // style used from here -> https://github.com/shadcn-ui/ui/blob/1cf5fad881b1da8f96923b7ad81d22d0aa3574b9/apps/www/app/docs/layout.tsx#L12
@@ -56,19 +56,19 @@ const WithDesktopSidebar = ({
       </aside>
       {children}
     </div>
-  );
-};
+  )
+}
 
 export const Sidebar = ({
   children,
   ...props
 }: {
-  children: React.ReactNode;
-  sidebarContent: () => JSX.Element;
+  children: React.ReactNode
+  sidebarContent: () => JSX.Element
 }) => {
   return (
     <WithDesktopSidebar {...props}>
       <WithMobileSidebar {...props}>{children}</WithMobileSidebar>
     </WithDesktopSidebar>
-  );
-};
+  )
+}

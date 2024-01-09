@@ -1,31 +1,31 @@
-import { memo, useState } from "react";
+import { memo, useState } from 'react'
 
 export const useEditor = (initialValue?: string) => {
-  const [value, setValue] = useState(initialValue ?? "");
+  const [value, setValue] = useState(initialValue ?? '')
 
   const onChange = (v: string) => {
-    setValue(v.trim());
-  };
+    setValue(v.trim())
+  }
 
-  return { onChange, value };
-};
+  return { onChange, value }
+}
 
 const Wrap = memo(function Wrap(props: {
-  wordWrap: boolean;
-  setWordWrap: (checked: boolean) => void;
+  wordWrap: boolean
+  setWordWrap: (checked: boolean) => void
 }) {
   return (
-    <label className="text-base flex items-center gap-2 text-[--text-muted] hover:text-[--text] cursor-pointer select-none">
+    <label className="flex cursor-pointer select-none items-center gap-2 text-base text-[--text-muted] hover:text-[--text]">
       <input
         checked={props.wordWrap}
         className="hidden"
-        onChange={(e) => {
-          props.setWordWrap(e.target.checked);
+        onChange={e => {
+          props.setWordWrap(e.target.checked)
         }}
         type="checkbox"
       />
       <svg
-        className="w-[1em] h-[1em] text-lg"
+        className="h-[1em] w-[1em] text-lg"
         fill="none"
         stroke="currentColor"
         strokeLinecap="round"
@@ -42,16 +42,16 @@ const Wrap = memo(function Wrap(props: {
       </svg>
       Wrap
     </label>
-  );
-});
+  )
+})
 
 export const useEditorWrap: (
   initialValue: boolean
-) => [boolean, () => JSX.Element] = (initialValue) => {
-  const [wordWrap, setWordWrap] = useState(initialValue);
+) => [boolean, () => JSX.Element] = initialValue => {
+  const [wordWrap, setWordWrap] = useState(initialValue)
 
   return [
     wordWrap,
     () => <Wrap wordWrap={wordWrap} setWordWrap={setWordWrap} />,
-  ];
-};
+  ]
+}

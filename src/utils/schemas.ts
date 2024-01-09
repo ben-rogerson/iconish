@@ -1,7 +1,7 @@
 /* v8 ignore start */
 
-import { configSchema } from "@/feature/config/schemas";
-import z from "zod";
+import { configSchema } from '@/feature/config/schemas'
+import z from 'zod'
 
 const viewSchema = z.object({
   doc: z.string(),
@@ -15,12 +15,12 @@ const viewSchema = z.object({
       z.null(),
     ])
     .optional(),
-});
+})
 
 const svgLogItem = z.object({
   msg: z.string(),
-  type: z.enum(["success", "error", "debug", "info", "data.type"]),
-});
+  type: z.enum(['success', 'error', 'debug', 'info', 'data.type']),
+})
 
 const svgSchema = z.object({
   // symbolReference: z.string(),
@@ -28,7 +28,7 @@ const svgSchema = z.object({
   output: z.string(),
   original: z.string(),
   log: z.array(svgLogItem).optional(),
-});
+})
 
 const editorSchema = z.tuple([
   z.string(),
@@ -38,7 +38,7 @@ const editorSchema = z.tuple([
     svg: svgSchema,
     view: z.union([viewSchema, z.null()]),
   }),
-]);
+])
 
 const groupSchema = z.object({
   id: z.string(),
@@ -46,15 +46,15 @@ const groupSchema = z.object({
   createdAt: z.number(),
   config: configSchema,
   editors: z.array(editorSchema),
-});
+})
 
-const activeGroupIdSchema = z.string();
-const groupsSchema = z.array(groupSchema);
+const activeGroupIdSchema = z.string()
+const groupsSchema = z.array(groupSchema)
 
 const appStateSchema = z.object({
   activeGroupId: activeGroupIdSchema,
   groups: groupsSchema,
-});
+})
 
 export {
   appStateSchema,
@@ -65,4 +65,4 @@ export {
   groupSchema,
   activeGroupIdSchema,
   groupsSchema,
-};
+}
