@@ -6,12 +6,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "tsc && next lint",
+    "lint": "tsc && next lint --fix",
     "test": "vitest run",
     "test:ui": "vitest --ui",
     "test:e2e": "npx playwright test --ui",
     "test:comp": "npx playwright test ComponentTest --ui",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "eslint --ext .ts,.tsx,.js --fix",
+      "prettier --cache --write"
+    ]
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.11.1",
@@ -88,6 +95,7 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.2.2",
     "vite": "^5.0.8",
-    "vitest": "^1.0.4"
+    "vitest": "^1.0.4",
+    "husky": "^8.0.0"
   }
 }
