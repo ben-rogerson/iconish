@@ -38,6 +38,7 @@ import {
 import { SortableItem } from "@/components/SortableItem";
 import type { VirtuosoHandle } from "react-virtuoso";
 import { relativeTime } from "@/utils/relativeTime";
+import { SheetClose } from "@/components/ui/sheet";
 
 export function Menu(props: {
   title: string;
@@ -252,33 +253,37 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
               </button> */}
           </div>
           {!props.isHeader && (
-            <button
-              type="button"
-              onClick={() => {
-                handleSelectGroup(props.id);
-              }}
-              className={tw(
-                "absolute inset-0 z-0 cursor-pointer rounded-lg border opacity-0",
-                "hover:opacity-50 group-focus-within:opacity-50 group-hover:opacity-50",
-                props.isCurrent && "opacity-50"
-              )}
-            />
+            <SheetClose asChild>
+              <button
+                type="button"
+                onClick={() => {
+                  handleSelectGroup(props.id);
+                }}
+                className={tw(
+                  "absolute inset-0 z-0 cursor-pointer rounded-lg border opacity-0",
+                  "hover:opacity-50 group-focus-within:opacity-50 group-hover:opacity-50",
+                  props.isCurrent && "opacity-50"
+                )}
+              />
+            </SheetClose>
           )}
         </div>
       )}
       {!props.isHeader && Boolean(!hasIcons) && (
         <div className="z-10 grid place-content-center text-center relative p-10">
           <div className="text-sm">No icons yet</div>
-          <button
-            type="button"
-            onClick={() => {
-              handleSelectGroup(props.id);
-            }}
-            className={tw(
-              "absolute inset-0 z-0 cursor-pointer rounded-lg border border-dashed",
-              props.isCurrent && "opacity-50"
-            )}
-          />
+          <SheetClose asChild>
+            <button
+              type="button"
+              onClick={() => {
+                handleSelectGroup(props.id);
+              }}
+              className={tw(
+                "absolute inset-0 z-0 cursor-pointer rounded-lg border border-dashed",
+                props.isCurrent && "opacity-50"
+              )}
+            />
+          </SheetClose>
         </div>
       )}
     </article>
