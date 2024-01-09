@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { Editors } from "@/feature/editor/components/Editors";
-import { useAppActions, useAppStore } from "@/hooks/appState";
+import { useAppActions } from "@/hooks/appState";
 import { GroupSet } from "@/components/GroupSet";
 import { ConfigPanel } from "@/feature/config/components/ConfigPanel";
 import { type VirtuosoHandle } from "react-virtuoso";
@@ -9,18 +9,19 @@ import { type VirtuosoHandle } from "react-virtuoso";
  * Update the group list when the hash changes.
  * This is a hack to get around the fact that getGroup is not reactive.
  */
-const useGroupRender = () => {
-  const { getGroup } = useAppActions();
-  const hash = useAppStore((s) => s.updateListHash);
-  const [group, setGroup] = useState(getGroup());
-  useEffect(() => {
-    setGroup(getGroup());
-  }, [hash, getGroup]);
-  return group;
-};
+// const useGroupRender = () => {
+//   const { getGroup } = useAppActions();
+//   const hash = useAppStore((s) => s.updateListHash);
+//   const [group, setGroup] = useState(getGroup());
+//   useEffect(() => {
+//     setGroup(getGroup());
+//   }, [hash, getGroup]);
+//   return group;
+// };
 
 const Detail = () => {
-  const group = useGroupRender();
+  const { getGroup } = useAppActions();
+  const group = getGroup();
   // TODO: Move this ref to a provider?
   const virtualListRef = useRef<VirtuosoHandle>(null);
 

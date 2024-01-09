@@ -11,7 +11,15 @@ import { useAppActions, useAppStore } from "@/hooks/appState";
 import { cn, tw } from "@/lib/utils";
 import { run } from "@/utils/run";
 import type { MutableRefObject } from "react";
-import { Fragment, memo, useMemo, useRef } from "react";
+import {
+  Fragment,
+  memo,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import validateColor from "validate-color";
 import debounce from "lodash/debounce";
 import type { DebouncedFunc } from "lodash";
@@ -419,6 +427,7 @@ export const ConfigPanel = () => {
   const mainItems = useMainItems();
   const moreItems = useMoreItems();
   const { getConfig, resetConfig } = useAppActions();
+  const [key, setKey] = useState(Date.now());
 
   // const handleSaveConfig = () => {
   //   let theDate = new Date();
@@ -443,15 +452,20 @@ export const ConfigPanel = () => {
   //   console.log("TODO: handleLoadConfig");
   // };
 
+  const handleResetConfig = () => {
+    resetConfig();
+    setKey(Date.now());
+  };
+
   return (
     <div
       className="group/config flex w-full grid-cols-4 items-center gap-10"
-      key={`group-${activeGroupId}`}
+      key={`group-${activeGroupId}-${key}`}
     >
       <div>{getConfig().iconSetType} set</div>
       <FormItems items={mainItems} />
       <FormItems items={moreItems} />
-      <button type="button" onClick={resetConfig}>
+      <button type="button" onClick={handleResetConfig}>
         <RotateCw />
       </button>
       {/* <div className="flex gap-2 text-[--text-muted]">
