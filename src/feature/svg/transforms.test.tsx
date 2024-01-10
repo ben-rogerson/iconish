@@ -386,7 +386,7 @@ describe('strokeColorTransform', () => {
     )
   })
 
-  it.only('should not update stroke attribute when already set to the initial value', () => {
+  it('should not update stroke attribute when already set to the initial value', () => {
     const outputSolid = transform(
       strokeColorTransform,
       '<svg stroke="currentColor"><path stroke="currentColor"/></svg>',
@@ -537,20 +537,20 @@ describe('fillColorTransform', () => {
     )
   })
 
-  it('should make updates if there are elements with different fill values but they fall under "currentColor, inherit, initial, transparent, unset, 0"', () => {
+  it('should make updates if there are elements with different fill values but not when they fall under "currentColor, inherit, initial, transparent, unset, 0"', () => {
     const outputSolid = transform(
       fillColorTransform,
-      '<svg fill="unset"><path fill="currentColor" /><path fill="inherit" /><path fill="initial" /><path fill="transparent" /><path fill="unset" /><path fill="0" /><path fill="blue"></svg>',
-      { iconSetType: 'solid' }
+      '<svg fill="unset"><path fill="currentColor" /><path fill="inherit" /><path fill="initial" /><path fill="transparent" /><path fill="unset" /><path fill="0" /><path fill="blue" /></svg>',
+      { iconSetType: 'solid', fill: 'new-color' }
     )
     const outputOutlined = transform(
       fillColorTransform,
-      '<svg fill="unset"><path fill="currentColor" /><path fill="inherit" /><path fill="initial" /><path fill="transparent" /><path fill="unset" /><path fill="0" /><path fill="blue"></svg>',
-      { iconSetType: 'outlined' }
+      '<svg fill="unset"><path fill="currentColor" /><path fill="inherit" /><path fill="initial" /><path fill="transparent" /><path fill="unset" /><path fill="0" /><path fill="blue" /></svg>',
+      { iconSetType: 'outlined', fill: 'new-color' }
     )
 
     expect(outputSolid.outerHTML).toMatchInlineSnapshot(
-      `"<svg fill="unset"><path fill="currentColor"></path><path fill="currentColor"></path><path fill="currentColor"></path><path fill="currentColor"></path><path fill="currentColor"></path><path fill="currentColor"></path><path fill="currentColor"></path></svg>"`
+      `"<svg fill="unset"><path fill="currentColor"></path><path fill="inherit"></path><path fill="initial"></path><path fill="transparent"></path><path fill="unset"></path><path fill="0"></path><path fill="new-color"></path></svg>"`
     )
     expect(outputOutlined.outerHTML).toMatchInlineSnapshot(
       `"<svg fill="unset"><path fill="currentColor"></path><path fill="inherit"></path><path fill="initial"></path><path fill="transparent"></path><path fill="unset"></path><path fill="0"></path><path fill="blue"></path></svg>"`
