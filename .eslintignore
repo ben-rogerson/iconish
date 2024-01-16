@@ -1,2 +1,4 @@
 .eslintrc.js
 postcss.config.js
+next.config.mjs
+.dockerignore

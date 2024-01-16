@@ -28,6 +28,8 @@ const config = {
 
     return config
   },
+
+  output: 'standalone',
 }
 
 export default config
