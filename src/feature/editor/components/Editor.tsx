@@ -84,39 +84,10 @@ const Log = (props: { logItems: EditorProps['data']['svg']['log'] }) => {
   )
 }
 
-const useExpandable = () => {
-  const [isCollapsed, setIsCollapsed] = useState(true)
-
-  return {
-    isCollapsed,
-    Expandable: (props: { children: React.ReactNode }) => (
-      <div className={cn({ 'max-h-60 overflow-hidden': isCollapsed })}>
-        {props.children}
-      </div>
-    ),
-    Expander: (props: { className?: string }) => (
-      <button
-        type="button"
-        onClick={() => {
-          setIsCollapsed(c => !c)
-        }}
-        className={props.className}
-      >
-        expand
-      </button>
-    ),
-  }
-}
-
 const Editor = (props: EditorProps) => {
   const { toast } = useToast()
   const { removeEditor, undoRemoveEditor, updateEditorSvg } = useAppActions()
-  // const [hasWordWrapIn, WordWrapIn] = useEditorWrap(false);
-  // const [hasWordWrapOut, WordWrapOut] = useEditorWrap(true);
   const [, copy] = useCopyToClipboard()
-
-  const { Expandable, Expander } = useExpandable()
-  const { Expandable: ExpandableOut, Expander: ExpanderOut } = useExpandable()
 
   const sanitizedSvg = useMemo(
     () => doSanitizeSvg(props.data.view?.doc ?? ''),
@@ -182,19 +153,13 @@ const Editor = (props: EditorProps) => {
               </div>
             )} */}
 
-            <Expandable>
-              <CodeMirror
-                extensions={[
-                  javascript({ jsx: true }),
-                  EditorView.lineWrapping,
-                ]}
-                onChange={handleOnChange}
-                theme={vscodeDark}
-                value={props.data.view?.doc ?? ''}
-                editable={false}
-              />
-            </Expandable>
-            <Expander />
+            <CodeMirror
+              extensions={[javascript({ jsx: true }), EditorView.lineWrapping]}
+              onChange={handleOnChange}
+              theme={vscodeDark}
+              value={props.data.view?.doc ?? ''}
+              editable={false}
+            />
           </div>
         </div>
       </div>
@@ -231,19 +196,16 @@ const Editor = (props: EditorProps) => {
                   <WordWrapOut />
                 </div>
               )} */}
-            <ExpandableOut>
-              <CodeMirror
-                extensions={[
-                  javascript({ jsx: true }),
-                  EditorView.editable.of(false),
-                  EditorView.lineWrapping,
-                ]}
-                theme={vscodeDark}
-                value={props.data.svg.output}
-                // onUpdate={handleOnUpdateOut}
-              />
-            </ExpandableOut>
-            <ExpanderOut />
+            <CodeMirror
+              extensions={[
+                javascript({ jsx: true }),
+                EditorView.editable.of(false),
+                EditorView.lineWrapping,
+              ]}
+              theme={vscodeDark}
+              value={props.data.svg.output}
+              // onUpdate={handleOnUpdateOut}
+            />
           </div>
         </div>
         <div className="rounded-b border border-t-0">
