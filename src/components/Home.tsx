@@ -15,9 +15,12 @@ const Home = () => {
     setIsClient(true)
   }, [])
 
-  if (!isClient || !hasHydrated) {
-    return <div>Loading...</div>
-  }
+  if (!isClient || !hasHydrated)
+    return (
+      <div className="grid h-screen w-full place-content-center p-10">
+        <span className="loader" />
+      </div>
+    )
 
   return (
     <WithMobileSidebar sidebarContent={List}>
