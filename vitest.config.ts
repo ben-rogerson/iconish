@@ -22,6 +22,7 @@ const alias: AliasOptions = Object.entries(compilerOptions.paths).reduce(
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: { alias },
   test: {
     // root: "src",
     globals: true,
@@ -33,5 +34,4 @@ export default defineConfig({
     //   enabled: true,
     // },
   },
-  resolve: { alias },
 })

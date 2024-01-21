@@ -10,13 +10,15 @@ const setupFirstEditor = async (page: Page) => {
   await expect(addButton).toHaveCount(0)
 
   // Add an editor to enable the add buttons
-  const addSvgButton = page.getByRole('button', { name: 'Bug' })
+  const addSvgButton = page.getByRole('button', {
+    name: 'Or try a random icon',
+  })
   await addSvgButton.click()
   await expect(page.getByRole('article', { name: 'editor' })).toHaveCount(1)
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/')
+  await page.goto('http://localhost:3000/')
 })
 
 test('should have a preview area and not a code editor by default', async ({
@@ -104,7 +106,7 @@ test('a svg can be added via the test buttons', async ({ page }) => {
   await page
     .getByRole('article', { name: 'preview' })
     .first()
-    .getByRole('button', { name: 'Bug' })
+    .getByRole('button', { name: 'Or try a random icon' })
     .first()
     .click()
 
