@@ -49,10 +49,10 @@ export default defineConfig({
 
     baseURL: 'http://127.0.0.1:3000',
 
-    ctViteConfig: {
-      plugins: [react()],
-      resolve: { alias },
-    },
+    // ctViteConfig: {
+    //   plugins: [react()],
+    //   resolve: { alias },
+    // },
   },
 
   /* Configure projects for major browsers */
