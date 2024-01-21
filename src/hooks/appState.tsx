@@ -466,7 +466,8 @@ export const useAppStore = create<
                 group[groupIndex].editors,
                 editor => {
                   const editorIndex = editor.findIndex(e => e[0] === id)
-                  editor[editorIndex][1].isDeleted = true
+                  if (editor[editorIndex])
+                    editor[editorIndex][1].isDeleted = true
                 }
               )
             })
