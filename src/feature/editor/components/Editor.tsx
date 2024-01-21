@@ -105,7 +105,7 @@ const Editor = (props: EditorProps) => {
   }
 
   return (
-    <div className="relative">
+    <div className="group/editor relative">
       <div className="grid gap-3">
         <div className="grid grid-cols-2">
           <div className="absolute right-0 top-3">

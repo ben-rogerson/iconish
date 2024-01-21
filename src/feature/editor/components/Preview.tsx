@@ -98,7 +98,7 @@ const Preview = memo(function Preview(props: PreviewProps) {
   }
 
   return (
-    <div className="relative">
+    <div className="group/editor relative">
       <div className="grid gap-3">
         {Boolean(props.showRemove) && (
           <div className="absolute right-2 top-5">
