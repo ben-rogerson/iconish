@@ -24,8 +24,8 @@ export const RemoveButton: FunctionComponent<{
       />
       <div
         className={tw([
-          'text-[--button-text-hover]',
-          // "hover:text-[--button-text-hover]",
+          'text-[--button-text]',
+          'group-hover/button:text-[--button-text-hover]',
           'text-md pointer-events-none relative z-0',
         ])}
       >

@@ -45,30 +45,36 @@ const AddIconInput = forwardRef<
 
 AddIconInput.displayName = 'AddIconInput'
 
+function getRandomIntInclusive(min: number, max: number) {
+  min = Math.ceil(min)
+  max = Math.floor(max)
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
 const examples = [
   ['bug', { code: bugIcon, display: bugItemDisplay }],
   ['burd', { code: flyaway, display: flyawayIconDisplay }],
   ['cookie', { code: cookie, display: cookieIconDisplay }],
 ] as const
 
-type ExampleItem = {
-  onClick: () => void
-  svg: JSX.Element
-  title: string
-}
+// type ExampleItem = {
+//   onClick: () => void
+//   svg: JSX.Element
+//   title: string
+// }
 
-function ExampleItem(props: ExampleItem) {
-  return (
-    <button
-      type="button"
-      onClick={props.onClick}
-      className="inline-flex gap-1 p-4"
-    >
-      {props.svg}
-      <span>{props.title}</span>
-    </button>
-  )
-}
+// function ExampleItem(props: ExampleItem) {
+//   return (
+//     <button
+//       type="button"
+//       onClick={props.onClick}
+//       className="inline-flex gap-1 p-4"
+//     >
+//       {props.svg}
+//       <span>{props.title}</span>
+//     </button>
+//   )
+// }
 
 const Preview = memo(function Preview(props: PreviewProps) {
   const { removeEditor, updateEditorSvg, addEditor } = useAppActions()
@@ -84,18 +90,23 @@ const Preview = memo(function Preview(props: PreviewProps) {
     })
   }
 
+  const handleAddRandomIcon = () => {
+    const randomIndex = getRandomIntInclusive(0, examples.length - 1)
+    const example = examples[randomIndex]
+    addEditor(example[1].code, example[0])
+    removeEditor(props.id)
+  }
+
   return (
     <div className="relative">
       <div className="grid gap-3">
         {Boolean(props.showRemove) && (
-          <div className="grid grid-cols-2">
-            <div className="absolute right-2 top-5">
-              <RemoveButton
-                onClick={() => {
-                  removeEditor(props.id)
-                }}
-              />
-            </div>
+          <div className="absolute right-2 top-5">
+            <RemoveButton
+              onClick={() => {
+                removeEditor(props.id)
+              }}
+            />
           </div>
         )}
         <div className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] rounded border md:grid">
@@ -115,8 +126,10 @@ const Preview = memo(function Preview(props: PreviewProps) {
                   onUpload={handleOnUpload}
                 />
                 <div className="inline-flex items-center">
-                  <div className="mr-3">Or add a</div>
-                  {examples.map(item => (
+                  <button type="button" onClick={handleAddRandomIcon}>
+                    Or try a random icon
+                  </button>
+                  {/* {examples.map(item => (
                     <ExampleItem
                       onClick={() => {
                         handleUpdateEditor(item[1].code)
@@ -125,7 +138,7 @@ const Preview = memo(function Preview(props: PreviewProps) {
                       svg={item[1].display}
                       title={item[0]}
                     />
-                  ))}
+                  ))} */}
                 </div>
               </div>
             </div>

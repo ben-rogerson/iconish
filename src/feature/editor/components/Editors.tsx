@@ -24,14 +24,11 @@ const Add = memo(function Memo(props: {
       aria-label="Add SVG"
     >
       <div
-        className={cn(
-          'grid h-0.5 place-content-center rounded bg-[--line-border-dark]',
-          { 'invisible group-hover/add:visible': !isVisible }
-        )}
+        className={cn('grid h-px place-content-center rounded bg-border', {
+          'invisible group-hover/add:visible': !isVisible,
+        })}
       >
-        <div className="bg-[--page-bg] px-5 text-xl text-[--line-border]">
-          Add icon
-        </div>
+        <div className="bg-[--page-bg] px-5 text-xl">Insert blank icon</div>
       </div>
     </button>
   )
@@ -58,14 +55,8 @@ const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
 
   if (getEditors.length === 0)
     return (
-      <div className="relative">
-        <Add
-          onClick={() => {
-            addEditorAtIndex(0)
-          }}
-          isVisible
-          isTop
-        />
+      <div>
+        <Preview id="none" showRemove={false} />
       </div>
     )
 

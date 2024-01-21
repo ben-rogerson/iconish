@@ -79,7 +79,7 @@ export const transformSvg = (
     log.add('compressed with svgo')
 
     const { savingsPercent } = calculateSizeSavings(svg, output)
-    savingsPercent && log.add(savingsPercent, 'success')
+    log.add(savingsPercent ?? 'attributes applied', 'success')
 
     return { output, id, log: [...logCache.values()] }
   } catch (error) {

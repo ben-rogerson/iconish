@@ -21,6 +21,11 @@ export const optimizeAll = (svg: string) => {
         { name: 'convertStyleToAttrs', params: { keepImportant: true } },
       ],
     })
+
+    if ((result.data.match(/</g)?.length ?? 0) <= 1) {
+      throw new Error('This SVG doesn’t seem to be valid')
+    }
+
     return result.data
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error)

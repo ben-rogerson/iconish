@@ -234,7 +234,7 @@ describe('<ConfigPanel />', () => {
     describe('stroke linecap', () => {
       const setup = () => {
         render(<ConfigPanel />)
-        // await openDropdownByName(/stroke-linecap/i);
+        // await openDropdownByName(/linecap/i);
 
         const container = within(screen.getByTestId('control-stroke-linecap'))
         const element = container.getByRole<HTMLButtonElement>('combobox')
@@ -245,7 +245,7 @@ describe('<ConfigPanel />', () => {
       it('has default value', () => {
         const { container, element, state } = setup()
 
-        expect(container.getByLabelText(/stroke-linecap/i)).toBeVisible()
+        expect(container.getByLabelText(/linecap/i)).toBeVisible()
         expect(element).toHaveTextContent('round')
         expect(element.getAttribute('aria-expanded')).toBe('false')
         expect(state.getConfig().strokeLinecap).toBe('round')
@@ -287,7 +287,7 @@ describe('<ConfigPanel />', () => {
 
       it('has default value', () => {
         const { container, element, state } = setup()
-        expect(container.getByLabelText(/stroke-linejoin/i)).toBeVisible()
+        expect(container.getByLabelText(/linejoin/i)).toBeVisible()
         expect(element.textContent).toBe('round')
         expect(element.getAttribute('aria-expanded')).toBe('false')
         expect(state.getConfig().strokeLinejoin).toBe('round')

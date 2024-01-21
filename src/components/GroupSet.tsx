@@ -106,6 +106,7 @@ const Header: FunctionComponent<{
   createdAt: number
   updateGroupTitle: (groupId: string, title: string) => void
 }> = props => {
+  const { getConfig } = useAppActions()
   // Perf: Local title state, with updates on input blur / enter
   const [title, setTitle] = useState(props.title)
   useEffect(() => {
@@ -113,45 +114,50 @@ const Header: FunctionComponent<{
   }, [props.title, props.id])
 
   return (
-    <header
-      className={tw('relative flex justify-between', props.isLarge && 'pb-3')}
-    >
-      <div className="grid w-full gap-2">
-        <input
-          type="text"
-          aria-label="Icon set title"
-          value={title}
-          placeholder={title ? '' : 'Untitled set…'}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            setTitle(e.currentTarget.value)
-          }}
-          onBlur={() => {
-            props.updateGroupTitle(props.id, title)
-          }}
-          onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
-            if (e.key !== 'Enter') return
-            props.updateGroupTitle(props.id, title)
-          }}
-          className={tw(
-            `w-[inherit] bg-transparent text-xl text-[--text-muted]`,
-            `focus:text-[--text] focus:outline-none`,
-            `placeholder-[--text-muted] placeholder:italic`,
-            props.isLarge && `text-5xl tracking-tight`
-          )}
-        />
+    <div className="grid gap-2">
+      <div className={tw('text-[--text-muted]', { 'text-xs': !props.isLarge })}>
+        {getConfig().iconSetType} set
       </div>
-      {/* <div className="flex justify-end gap-10"> */}
-      {/* <div>View spritesheet</div> */}
-      <div className="flex">
-        <Menu
-          groupId={props.id}
-          createdAt={props.createdAt}
-          title={props.title}
-        />
-        {/* <RemoveButton onClick={() => props.removeGroup(props.id)} /> */}
-      </div>
-      {/* </div> */}
-    </header>
+      <header
+        className={tw('relative flex justify-between', props.isLarge && 'pb-3')}
+      >
+        <div className="grid w-full gap-2">
+          <input
+            type="text"
+            aria-label="Icon set title"
+            value={title}
+            placeholder={title ? '' : 'Untitled set…'}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setTitle(e.currentTarget.value)
+            }}
+            onBlur={() => {
+              props.updateGroupTitle(props.id, title)
+            }}
+            onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
+              if (e.key !== 'Enter') return
+              props.updateGroupTitle(props.id, title)
+            }}
+            className={tw(
+              `w-[inherit] bg-transparent text-xl text-[--text]`,
+              `focus:text-[--text] focus:outline-none`,
+              `placeholder-[--text-muted] placeholder:italic`,
+              props.isLarge && `text-5xl tracking-tight`
+            )}
+          />
+        </div>
+        {/* <div className="flex justify-end gap-10"> */}
+        {/* <div>View spritesheet</div> */}
+        <div className="flex">
+          <Menu
+            groupId={props.id}
+            createdAt={props.createdAt}
+            title={props.title}
+          />
+          {/* <RemoveButton onClick={() => props.removeGroup(props.id)} /> */}
+        </div>
+        {/* </div> */}
+      </header>
+    </div>
   )
 }
 
@@ -203,7 +209,7 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
       />
       {Boolean(hasIcons) && (
         <div className="group relative @container">
-          <div className="@4xl:grid-cols-15 pointer-events-none grid grid-cols-2 p-3.5 @xs:grid-cols-4 @xl:grid-cols-5 @2xl:grid-cols-6 @3xl:grid-cols-12">
+          <div className="@4xl:grid-cols-15 pointer-events-none grid grid-cols-2 p-3.5 pl-0 @xs:grid-cols-4 @xl:grid-cols-5 @2xl:grid-cols-6 @3xl:grid-cols-12">
             <div className="z-10 grid place-content-center text-center">
               <div className="-mb-1 block text-lg">{iconCount}</div>
               <div className="text-md">

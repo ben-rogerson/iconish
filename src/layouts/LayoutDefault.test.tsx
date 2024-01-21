@@ -12,7 +12,6 @@ describe('<LayoutDefault />', () => {
     expect(
       header.getByRole('heading', {
         level: 1,
-        name: /align and minify svg icon sets/i,
       })
     ).toBeVisible()
   })

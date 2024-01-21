@@ -17,9 +17,11 @@ const Home = () => {
 
   if (!isClient || !hasHydrated)
     return (
-      <div className="grid h-screen w-full place-content-center p-10">
-        <span className="loader" />
-      </div>
+      <LayoutDefault>
+        <div className="grid h-full w-full place-content-center p-10">
+          <span className="loader" />
+        </div>
+      </LayoutDefault>
     )
 
   return (

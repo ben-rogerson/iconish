@@ -248,7 +248,7 @@ const useMoreItems = () => {
     () => [
       {
         id: 'stroke-linecap',
-        title: 'stroke-linecap',
+        title: 'linecap',
         defaultValue: config.strokeLinecap,
         disabled: false,
         options: ['butt', 'round', 'square'],
@@ -258,7 +258,7 @@ const useMoreItems = () => {
       } satisfies FormSelect,
       {
         id: 'stroke-linejoin',
-        title: 'stroke-linejoin',
+        title: 'linejoin',
         defaultValue: config.strokeLinejoin,
         disabled: false,
         options: ['arcs', 'bevel', 'miter', 'miter-clip', 'round'],
@@ -349,7 +349,7 @@ export const FormItems = memo(function FormItems(props: {
                     onBlur={item.onBlur}
                     disabled={item.disabled}
                     spellCheck={false}
-                    className="w-full max-w-[6rem] border-b border-b-transparent bg-transparent text-[--text-muted] focus:border-b-[--line-border] focus:text-[--text] focus:outline-none"
+                    className="w-full max-w-[6rem] border-b border-b-transparent bg-transparent text-[--text-muted] focus:border-b focus:text-[--text] focus:outline-none"
                     id={`input-${i}`}
                   />
                 </div>
@@ -418,7 +418,7 @@ export const ConfigPanel = () => {
   const activeGroupId = useAppStore(s => s.activeGroupId)
   const mainItems = useMainItems()
   const moreItems = useMoreItems()
-  const { getConfig, resetConfig } = useAppActions()
+  const { resetConfig } = useAppActions()
   const [key, setKey] = useState(Date.now())
 
   // const handleSaveConfig = () => {
@@ -454,7 +454,6 @@ export const ConfigPanel = () => {
       className="group/config flex w-full grid-cols-4 items-center gap-10"
       key={`group-${activeGroupId}-${key}`}
     >
-      <div>{getConfig().iconSetType} set</div>
       <FormItems items={mainItems} />
       <FormItems items={moreItems} />
       <button type="button" onClick={handleResetConfig}>

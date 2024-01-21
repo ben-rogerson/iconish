@@ -8,11 +8,15 @@
   --secondary: 0 0% 94.5%;
 
   --text: 0 0% 90.2%;
-  --muted: 0 0% 43.1%;
-  --muted-more: 0 0% 27.5%;
-  --bg: 0 0% 11.8%;
+  --muted: 220 30% 40%; /* TODO: Fix */
+  /* --muted: 0 0% 43.1%; */
+  --muted-more: 120 30% 40%;
+  /* --muted-more: 0 0% 27.5%; */
+  /* --bg: 0 0% 11.8%; */
+  --bg: 220 30% 7.5%;
   --bg-dark: 0 0% 0%;
-  --bg-darkish: 0 0% 17.6%;
+  --bg-darkish: 220 30% 15%;
+  /* --bg-darkish: 0 0% 17.6%; */
   /* --primary: 255, 255, 255;
   --secondary: #f1f1f1;
 
@@ -31,15 +35,15 @@
   --text-primary: hsl(var(--primary));
   --text-secondary: hsl(var(--secondary));
 
-  --line-border: hsl(var(--muted));
-  --line-border-dark: hsl(var(--muted-more));
+  /* --line-border: hsl(var(--muted));
+  --line-border-dark: hsl(var(--muted-more)); */
 
   --page-bg: hsl(var(--bg));
   --page-bg-dark: hsl(var(--extreme));
   --page-scrollbar: hsl(var(--bg-darkish));
 
   /* Buttons */
-  --button-text: hsl(var(--text));
+  --button-text: hsl(var(--muted));
   --button-text-muted: hsl(var(--muted));
   --button-text-hover: hsl(var(--text));
   --button-bg: hsl(var(--bg));
@@ -98,6 +102,7 @@ body {
 .cm-editor {
   height: 100%;
   min-height: 100%;
+  background-color: transparent;
 }
 
 .cm-content {
@@ -116,7 +121,7 @@ body {
 }
 
 @layer base {
-  :root {
+  /* :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
@@ -146,7 +151,7 @@ body {
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
-  }
+  } */
 
   .dark {
     --background: var(--bg);
@@ -173,7 +178,8 @@ body {
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 0 0% 27.5%;
+    --border: 220 30% 20%;
+    /* --border: 0 0% 27.5%; */
     --input: 0 0% 27.5%;
     --ring: 212.7 26.8% 83.9%;
   }

@@ -13,7 +13,7 @@ describe('transformSvg', () => {
 
       const { output, id } = transformSvg(svg, initialConfig)
 
-      expect(output).toBe('<svg id="svgId"/>')
+      expect(output).toBe('<svg id="svgId"></svg>')
       expect(id).toBe('svgId')
     })
 
@@ -22,7 +22,7 @@ describe('transformSvg', () => {
 
       const { output, id } = transformSvg(svg, initialConfig)
 
-      expect(output).toBe('<svg/>')
+      expect(output).toBe('<svg></svg>')
       expect(id).toBeUndefined()
     })
 
@@ -44,7 +44,7 @@ describe('transformSvg', () => {
         title: 'A title',
       })
 
-      expect(output).toBe('<svg id="a-title"/>')
+      expect(output).toBe('<svg id="a-title"></svg>')
       expect(id).toBe('a-title')
     })
 
@@ -55,7 +55,7 @@ describe('transformSvg', () => {
         title: 'A title',
       })
 
-      expect(output).toBe('<svg id="a-title"/>')
+      expect(output).toBe('<svg id="a-title"></svg>')
       expect(id).toBe('a-title')
     })
 
@@ -64,7 +64,7 @@ describe('transformSvg', () => {
 
       const { output, id } = transformSvg(svg, initialConfig)
 
-      expect(output).toBe('<svg id="Bert"/>')
+      expect(output).toBe('<svg id="Bert"></svg>')
       expect(id).toBe('Bert')
     })
   })
@@ -101,7 +101,7 @@ describe('transformSvg', () => {
 
     const { output, id } = transformSvg(svg, initialConfig)
 
-    expect(output).toBe('<svg/>')
+    expect(output).toBe('<svg></svg>')
     expect(id).toBeUndefined()
   })
 })

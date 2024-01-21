@@ -14,6 +14,6 @@ export const calculateSizeSavings = (codeBefore: string, codeAfter: string) => {
         ? `${savingsPercent.toFixed(2)} % saved (${`${
             savingsNumber > 0 ? `-${savingsNumber.toFixed(2)}` : 0
           } KB`})`
-        : '',
+        : null,
   }
 }
