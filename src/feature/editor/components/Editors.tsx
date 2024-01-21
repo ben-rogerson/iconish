@@ -50,7 +50,7 @@ const useEditorsRender = () => {
 }
 
 const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
-  const { addEditorAtIndex } = useAppActions()
+  const { addEditorAfter } = useAppActions()
   const getEditors = useEditorsRender()
 
   if (getEditors.length === 0)
@@ -74,13 +74,13 @@ const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
           <article
             id={editorId}
             key={editorId}
-            className={cn('group/editor relative pb-14 pt-6')}
+            className="relative pb-14 pt-6"
             aria-label={showOutput ? 'editor' : 'preview'}
           >
             {Boolean(showAdd) && index === 0 && (
               <Add
                 onClick={() => {
-                  addEditorAtIndex(index)
+                  addEditorAfter()
                 }}
                 isTop
               />
@@ -93,7 +93,7 @@ const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
             {Boolean(showAdd) && (
               <Add
                 onClick={() => {
-                  addEditorAtIndex(index + 1)
+                  addEditorAfter(editorId)
                 }}
               />
             )}

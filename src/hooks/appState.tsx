@@ -48,8 +48,8 @@ interface AppStoreActions {
     title?: string,
     toGroupId?: string
   ) => { scrollTo: () => void }
-  addEditorAtIndex: (
-    index: number,
+  addEditorAfter: (
+    editorId?: string,
     editor?: EditorState
   ) => { scrollTo: () => void }
 }
@@ -423,9 +423,8 @@ export const useAppStore = create<
             }
           },
 
-          addEditorAtIndex: (index, editor) => {
+          addEditorAfter: (editorId, editor) => {
             const newEditor = editor ?? initialEditorData()
-            const newEditorId = newEditor[0] // Get id for scroll use
 
             const newGroups: Group[] = []
 
@@ -438,7 +437,8 @@ export const useAppStore = create<
               }
 
               const newEditors = [...group.editors]
-              newEditors.splice(index, 0, newEditor)
+              const index = newEditors.findIndex(e => e[0] === editorId)
+              newEditors.splice(index + 1, 0, newEditor)
 
               newGroups.push({ ...group, editors: newEditors })
             }
@@ -450,7 +450,7 @@ export const useAppStore = create<
               scrollTo: () => {
                 setTimeout(() => {
                   document
-                    .querySelector(`#${newEditorId}`)
+                    .querySelector(`#${newEditor[0]}`)
                     ?.scrollIntoView({ behavior: 'smooth' })
                 }, 0)
               },
