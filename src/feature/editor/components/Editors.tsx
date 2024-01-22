@@ -16,7 +16,7 @@ const Add = memo(function Memo(props: {
   return (
     <button
       className={tw(
-        'group/add absolute block w-full py-10',
+        'group/add block w-full pb-8 pt-10',
         props.isTop ? '-top-16' : '-bottom-34'
       )}
       type="button"
@@ -74,7 +74,7 @@ const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
           <article
             id={editorId}
             key={editorId}
-            className="relative pb-14 pt-6"
+            className="relative"
             aria-label={showOutput ? 'editor' : 'preview'}
           >
             {Boolean(showAdd) && index === 0 && (

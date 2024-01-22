@@ -185,7 +185,6 @@ const useMainItems = () => {
           }, 0)
         },
       } satisfies FormInput,
-
       {
         id: 'stroke-width',
         title: 'stroke width',
@@ -222,30 +221,7 @@ const useMainItems = () => {
           e.target.value = config.stroke
         },
       } satisfies FormInput,
-      {
-        id: 'non-scaling-stroke',
-        title: 'non-scaling stroke',
-        defaultChecked: config.nonScalingStroke,
-        disabled: config.iconSetType === 'solid',
-        hidden: config.iconSetType === 'solid',
-        type: 'checkbox',
-        onChange: e => {
-          setConfig({ nonScalingStroke: e.target.checked })
-        },
-      } satisfies FormCheckbox,
-    ],
-    [setConfig, config]
-  )
 
-  return mainItems
-}
-
-const useMoreItems = () => {
-  const { getConfig, setConfig } = useAppActions()
-  const config = getConfig()
-
-  const moreItems = useMemo(
-    () => [
       {
         id: 'stroke-linecap',
         title: 'linecap',
@@ -266,11 +242,22 @@ const useMoreItems = () => {
           setConfig({ strokeLinejoin })
         },
       } satisfies FormSelect,
+      {
+        id: 'non-scaling-stroke',
+        title: 'non-scaling stroke',
+        defaultChecked: config.nonScalingStroke,
+        disabled: config.iconSetType === 'solid',
+        hidden: config.iconSetType === 'solid',
+        type: 'checkbox',
+        onChange: e => {
+          setConfig({ nonScalingStroke: e.target.checked })
+        },
+      } satisfies FormCheckbox,
     ],
     [setConfig, config]
   )
 
-  return moreItems
+  return mainItems
 }
 
 export const FormItems = memo(function FormItems(props: {
@@ -299,7 +286,7 @@ export const FormItems = memo(function FormItems(props: {
           return (
             <div
               data-testid={`control-${item.id}`}
-              className={cn({
+              className={cn('grid gap-2', {
                 'opacity-25': item.disabled,
                 hidden: item.hidden,
               })}
@@ -307,7 +294,7 @@ export const FormItems = memo(function FormItems(props: {
               {/* Can't have clickable label - htmlFor not supported with Slider */}
               <div id={`range-${i}-title`}>{item.title}</div>
               <div className="flex gap-2 text-[--text-muted]">
-                <div className="relative -mb-2 -mt-1 flex w-44 items-center gap-2">
+                <div className="relative -mb-2 -mt-1 flex w-44 items-center gap-1.5">
                   <Slider
                     defaultValue={[Number(item.defaultValue)]}
                     max={5}
@@ -318,7 +305,7 @@ export const FormItems = memo(function FormItems(props: {
                     id={`range-${i}`}
                     disabled={item.disabled}
                   />
-                  {item.defaultValue}
+                  <div className="min-w-[3ch]">{item.defaultValue}</div>
                 </div>
               </div>
             </div>
@@ -328,14 +315,14 @@ export const FormItems = memo(function FormItems(props: {
           return (
             <div
               data-testid={`control-${item.id}`}
-              className={cn({
+              className={cn('grid gap-1.5', {
                 'opacity-25': item.disabled,
                 hidden: item.hidden,
               })}
             >
               <label htmlFor={`input-${i}`}>{item.title}</label>
               <div className="flex gap-2 text-[--text-muted]">
-                <div className={tw`flex items-center gap-x-1.5`}>
+                <div className={tw`flex w-full items-center gap-x-1.5`}>
                   {!!item.theme && (
                     <div
                       className={tw`h-3 w-3 rounded-sm`}
@@ -349,7 +336,7 @@ export const FormItems = memo(function FormItems(props: {
                     onBlur={item.onBlur}
                     disabled={item.disabled}
                     spellCheck={false}
-                    className="w-full max-w-[6rem] border-b border-b-transparent bg-transparent text-[--text-muted] focus:border-b focus:text-[--text] focus:outline-none"
+                    className="w-full max-w-[7rem] border-b border-b-transparent bg-transparent text-[--text-muted] focus:border-b focus:text-[--text] focus:outline-none"
                     id={`input-${i}`}
                   />
                 </div>
@@ -361,7 +348,7 @@ export const FormItems = memo(function FormItems(props: {
           return (
             <div
               data-testid={`control-${item.id}`}
-              className={cn({
+              className={cn('max-w-[105px]', {
                 'opacity-25': item.disabled,
                 hidden: item.hidden,
               })}
@@ -395,18 +382,24 @@ export const FormItems = memo(function FormItems(props: {
           return (
             <div
               data-testid={`control-${item.id}`}
-              className={cn('flex gap-x-1.5', {
-                'opacity-25': item.disabled,
-                hidden: item.hidden,
-              })}
+              className={cn(
+                'flex h-full cursor-pointer items-center gap-x-1.5',
+                {
+                  'opacity-25': item.disabled,
+                  hidden: item.hidden,
+                }
+              )}
             >
               <input
                 id={`checkbox-${i}`}
                 type={item.type}
                 defaultChecked={item.defaultChecked}
                 onChange={item.onChange}
+                className="cursor-pointer"
               />
-              <label htmlFor={`checkbox-${i}`}>{item.title}</label>
+              <label htmlFor={`checkbox-${i}`} className="cursor-pointer">
+                {item.title}
+              </label>
             </div>
           )
       })}
@@ -417,7 +410,6 @@ export const FormItems = memo(function FormItems(props: {
 export const ConfigPanel = () => {
   const activeGroupId = useAppStore(s => s.activeGroupId)
   const mainItems = useMainItems()
-  const moreItems = useMoreItems()
   const { resetConfig } = useAppActions()
   const [key, setKey] = useState(Date.now())
 
@@ -451,14 +443,19 @@ export const ConfigPanel = () => {
 
   return (
     <div
-      className="group/config flex w-full grid-cols-4 items-center gap-10"
+      className="group/config flex w-full grid-cols-4 items-start gap-10 pt-1.5 text-sm"
       key={`group-${activeGroupId}-${key}`}
     >
       <FormItems items={mainItems} />
-      <FormItems items={moreItems} />
-      <button type="button" onClick={handleResetConfig}>
-        <RotateCw />
-      </button>
+      <div className="ml-auto grid h-full items-center">
+        <button
+          type="button"
+          onClick={handleResetConfig}
+          className="text-secondary hover:text-inherit"
+        >
+          <RotateCw />
+        </button>
+      </div>
       {/* <div className="flex gap-2 text-[--text-muted]">
         <div className="flex items-center gap-x-1.5">
           <Select>

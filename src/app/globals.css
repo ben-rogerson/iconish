@@ -2,30 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* Colors */
+.dark {
   --primary: 0 0% 100%;
-  --secondary: 0 0% 94.5%;
-
+  --secondary: 220 30% 40%;
   --text: 0 0% 90.2%;
-  --muted: 220 30% 40%; /* TODO: Fix */
-  /* --muted: 0 0% 43.1%; */
-  --muted-more: 120 30% 40%;
-  /* --muted-more: 0 0% 27.5%; */
-  /* --bg: 0 0% 11.8%; */
+  --muted: 220 30% 40%;
   --bg: 220 30% 7.5%;
   --bg-dark: 0 0% 0%;
   --bg-darkish: 220 30% 15%;
-  /* --bg-darkish: 0 0% 17.6%; */
-  /* --primary: 255, 255, 255;
-  --secondary: #f1f1f1;
+  --border: 220 30% 20%;
+  --input: 0 0% 27.5%;
+}
 
-  --text: 230, 230, 230;
-  --muted: 110, 110, 110;
-  --muted-more: 70, 70, 70;
-  --bg: 30, 30, 30;
-  --bg-dark: 0, 0, 0;
-  --bg-darkish: 45, 45, 45; */
+.light {
+  --primary: 0 0% 100%;
+  --secondary: 10 30% 75%;
+  --text: 10 20% 30%;
+  --muted: 10 15% 50%;
+  --bg: 10 20% 90%;
+  --bg-dark: 100 0% 0%;
+  --bg-darkish: 120 30% 15%;
+  --border: 10 20% 75%;
+  --input: 0 0% 27.5%;
+}
+
+.light,
+.dark {
+  --background: var(--bg);
+  --foreground: 210 40% 98%;
+
+  --card: var(--bg);
+  --card-foreground: 210 40% 98%;
+
+  --popover: var(--bg);
+  --popover-foreground: 210 40% 98%;
+
+  /* --primary: 210 40% 98%; */
+  --primary-foreground: 222.2 47.4% 11.2%;
+
+  /* --secondary: 220 30% 20%; */
+  --secondary-foreground: 210 40% 98%;
+
+  /* --muted: 0 0% 43.1%; */
+  --muted-foreground: 215 20.2% 65.1%;
+
+  --accent: var(--bg-darkish);
+  --accent-foreground: 210 40% 98%;
+
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+
+  --ring: 212.7 26.8% 83.9%;
 
   /* Generic */
   --text-normal: hsl(var(--text));
@@ -35,11 +62,7 @@
   --text-primary: hsl(var(--primary));
   --text-secondary: hsl(var(--secondary));
 
-  /* --line-border: hsl(var(--muted));
-  --line-border-dark: hsl(var(--muted-more)); */
-
   --page-bg: hsl(var(--bg));
-  --page-bg-dark: hsl(var(--extreme));
   --page-scrollbar: hsl(var(--bg-darkish));
 
   /* Buttons */
@@ -59,130 +82,6 @@
   /* Sortable drag indicators */
   --drag-indicator-text: hsl(var(--muted));
   --drag-indicator-text-active: hsl(var(--text));
-}
-
-@font-face {
-  font-family: 'Chivo';
-  src: url('./../../public/ChivoMono.woff2') format('woff2-variations');
-  src: url('./../../public/ChivoMono.woff2') format('woff2') tech('variations');
-  font-weight: 100 900;
-  /* font-stretch: 25% 151%; */
-}
-
-html {
-  color: var(--text-normal);
-  background: var(--page-bg);
-  /* font-family: "Space Mono", monospace; */
-  font-family: 'Chivo';
-  font-weight: 250;
-
-  overflow-y: scroll; /* Always show scrollbar to avoid layout shift */
-  /* scroll-margin-top: 8rem; */
-}
-
-body {
-  overflow-y: none; /* Always show scrollbar to avoid layout shift */
-}
-
-::-webkit-scrollbar {
-  width: 0.5em;
-  height: 1em;
-}
-
-::-webkit-scrollbar-track {
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: var(--page-scrollbar);
-  border-radius: 2.5px;
-}
-
-/* CodeMirror container */
-.cm-theme,
-.cm-editor {
-  height: 100%;
-  min-height: 100%;
-  background-color: transparent;
-}
-
-.cm-content {
-  padding: 0 0.5em 0 0 !important;
-}
-.cm-gutters {
-  display: none !important;
-}
-.cm-line {
-  padding-left: 0 !important;
-}
-/* .cm-gutters, */
-.cm-activeLineGutter,
-.cm-activeLine {
-  background-color: transparent !important;
-}
-
-@layer base {
-  /* :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 8.76%;
-    --popover-foreground: 0 0% 100%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-  } */
-
-  .dark {
-    --background: var(--bg);
-    --foreground: 210 40% 98%;
-
-    --card: var(--bg);
-    --card-foreground: 210 40% 98%;
-
-    --popover: var(--bg);
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 0 0% 43.1%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 0 0% 43.1%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: var(--bg-darkish);
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 220 30% 20%;
-    /* --border: 0 0% 27.5%; */
-    --input: 0 0% 27.5%;
-    --ring: 212.7 26.8% 83.9%;
-  }
 }
 
 @layer base {
@@ -257,4 +156,60 @@ body {
     box-shadow: 30px 0 0 #fff;
     margin-top: 0;
   }
+}
+
+@font-face {
+  font-family: 'Chivo';
+  src: url('./../../public/ChivoMono.woff2') format('woff2-variations');
+  src: url('./../../public/ChivoMono.woff2') format('woff2') tech('variations');
+  font-weight: 100 900;
+  /* font-stretch: 25% 151%; */
+}
+
+html {
+  /* font-family: "Space Mono", monospace; */
+  font-family: 'Chivo';
+  font-weight: 250;
+
+  overflow-y: scroll; /* Always show scrollbar to avoid layout shift */
+  /* scroll-margin-top: 8rem; */
+}
+
+body {
+  overflow-y: none; /* Always show scrollbar to avoid layout shift */
+  background: var(--page-bg);
+  color: var(--text-normal);
+}
+
+::-webkit-scrollbar {
+  width: 0.5em;
+  height: 1em;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--page-scrollbar);
+  border-radius: 2.5px;
+}
+
+/* CodeMirror container */
+.cm-theme,
+.cm-editor {
+  height: 100%;
+  min-height: 100%;
+  background-color: transparent;
+}
+
+.cm-content {
+  padding: 0 0.5em 0 0 !important;
+}
+.cm-gutters {
+  display: none !important;
+}
+.cm-line {
+  padding-left: 0 !important;
+}
+/* .cm-gutters, */
+.cm-activeLineGutter,
+.cm-activeLine {
+  background-color: transparent !important;
 }

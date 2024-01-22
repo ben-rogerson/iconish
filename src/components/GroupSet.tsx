@@ -103,6 +103,7 @@ const Header: FunctionComponent<{
   title: string
   isCurrent: boolean
   isLarge: boolean
+  hasIcons: boolean
   createdAt: number
   updateGroupTitle: (groupId: string, title: string) => void
 }> = props => {
@@ -115,12 +116,14 @@ const Header: FunctionComponent<{
 
   return (
     <div className="grid gap-2">
-      <div className={tw('text-[--text-muted]', { 'text-xs': !props.isLarge })}>
-        {getConfig().iconSetType} set
-      </div>
-      <header
-        className={tw('relative flex justify-between', props.isLarge && 'pb-3')}
-      >
+      {Boolean(props.hasIcons) && (
+        <div
+          className={tw('text-[--text-muted]', { 'text-xs': !props.isLarge })}
+        >
+          {getConfig().iconSetType} set
+        </div>
+      )}
+      <header className="relative flex justify-between">
         <div className="grid w-full gap-2">
           <input
             type="text"
@@ -206,10 +209,11 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
         isCurrent={props.isCurrent ?? false}
         isLarge={props.isHeader ?? false}
         createdAt={props.createdAt}
+        hasIcons={hasIcons}
       />
       {Boolean(hasIcons) && (
         <div className="group relative @container">
-          <div className="@4xl:grid-cols-15 pointer-events-none grid grid-cols-2 p-3.5 pl-0 @xs:grid-cols-4 @xl:grid-cols-5 @2xl:grid-cols-6 @3xl:grid-cols-12">
+          <div className="@4xl:grid-cols-15 pointer-events-none grid grid-cols-2 @xs:grid-cols-4 @xl:grid-cols-5 @2xl:grid-cols-6 @3xl:grid-cols-12">
             <div className="z-10 grid place-content-center text-center">
               <div className="-mb-1 block text-lg">{iconCount}</div>
               <div className="text-md">
@@ -267,8 +271,8 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
                 }}
                 className={tw(
                   'absolute inset-0 z-0 cursor-pointer rounded-lg border opacity-0',
-                  'hover:opacity-50 group-focus-within:opacity-50 group-hover:opacity-50',
-                  props.isCurrent && 'opacity-50'
+                  'hover:opacity-50 group-focus-within:opacity-50 group-hover:opacity-50'
+                  // props.isCurrent && 'opacity-50'
                 )}
               />
             </SheetClose>
@@ -285,8 +289,8 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
                 handleSelectGroup(props.id)
               }}
               className={tw(
-                'absolute inset-0 z-0 cursor-pointer rounded-lg border border-dashed',
-                props.isCurrent && 'opacity-50'
+                'absolute inset-0 z-0 cursor-pointer rounded-lg border border-dashed'
+                // props.isCurrent && 'opacity-50'
               )}
             />
           </SheetClose>

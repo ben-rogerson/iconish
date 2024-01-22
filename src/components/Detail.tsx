@@ -34,12 +34,12 @@ const Detail = () => {
   return (
     <div className="grid gap-16">
       <div
-        className="sticky -top-px z-50 flex items-center gap-6 border-y bg-[--page-bg] py-3"
+        className="sticky -top-px z-50 flex gap-6 border-y bg-[--page-bg] px-4 py-3"
         role="toolbar"
       >
         <ConfigPanel />
       </div>
-      <div className="grid gap-16">
+      <div>
         {!!group && (
           <GroupSet
             id={group.id}

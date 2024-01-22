@@ -1,8 +1,10 @@
+import { cn } from '@/lib/utils'
 import { run } from '@/utils/run'
 import React, { type ChangeEvent } from 'react'
 
 export function Upload(props: {
   onUpload: (files: Set<[string, string]>) => void
+  className?: string
 }) {
   function handleOnChange(event: ChangeEvent<HTMLInputElement>) {
     event.preventDefault()
@@ -24,7 +26,7 @@ export function Upload(props: {
   }
 
   return (
-    <div className="relative flex-shrink-0">
+    <div className={cn('relative flex-shrink-0', props.className)}>
       <input
         id="upload"
         type="file"
@@ -35,9 +37,9 @@ export function Upload(props: {
       />
       <label
         htmlFor="upload"
-        className="inline-flex h-10 cursor-pointer items-center justify-center whitespace-nowrap rounded-md border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+        // className="inline-flex h-10 w-full cursor-pointer items-center justify-center whitespace-nowrap rounded border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
       >
-        Upload svg(s)
+        Upload svg&hellip;
       </label>
     </div>
   )
