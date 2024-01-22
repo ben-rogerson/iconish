@@ -1,3 +1,4 @@
+import million from 'million/compiler';
 /* v8 ignore start */
 /** @type {import("next").NextConfig} */
 const config = {
@@ -30,4 +31,7 @@ const config = {
   },
 }
 
-export default config
+export default million.next(
+  config
+, { auto: { rsc: true } }
+)
