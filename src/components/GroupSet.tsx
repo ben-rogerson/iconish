@@ -116,7 +116,7 @@ const Header: FunctionComponent<{
 
   return (
     <div className="grid gap-2">
-      {Boolean(props.hasIcons) && (
+      {Boolean(props.isLarge) && Boolean(props.hasIcons) && (
         <div
           className={tw('text-[--text-muted]', { 'text-xs': !props.isLarge })}
         >
