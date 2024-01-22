@@ -19,9 +19,11 @@ const EditorList: React.FC<MessageListProps> = props => {
         ref={props.virtualListRef}
         useWindowScroll
         data={childrenArray}
-        style={{ width: '100%' }}
+        style={{
+          width: '100%',
+          minHeight: '1px', // Unsure why this is needed, otherwise list isn't rendered on load
+        }}
         totalCount={childrenArray.length}
-        initialTopMostItemIndex={childrenArray.length - 1} // Set initialTopMostItemIndex to the last item
         itemContent={itemContent}
       />
     </div>
