@@ -405,8 +405,6 @@ export const useAppStore = create<
                 ...group,
                 editors: [...group.editors, newEditor],
               })
-
-              break
             }
 
             set({ groups: newGroups })
