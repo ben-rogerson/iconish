@@ -11,7 +11,7 @@
   --bg-dark: 0 0% 0%;
   --bg-darkish: 220 30% 15%;
   --border: 220 30% 20%;
-  --input: 0 0% 27.5%;
+  --input: 220 30% 20%;
 }
 
 .light {
@@ -23,7 +23,7 @@
   --bg-dark: 100 0% 0%;
   --bg-darkish: 120 30% 15%;
   --border: 10 20% 75%;
-  --input: 0 0% 27.5%;
+  --input: 10 20% 75%;
 }
 
 .light,

@@ -1,3 +1,4 @@
+import { uploadIcon } from '@/lib/icons'
 import { cn } from '@/lib/utils'
 import { run } from '@/utils/run'
 import React, { type ChangeEvent } from 'react'
@@ -26,7 +27,12 @@ export function Upload(props: {
   }
 
   return (
-    <div className={cn('relative flex-shrink-0', props.className)}>
+    <div
+      className={cn(
+        'w-full border px-5 py-3 text-center text-[--input-text] placeholder-[var(--text-muted)] focus:outline-0',
+        props.className
+      )}
+    >
       <input
         id="upload"
         type="file"
@@ -37,9 +43,10 @@ export function Upload(props: {
       />
       <label
         htmlFor="upload"
-        // className="inline-flex h-10 w-full cursor-pointer items-center justify-center whitespace-nowrap rounded border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+        className="flex h-full items-center justify-center gap-3"
       >
-        Upload svg&hellip;
+        <div>{uploadIcon}</div>
+        <div>Upload SVG&hellip;</div>
       </label>
     </div>
   )
