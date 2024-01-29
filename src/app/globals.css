@@ -181,6 +181,11 @@ body {
   color: var(--text-normal);
 }
 
+html body {
+  /* Fix Radix select open interfering with sticky */
+  overflow: clip !important;
+}
+
 ::-webkit-scrollbar {
   width: 0.5em;
   height: 1em;
