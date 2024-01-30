@@ -26,7 +26,8 @@ export const optimizeAll = (svg: string) => {
       throw new Error('This SVG doesn’t seem to be valid')
     }
 
-    return result.data
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Sometimes result.data is undefined
+    return result.data ?? ''
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error)
     throw new Error(msg)
