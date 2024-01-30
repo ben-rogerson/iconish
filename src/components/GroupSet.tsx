@@ -9,7 +9,7 @@ import {
   memo,
 } from 'react'
 import { type Group } from '@/utils/types'
-import { AlertOctagon, Copy, Layers, MoreVertical, Trash } from 'lucide-react'
+import { Copy, Layers, MoreVertical, Trash } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -353,9 +353,6 @@ const IconListDraggable = (props: {
               { 'border-red-800': hasError }
             )}
           />
-          {Boolean(hasError) && (
-            <AlertOctagon className="absolute -mb-3 self-end justify-self-center text-red-800" />
-          )}
         </div>
         {/* <Guides /> */}
       </SortableItem>
