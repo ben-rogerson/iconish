@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/experimental-ct-react'
-import viteConfig from './vitest.config'
+import { plugins, resolve } from './vitest.config'
 
 /**
  * Read environment variables from file.
@@ -33,12 +33,7 @@ export default defineConfig({
 
     baseURL: 'http://127.0.0.1:3000',
 
-    ...(!process.env.CI && {
-      ctViteConfig: {
-        plugins: viteConfig.plugins,
-        resolve: viteConfig.resolve,
-      },
-    }),
+    ctViteConfig: { plugins, resolve },
   },
 
   /* Configure projects for major browsers */
