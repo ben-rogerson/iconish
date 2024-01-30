@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test'
 import { test, expect } from '@playwright/test'
+import exp from 'constants'
 
 // https://github.com/microsoft/playwright/issues/4302#issuecomment-1165404704
 const scroll = async ({
@@ -36,6 +37,20 @@ const setupFirstEditor = async (page: Page) => {
   })
   await addSvgButton.click()
   await expect(page.getByRole('article', { name: 'editor' })).toHaveCount(1)
+}
+
+const insertCustomIcon = async (svgCode: string, page: Page) => {
+  const item = page
+    .locator('[data-test-id=virtuoso-item-list]')
+    .getByRole('article')
+
+  const input = item.getByPlaceholder(/Paste svg/i)
+  await expect(input).toHaveCount(1)
+
+  await input.fill(svgCode)
+  await input.press('Enter')
+
+  await expect(item).toContainText(svgCode)
 }
 
 test.beforeEach(async ({ page }) => {
@@ -109,20 +124,10 @@ test('should remove an editor after clicking the remove button', async ({
 test('a svg can be added via paste', async ({ page }) => {
   const icon = '<svg><circle cx="50" cy="50" r="40"/></svg>'
 
-  const item = page
-    .locator('[data-test-id=virtuoso-item-list]')
-    .getByRole('article')
-
-  const input = item.getByPlaceholder(/Paste svg/i)
-  await expect(input).toHaveCount(1)
-
-  await input.fill(icon)
-  await input.press('Enter')
+  await insertCustomIcon(icon, page)
 
   const itemsAfter = await getEditorTypes(page)
   expect(itemsAfter).toEqual(['editor'])
-
-  await expect(item).toContainText(icon)
 })
 
 test('a svg can be added via the test buttons', async ({ page }) => {
@@ -134,4 +139,48 @@ test('a svg can be added via the test buttons', async ({ page }) => {
     .click()
 
   await expect(page.getByRole('article', { name: 'editor' })).toHaveCount(1)
+})
+
+test('the output is jsx when "output jsx" is selected', async ({
+  page,
+  context,
+}) => {
+  const icon =
+    '<svg stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="test"><path d="M12 12v.01"/></svg>'
+  await insertCustomIcon(icon, page)
+
+  const expectedJsxOutput =
+    '<svg strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="test" viewBox="0 0 1 1"><path d="M12 12v.01" vectorEffect="non-scaling-stroke"></path></svg>'
+
+  await expect(page.getByRole('article', { name: 'editor' })).toContainText(
+    expectedJsxOutput
+  )
+
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+  await page.getByRole('button', { name: 'Copy svg code to clipboard' }).click()
+  const copiedText = await page.evaluate(() => navigator.clipboard.readText())
+  expect(copiedText).toBe(expectedJsxOutput)
+})
+
+test('the output is svg when "output jsx" is not selected', async ({
+  page,
+  context,
+}) => {
+  const icon =
+    '<svg stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="test"><path d="M12 12v.01"/></svg>'
+  await insertCustomIcon(icon, page)
+
+  await page.getByRole('checkbox', { name: 'output JSX' }).uncheck()
+
+  const expectedSvgOutput =
+    '<svg stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="test" viewBox="0 0 1 1"><path d="M12 12v.01" vector-effect="non-scaling-stroke"/></svg>'
+
+  await expect(page.getByRole('article', { name: 'editor' })).toContainText(
+    expectedSvgOutput
+  )
+
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+  await page.getByRole('button', { name: 'Copy svg code to clipboard' }).click()
+  const copiedText = await page.evaluate(() => navigator.clipboard.readText())
+  expect(copiedText).toBe(expectedSvgOutput)
 })

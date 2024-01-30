@@ -12,6 +12,7 @@ type ConfigItem = Partial<Config>
 type SVGData = {
   original?: string
   output: string
+  outputJsx: string
   id?: string
   log: LogItem[]
 }
@@ -69,6 +70,7 @@ export const initialConfig = {
   strokeLinecap: 'round',
   strokeLinejoin: 'round',
   nonScalingStroke: true,
+  outputJsx: true,
 } as const satisfies Config
 
 const makeGroup = (config?: Config, editors?: EditorState[]) =>
@@ -88,6 +90,7 @@ const initialEditorData = (svgData?: SVGData, title?: string) => {
       isDeleted: false,
       svg: {
         output: svgData?.output ?? '',
+        outputJsx: svgData?.output ?? '',
         original: svgData?.original ?? '',
         log: svgData?.log ?? [],
       },
@@ -258,6 +261,7 @@ export const useAppStore = create<
                           ...editorData,
                           svg: {
                             output: svg.output,
+                            outputJsx: svg.outputJsx,
                             original: editorData.svg.original,
                             log: svg.log,
                           },
@@ -331,11 +335,16 @@ export const useAppStore = create<
             const svgs = (
               get().groups.find(g => g.id === groupId)?.editors ?? []
             )
-              .map(([, data]) =>
-                data.svg.output.startsWith('<svg') ? data.svg.output : null
-              )
+              .map(([, data]) => {
+                if (!data.svg.output.startsWith('<svg')) return null
+                const hasJsxOutput = get().actions.getConfig().outputJsx
+                return data.svg[hasJsxOutput ? 'outputJsx' : 'output']
+              })
               .filter(Boolean)
               .join('\n')
+
+            console.log({ svgs })
+
             return svgs
           },
 

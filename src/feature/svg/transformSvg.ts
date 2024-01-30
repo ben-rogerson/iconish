@@ -1,3 +1,4 @@
+import parse from 'html-react-parser'
 import { parseSvg } from '@/feature/svg/parseSvg'
 import { type TransformOptions, transforms } from '@/feature/svg/transforms'
 import { optimizeAll } from './svgTasks'
@@ -9,6 +10,32 @@ export type LogItem = SvgLogItem
 
 export type LogHelper = {
   add: (msg: LogItem['msg'], type?: LogItem['type']) => void
+}
+
+const toJSX = (
+  element: string | JSX.Element | Array<string | JSX.Element> | undefined
+): string => {
+  if (element === undefined) return ''
+
+  if (Array.isArray(element)) return element.map(toJSX).join('')
+
+  if (typeof element === 'string') return element
+
+  const props =
+    (element.props as
+      | (Record<string, unknown> & {
+          children?: JSX.Element | Array<string | JSX.Element> | string
+        })
+      | undefined) ?? {}
+  const { children, ...rawProps } = props
+  const elementProps = Object.entries(rawProps)
+    .map(([key, value]) => `${key}="${String(value)}"`)
+    .join(' ')
+
+  const allChildren = Array.isArray(children) ? children : [children]
+  return `<${[element.type, elementProps].join(' ')}>${allChildren
+    .map(c => (c ? toJSX(c) : ''))
+    .join('')}</${element.type}>`
 }
 
 export const transformSvg = (
@@ -28,7 +55,7 @@ export const transformSvg = (
 
   if (!svgDoc) {
     // log.add("No svg element found", "error");
-    return { output: '', log: [...logCache.values()] }
+    return { output: '', outputJsx: '', log: [...logCache.values()] }
   }
 
   const type =
@@ -76,14 +103,16 @@ export const transformSvg = (
 
   try {
     const output = optimizeAll(svgDoc.toString())
+    const outputJsx = config.outputJsx ? toJSX(parse(output)) : ''
     log.add('compressed with svgo')
 
     const { savingsPercent } = calculateSizeSavings(svg, output)
     log.add(savingsPercent ?? 'attributes applied', 'success')
 
-    return { output, id, log: [...logCache.values()] }
+    return { output, outputJsx, id, log: [...logCache.values()] }
   } catch (error) {
     log.add(error instanceof Error ? error.message : String(error), 'error')
-    return { output: svgDoc.toString(), id, log: [...logCache.values()] }
+    const output = svgDoc.toString()
+    return { output, outputJsx: output, id, log: [...logCache.values()] }
   }
 }

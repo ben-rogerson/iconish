@@ -83,17 +83,21 @@ const Log = (props: { logItems: EditorProps['data']['svg']['log'] }) => {
 
 const Editor = (props: EditorProps) => {
   const { toast } = useToast()
-  const { removeEditor, undoRemoveEditor, updateEditorSvg } = useAppActions()
+  const { getConfig, removeEditor, undoRemoveEditor, updateEditorSvg } =
+    useAppActions()
   const [, copy] = useCopyToClipboard()
+  const config = getConfig()
 
   const sanitizedSvg = useMemo(
     () => doSanitizeSvg(props.data.view?.doc ?? ''),
     [props.data.view?.doc]
   )
+
+  const output = props.data.svg[config.outputJsx ? 'outputJsx' : 'output']
+
   const sized = useMemo(
-    () =>
-      calculateSizeSavings(props.data.view?.doc ?? '', props.data.svg.output),
-    [props.data.view?.doc, props.data.svg.output]
+    () => calculateSizeSavings(props.data.view?.doc ?? '', output),
+    [props.data.view?.doc, output]
   )
 
   const handleOnChange = (value: string) => {
@@ -184,15 +188,16 @@ const Editor = (props: EditorProps) => {
                 EditorView.lineWrapping,
               ]}
               theme={vscodeDark}
-              value={props.data.svg.output}
+              value={output}
               // onUpdate={handleOnUpdateOut}
             />
           </div>
           <div className="absolute bottom-2 right-2">
             <Button
+              aria-label="Copy svg code to clipboard"
               type="button"
               onClick={() => {
-                copy(props.data.svg.output).catch(() => null)
+                copy(output).catch(() => null)
                 toast({
                   itemID: `copied-${props.id}`,
                   title: `Copied svg code to clipboard`,

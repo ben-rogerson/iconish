@@ -135,26 +135,27 @@ describe('<ConfigPanel />', () => {
         const container = within(
           screen.getByTestId('control-non-scaling-stroke')
         )
-        const element = container.getByRole<HTMLInputElement>('checkbox')
+        const element = container.getByRole<HTMLButtonElement>('checkbox')
         const { result } = renderHook(() => useAppActions())
         return { container, element, state: result.current }
       }
 
       it('has default value', () => {
         const { container, element } = setup()
+
         expect(container.getByLabelText(/non-scaling stroke/i)).toBeVisible()
-        expect(element.checked).toBe(true)
+        expect(element).toHaveAttribute('aria-checked', 'true')
       })
 
       it('can be updated', async () => {
         const { element, state } = setup()
 
         await userEvent.click(element)
-        expect(element.checked).toBe(false)
+        expect(element).toHaveAttribute('aria-checked', 'false')
         expect(state.getConfig().nonScalingStroke).toBe(false)
 
         await userEvent.click(element)
-        expect(element.checked).toBe(true)
+        expect(element).toHaveAttribute('aria-checked', 'true')
         expect(state.getConfig().nonScalingStroke).toBe(true)
       })
     })

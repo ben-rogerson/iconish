@@ -6,6 +6,7 @@ import {
   SelectValue,
   SelectMainLabel,
 } from '@/components/ui/select'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Slider } from '@/components/ui/slider'
 import { useAppActions, useAppStore } from '@/hooks/appState'
 import { cn, tw } from '@/lib/utils'
@@ -94,7 +95,7 @@ type FormCheckbox = {
   type: 'checkbox'
   hidden?: boolean
   disabled: boolean
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onChange: (isChecked: boolean) => void
 }
 
 type FormItemType =
@@ -249,8 +250,18 @@ const useMainItems = () => {
         disabled: config.iconSetType === 'solid',
         hidden: config.iconSetType === 'solid',
         type: 'checkbox',
-        onChange: e => {
-          setConfig({ nonScalingStroke: e.target.checked })
+        onChange: isChecked => {
+          setConfig({ nonScalingStroke: isChecked })
+        },
+      } satisfies FormCheckbox,
+      {
+        id: 'output-jsx',
+        title: 'output jsx',
+        defaultChecked: config.outputJsx,
+        disabled: false,
+        type: 'checkbox',
+        onChange: isChecked => {
+          setConfig({ outputJsx: isChecked })
         },
       } satisfies FormCheckbox,
     ],
@@ -390,12 +401,10 @@ export const FormItems = memo(function FormItems(props: {
                 }
               )}
             >
-              <input
+              <Checkbox
                 id={`checkbox-${i}`}
-                type={item.type}
                 defaultChecked={item.defaultChecked}
-                onChange={item.onChange}
-                className="cursor-pointer"
+                onCheckedChange={item.onChange}
               />
               <label htmlFor={`checkbox-${i}`} className="cursor-pointer">
                 {item.title}
