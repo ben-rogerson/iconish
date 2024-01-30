@@ -33,10 +33,12 @@ export default defineConfig({
 
     baseURL: 'http://127.0.0.1:3000',
 
-    ctViteConfig: {
-      plugins: viteConfig.plugins,
-      resolve: viteConfig.resolve,
-    },
+    ...(!process.env.CI && {
+      ctViteConfig: {
+        plugins: viteConfig.plugins,
+        resolve: viteConfig.resolve,
+      },
+    }),
   },
 
   /* Configure projects for major browsers */
