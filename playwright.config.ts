@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 import { defineConfig, devices } from '@playwright/experimental-ct-react'
 import { plugins, resolve } from './vitest.config'
 
