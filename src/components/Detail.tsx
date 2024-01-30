@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Editors } from '@/feature/editor/components/Editors'
 import { useAppActions, useAppStore } from '@/hooks/appState'
 import { GroupSet } from '@/components/GroupSet'
@@ -24,21 +24,28 @@ const Detail = () => {
   // TODO: Move this ref to a provider?
   const virtualListRef = useRef<VirtuosoHandle>(null)
 
-  const activeEditors =
-    group?.editors.filter(
-      ([, data]) =>
-        data.svg.output &&
-        data.svg.output !== '<html xmlns="http://www.w3.org/1999/xhtml"/>'
-    ) ?? []
+  const activeEditors = useMemo(
+    () =>
+      group?.editors.filter(
+        ([, data]) =>
+          data.svg.output &&
+          data.svg.output !== '<html xmlns="http://www.w3.org/1999/xhtml"/>'
+      ) ?? [],
+    [group?.editors]
+  )
 
   return (
     <div className="grid gap-16">
-      <div
-        className="sticky -top-px z-50 flex gap-6 border-y bg-[--page-bg] px-4 py-3"
-        role="toolbar"
-      >
-        <ConfigPanel />
-      </div>
+      {activeEditors.length > 0 ? (
+        <div
+          className="sticky -top-px z-50 flex gap-6 border-y bg-[--page-bg] px-4 py-3"
+          role="toolbar"
+        >
+          <ConfigPanel />
+        </div>
+      ) : (
+        <div className="border-t" />
+      )}
       <div>
         {!!group && (
           <GroupSet
