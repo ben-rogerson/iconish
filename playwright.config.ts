@@ -1,21 +1,5 @@
 import { defineConfig, devices } from '@playwright/experimental-ct-react'
-import react from '@vitejs/plugin-react'
-import { type AliasOptions } from 'vite'
-import { resolve } from 'path'
-import { compilerOptions } from './tsconfig.json'
-
-// https://github.com/vitejs/vite/issues/88#issuecomment-864348862
-const alias: AliasOptions = Object.entries(compilerOptions.paths).reduce(
-  (acc, [key, [value]]) => {
-    const aliasKey = key.substring(0, key.length - 2)
-    const path = value.substring(0, value.length - 2)
-    return {
-      ...acc,
-      [aliasKey]: resolve(__dirname, path),
-    }
-  },
-  {}
-)
+import viteConfig from './vitest.config'
 
 /**
  * Read environment variables from file.
@@ -49,10 +33,10 @@ export default defineConfig({
 
     baseURL: 'http://127.0.0.1:3000',
 
-    // ctViteConfig: {
-    //   plugins: [react()],
-    //   resolve: { alias },
-    // },
+    ctViteConfig: {
+      plugins: viteConfig.plugins,
+      resolve: viteConfig.resolve,
+    },
   },
 
   /* Configure projects for major browsers */

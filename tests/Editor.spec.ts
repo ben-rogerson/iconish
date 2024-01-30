@@ -1,6 +1,27 @@
 import type { Page } from '@playwright/test'
 import { test, expect } from '@playwright/test'
 
+// https://github.com/microsoft/playwright/issues/4302#issuecomment-1165404704
+const scroll = async ({
+  direction,
+  speed,
+}: {
+  direction: 'down' | 'up'
+  speed: 'slow' | 'fast'
+}) => {
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+  const scrollHeight = () => document.body.scrollHeight
+  const start = direction === 'down' ? 0 : scrollHeight()
+  const shouldStop = (position: number) =>
+    direction === 'down' ? position > scrollHeight() : position < 0
+  const increment = direction === 'down' ? 100 : -100
+  const delayTime = speed === 'slow' ? 50 : 10
+  for (let i = start; !shouldStop(i); i += increment) {
+    window.scrollTo(0, i)
+    await delay(delayTime)
+  }
+}
+
 const setupFirstEditor = async (page: Page) => {
   // Set a large height to avoid the windowing removing the editor/preview from the DOM
   await page.setViewportSize({ width: 1200, height: 1200 })
@@ -11,7 +32,7 @@ const setupFirstEditor = async (page: Page) => {
 
   // Add an editor to enable the add buttons
   const addSvgButton = page.getByRole('button', {
-    name: 'Or try a random icon',
+    name: 'Random SVG',
   })
   await addSvgButton.click()
   await expect(page.getByRole('article', { name: 'editor' })).toHaveCount(1)
@@ -66,6 +87,8 @@ test('should add an editor after clicking the add buttons', async ({
     .last()
     .click()
 
+  await page.evaluate(scroll, { direction: 'up', speed: 'fast' } as const)
+
   const itemsAfterSecondAdd = await getEditorTypes(page)
   expect(itemsAfterSecondAdd).toEqual(['preview', 'editor', 'preview'])
 })
@@ -106,7 +129,7 @@ test('a svg can be added via the test buttons', async ({ page }) => {
   await page
     .getByRole('article', { name: 'preview' })
     .first()
-    .getByRole('button', { name: 'Or try a random icon' })
+    .getByRole('button', { name: 'Random SVG' })
     .first()
     .click()
 
