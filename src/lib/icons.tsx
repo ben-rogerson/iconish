@@ -7,7 +7,7 @@ export const iconBarrier = (
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="inline-block h-[1em] w-[1em] text-[500%] text-[--text-muted]"
+    className="inline-block"
   >
     <rect
       x="2"

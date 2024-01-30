@@ -115,7 +115,9 @@ const Preview = memo(function Preview(props: PreviewProps) {
           </div>
         )}
         <div className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] rounded border text-2xl md:grid">
-          <div className="relative grid place-items-center">{iconBarrier}</div>
+          <div className="relative grid place-items-center px-[25%] text-[--text-muted]">
+            {iconBarrier}
+          </div>
           <div className="relative grid gap-4 py-10 pr-12">
             <div className="grid grid-cols-2 gap-5">
               <Upload onUpload={handleOnUpload} className="w-full" />
