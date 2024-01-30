@@ -57,7 +57,10 @@ const Log = (props: { logItems: EditorProps['data']['svg']['log'] }) => {
               )}
             </div>
             <div>
-              {l.msg} <span className="text-xs opacity-50">{l.type}</span>
+              {l.msg}{' '}
+              <span className="pointer-events-none text-xs opacity-50">
+                {l.type}
+              </span>
             </div>
           </div>
         </li>
