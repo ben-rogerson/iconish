@@ -112,109 +112,116 @@ const Editor = (props: EditorProps) => {
   }
 
   return (
-    <div className="group/editor relative">
-      <div className="grid gap-3">
-        <div className="grid grid-cols-2">
-          <div className="absolute right-0 top-3">
-            <RemoveButton
-              onClick={() => {
-                removeEditor(props.id)
-                toast({
-                  itemID: props.id,
-                  title: `Removed icon${
-                    props.data.title ? ` “${props.data.title}”` : ''
-                  }`,
-                  action: (
-                    <ToastAction altText="Undo" onClick={handleUndo}>
-                      Undo
-                    </ToastAction>
-                  ),
-                })
-              }}
-            />
-          </div>
-          <Title id={props.id} title={props.data.title} />
-        </div>
-        <div
-          className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] rounded-t border md:grid"
-          style={{ borderBottomStyle: 'dashed' }}
-        >
-          <div className={cn('relative px-[25%] py-[15%]')}>
-            {Boolean(sanitizedSvg) && (
-              <>
-                <div dangerouslySetInnerHTML={{ __html: sanitizedSvg }} />
-                <div className="absolute left-2 top-2 hidden text-xs text-[--text-muted] group-focus-within/editor:block group-hover/editor:block">
-                  {sized.before}
-                </div>
-              </>
-            )}
-            {/* <div className="absolute -bottom-px left-1/2 top-full h-[25px] w-px origin-top-left bg-[--border] after:absolute after:bottom-px after:h-2 after:w-2 after:-translate-x-[50%] after:-rotate-45 after:border-b after:border-l after:border-b-[--border] after:border-l-[--border]" /> */}
-          </div>
-          <div className="relative p-6 pl-0">
-            {/* {(props.data.view?.doc.length ?? 0) > 30 && (
-              <div className="absolute right-6 top-0 -mt-2.5 flex justify-end bg-[--page-bg] px-1.5 group-focus-within/editor:block group-hover/editor:block md:hidden">
-                <WordWrapIn />
-              </div>
-            )} */}
-
-            <CodeMirror
-              extensions={[javascript({ jsx: true }), EditorView.lineWrapping]}
-              onChange={handleOnChange}
-              theme={vscodeDark}
-              value={props.data.view?.doc ?? ''}
-              editable={false}
-            />
-          </div>
-        </div>
-      </div>
-      <div>
-        <div
-          className="relative grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] border border-t-0 md:grid"
-          style={{ borderBottomStyle: 'dashed' }}
-        >
-          <div className="relative px-[25%] pb-[25%] pt-[15%]">
-            <div dangerouslySetInnerHTML={{ __html: props.data.svg.output }} />
-            <div className="absolute left-2 top-2 hidden text-xs text-[--text-muted] group-focus-within/editor:block group-hover/editor:block">
-              {sized.after}
+    <div>
+      <div className="pointer-events-none absolute -left-[20%] -top-[2%] h-[500px] w-full rotate-12 rounded-full bg-[radial-gradient(169.40%_89.55%_at_94.76%_6.29%,rgba(36,46,66,1)_0%,rgba(255,255,255,0.00)_100%)] opacity-20 blur-2xl" />
+      <div className="group/editor relative">
+        <div className="grid gap-3">
+          <div className="grid grid-cols-2">
+            <div className="absolute right-0 top-3">
+              <RemoveButton
+                onClick={() => {
+                  removeEditor(props.id)
+                  toast({
+                    itemID: props.id,
+                    title: `Removed icon${
+                      props.data.title ? ` “${props.data.title}”` : ''
+                    }`,
+                    action: (
+                      <ToastAction altText="Undo" onClick={handleUndo}>
+                        Undo
+                      </ToastAction>
+                    ),
+                  })
+                }}
+              />
             </div>
+            <Title id={props.id} title={props.data.title} />
           </div>
-          <div className="relative p-6 pl-0">
-            {/* {props.data.svg.output.length > 30 && (
+          <div
+            className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] rounded-t border bg-black/10 md:grid"
+            style={{ borderBottomStyle: 'dashed' }}
+          >
+            <div className={cn('relative px-[25%] py-[15%]')}>
+              {Boolean(sanitizedSvg) && (
+                <>
+                  <div dangerouslySetInnerHTML={{ __html: sanitizedSvg }} />
+                  <div className="absolute left-2 top-2 hidden text-xs text-[--text-muted] group-focus-within/editor:block group-hover/editor:block">
+                    {sized.before}
+                  </div>
+                </>
+              )}
+              {/* <div className="absolute -bottom-px left-1/2 top-full h-[25px] w-px origin-top-left bg-[--border] after:absolute after:bottom-px after:h-2 after:w-2 after:-translate-x-[50%] after:-rotate-45 after:border-b after:border-l after:border-b-[--border] after:border-l-[--border]" /> */}
+            </div>
+            <div className="relative p-6 pl-0">
+              {/* {(props.data.view?.doc.length ?? 0) > 30 && (
                 <div className="absolute right-6 top-0 -mt-2.5 flex justify-end bg-[--page-bg] px-1.5 group-focus-within/editor:block group-hover/editor:block md:hidden">
-                  <WordWrapOut />
+                  <WordWrapIn />
                 </div>
               )} */}
-            <CodeMirror
-              extensions={[
-                javascript({ jsx: true }),
-                EditorView.editable.of(false),
-                EditorView.lineWrapping,
-              ]}
-              theme={vscodeDark}
-              value={output}
-              // onUpdate={handleOnUpdateOut}
-            />
-          </div>
-          <div className="absolute bottom-2 right-2">
-            <Button
-              aria-label="Copy svg code to clipboard"
-              type="button"
-              onClick={() => {
-                copy(output).catch(() => null)
-                toast({
-                  itemID: `copied-${props.id}`,
-                  title: `Copied svg code to clipboard`,
-                })
-              }}
-              variant="ghost"
-              className="text-[--text-muted]"
-            >
-              <Copy width={15} />
-            </Button>
+              <CodeMirror
+                extensions={[
+                  javascript({ jsx: true }),
+                  EditorView.lineWrapping,
+                ]}
+                onChange={handleOnChange}
+                theme={vscodeDark}
+                value={props.data.view?.doc ?? ''}
+                editable={false}
+              />
+            </div>
           </div>
         </div>
-        <div className="rounded-b border border-t-0">
-          <Log logItems={props.data.svg.log} />
+        <div className="bg-black/10">
+          <div
+            className="relative grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] border border-t-0 md:grid"
+            style={{ borderBottomStyle: 'dashed' }}
+          >
+            <div className="relative px-[25%] pb-[25%] pt-[15%]">
+              <div
+                dangerouslySetInnerHTML={{ __html: props.data.svg.output }}
+              />
+              <div className="absolute left-2 top-2 hidden text-xs text-[--text-muted] group-focus-within/editor:block group-hover/editor:block">
+                {sized.after}
+              </div>
+            </div>
+            <div className="relative p-6 pl-0">
+              {/* {props.data.svg.output.length > 30 && (
+                  <div className="absolute right-6 top-0 -mt-2.5 flex justify-end bg-[--page-bg] px-1.5 group-focus-within/editor:block group-hover/editor:block md:hidden">
+                    <WordWrapOut />
+                  </div>
+                )} */}
+              <CodeMirror
+                extensions={[
+                  javascript({ jsx: true }),
+                  EditorView.editable.of(false),
+                  EditorView.lineWrapping,
+                ]}
+                theme={vscodeDark}
+                value={output}
+                // onUpdate={handleOnUpdateOut}
+              />
+            </div>
+            <div className="absolute bottom-2 right-2">
+              <Button
+                aria-label="Copy svg code to clipboard"
+                type="button"
+                onClick={() => {
+                  copy(output).catch(() => null)
+                  toast({
+                    itemID: `copied-${props.id}`,
+                    title: `Copied svg code to clipboard`,
+                  })
+                }}
+                variant="ghost"
+                className="rounded text-[--text-muted]"
+              >
+                <Copy width={15} />
+              </Button>
+            </div>
+          </div>
+          <div className="rounded-b border border-t-0">
+            <Log logItems={props.data.svg.log} />
+          </div>
         </div>
       </div>
     </div>
