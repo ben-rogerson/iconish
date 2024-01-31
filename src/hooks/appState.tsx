@@ -90,7 +90,7 @@ const initialEditorData = (svgData?: SVGData, title?: string) => {
       isDeleted: false,
       svg: {
         output: svgData?.output ?? '',
-        outputJsx: svgData?.output ?? '',
+        outputJsx: svgData?.outputJsx ?? '',
         original: svgData?.original ?? '',
         log: svgData?.log ?? [],
       },
