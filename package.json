@@ -52,6 +52,7 @@
     "html-react-parser": "^5.1.1",
     "immer": "^10.0.3",
     "lodash": "^4.17.21",
+    "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.279.0",
     "million": "^2.6.4",
     "next": "13.5.2",
