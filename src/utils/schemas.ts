@@ -28,6 +28,7 @@ const svgSchema = z.object({
   output: z.string(),
   outputJsx: z.string(),
   original: z.string(),
+  savings: z.number(),
   log: z.array(svgLogItem).optional(),
 })
 

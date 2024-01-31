@@ -15,6 +15,7 @@ type SVGData = {
   outputJsx: string
   id?: string
   log: LogItem[]
+  savings: number
 }
 
 interface AppStoreActions {
@@ -93,6 +94,7 @@ const initialEditorData = (svgData?: SVGData, title?: string) => {
         outputJsx: svgData?.outputJsx ?? '',
         original: svgData?.original ?? '',
         log: svgData?.log ?? [],
+        savings: svgData?.savings ?? 0,
       },
       view: {
         doc: svgData?.original ?? '',
@@ -264,6 +266,7 @@ export const useAppStore = create<
                             outputJsx: svg.outputJsx,
                             original: editorData.svg.original,
                             log: svg.log,
+                            savings: svg.savings,
                           },
                         },
                       ] satisfies EditorState

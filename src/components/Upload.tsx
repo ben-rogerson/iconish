@@ -29,7 +29,7 @@ export function Upload(props: {
   return (
     <div
       className={cn(
-        'w-full border px-5 py-3 text-center text-[--input-text] placeholder-[var(--text-muted)] focus:outline-0',
+        'w-full rounded border px-5 py-3 text-center text-[--input-text] placeholder-[var(--text-muted)] focus:outline-0',
         props.className
       )}
     >

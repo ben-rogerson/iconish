@@ -60,6 +60,12 @@ const Detail = () => {
         )}
         <Editors virtualListRef={virtualListRef} />
       </div>
+      {activeEditors.length > 1 && (
+        <div className="fixed bottom-0 right-0 z-10 rounded-tl border-l border-t bg-background py-2 pl-4 pr-10 text-sm">
+          Total saved:{' '}
+          {activeEditors.reduce((acc, val) => val[1].svg.savings + acc, 0)} KB
+        </div>
+      )}
     </div>
   )
 }

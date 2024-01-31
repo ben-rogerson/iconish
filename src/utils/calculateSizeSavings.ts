@@ -8,7 +8,7 @@ export const calculateSizeSavings = (codeBefore: string, codeAfter: string) => {
   return {
     before: `${sizeBefore.toFixed(2)}KB`,
     after: `${sizeAfter.toFixed(2)}KB`,
-    // savings: `${savingsNumber > 0 ? `${savingsNumber.toFixed(2)}` : 0} KB`,
+    savings: savingsNumber > 0 ? Number(savingsNumber.toFixed(2)) : 0,
     savingsPercent:
       savingsPercent > 0
         ? `${savingsPercent.toFixed(2)} % saved (${`${

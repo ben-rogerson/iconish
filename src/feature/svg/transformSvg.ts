@@ -42,7 +42,13 @@ export const transformSvg = (
   svg: string,
   config: Config,
   options?: Omit<TransformOptions, 'config' | 'log'>
-) => {
+): {
+  output: string
+  outputJsx: string
+  savings: number
+  id?: string
+  log: LogItem[]
+} => {
   const logCache = new Set<LogItem>()
   const log: LogHelper = {
     add: (msg, type) => {
@@ -55,7 +61,12 @@ export const transformSvg = (
 
   if (!svgDoc) {
     // log.add("No svg element found", "error");
-    return { output: '', outputJsx: '', log: [...logCache.values()] }
+    return {
+      output: '',
+      outputJsx: '',
+      savings: 0,
+      log: [...logCache.values()],
+    }
   }
 
   const type =
@@ -106,13 +117,19 @@ export const transformSvg = (
     const outputJsx = config.outputJsx ? toJSX(parse(output)) : ''
     log.add('compressed with svgo')
 
-    const { savingsPercent } = calculateSizeSavings(svg, output)
+    const { savingsPercent, savings } = calculateSizeSavings(svg, output)
     log.add(savingsPercent ?? 'attributes applied', 'success')
 
-    return { output, outputJsx, id, log: [...logCache.values()] }
+    return { output, outputJsx, savings, id, log: [...logCache.values()] }
   } catch (error) {
     log.add(error instanceof Error ? error.message : String(error), 'error')
     const output = svgDoc.toString()
-    return { output, outputJsx: output, id, log: [...logCache.values()] }
+    return {
+      output,
+      outputJsx: output,
+      savings: 0,
+      id,
+      log: [...logCache.values()],
+    }
   }
 }
