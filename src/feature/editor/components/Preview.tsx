@@ -124,7 +124,7 @@ const Preview = memo(function Preview(props: PreviewProps) {
               <button
                 type="button"
                 onClick={handleAddRandomIcon}
-                className="flex h-full w-full items-center justify-center gap-3 border px-5 py-3"
+                className="flex h-full w-full items-center justify-center gap-3 rounded border px-5 py-3"
               >
                 <div>{diceIcon}</div>
                 <div>Random SVG</div>
@@ -135,7 +135,7 @@ const Preview = memo(function Preview(props: PreviewProps) {
               <input
                 ref={ref}
                 type="text"
-                className="w-full border bg-transparent px-5 py-3 text-[--input-text] placeholder-[var(--text-muted)] focus:outline-0"
+                className="w-full rounded border bg-transparent px-5 py-3 text-[--input-text] placeholder-[var(--text-muted)] focus:outline-0"
                 placeholder="Paste SVG, eg: <svg><path .../></svg>"
                 onKeyDown={e => {
                   if (e.key !== 'Enter') return
