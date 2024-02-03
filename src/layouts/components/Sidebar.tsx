@@ -26,7 +26,7 @@ export const WithMobileSidebar = ({
         </SheetTrigger>
         <SheetContent
           side="right"
-          className="overflow-y-auto"
+          className="overflow-y-auto px-7"
           data-testid="sidebar"
         >
           <SidebarContent />
