@@ -29,7 +29,7 @@ const List = () => {
             onClick={() => {
               addGroup()
             }}
-            className="w-full"
+            className="w-full rounded"
             variant="ghost"
             size="sm"
           >

@@ -2,8 +2,8 @@ import { useAppActions } from '@/hooks/appState'
 import { cn, tw } from '@/lib/utils'
 import type { RefObject } from 'react'
 import {
-  useEffect,
   type FunctionComponent,
+  useEffect,
   useState,
   useRef,
   memo,
@@ -141,9 +141,9 @@ const Header: FunctionComponent<{
               props.updateGroupTitle(props.id, title)
             }}
             className={tw(
-              `w-[inherit] bg-transparent text-xl text-[--text]`,
-              `focus:text-[--text] focus:outline-none`,
-              `placeholder-[--text-muted] placeholder:italic`,
+              `w-[inherit] bg-transparent text-xl`,
+              `hover:text-text focus:text-[--text] focus:outline-none`,
+              `placeholder-[--text-muted] placeholder:italic hover:placeholder-[--text] `,
               props.isLarge && `text-5xl tracking-tight`
             )}
           />
@@ -177,7 +177,6 @@ type GroupSetBlock = {
 
 export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
   const { updateGroupTitle, setActiveGroup } = useAppActions()
-  // const { toast } = useToast();
 
   const iconCount = props.count ?? props.icons.length
   const hasIcons = props.icons.length > 0
@@ -213,7 +212,7 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
       />
       {Boolean(hasIcons) && (
         <div className="group relative @container">
-          <div className="@4xl:grid-cols-15 pointer-events-none grid grid-cols-2 @xs:grid-cols-4 @xl:grid-cols-5 @2xl:grid-cols-6 @3xl:grid-cols-12">
+          <div className="@4xl:grid-cols-15 pointer-events-none grid grid-cols-2 @xs:grid-cols-4 @lg:grid-cols-5 @2xl:grid-cols-8 @3xl:grid-cols-8 @4xl:grid-cols-12">
             <div className="z-10 grid place-content-center text-center">
               <div className="-mb-1 block text-lg">{iconCount}</div>
               <div className="text-md">
@@ -270,7 +269,7 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
                   handleSelectGroup(props.id)
                 }}
                 className={tw(
-                  'absolute inset-0 z-0 cursor-pointer rounded-lg border opacity-0',
+                  'absolute inset-0 z-0 cursor-pointer rounded border opacity-0',
                   'hover:opacity-50 group-focus-within:opacity-50 group-hover:opacity-50'
                   // props.isCurrent && 'opacity-50'
                 )}
@@ -349,7 +348,7 @@ const IconListDraggable = (props: {
           <div
             dangerouslySetInnerHTML={{ __html: data.svg.output }}
             className={cn(
-              'relative z-10 rounded border border-transparent p-5 hover:border-[--text-muted] hover:shadow-sm',
+              'relative z-10 rounded border border-transparent p-[25%] hover:border-[--text-muted] hover:shadow-sm @sm:p-[32%] @3xl:p-[22%]',
               { 'border-red-800': hasError }
             )}
           />
@@ -402,6 +401,6 @@ const IconList = (props: { icons: Group['editors'] }) =>
       // eslint-disable-next-line react/no-array-index-key
       key={`${i}-${id}`}
       dangerouslySetInnerHTML={{ __html: data.svg.output }}
-      className="relative z-10 rounded border border-transparent p-3 hover:border-[--text-muted] hover:shadow-sm"
+      className="relative z-10 rounded border border-transparent p-5 hover:border-[--text-muted] hover:shadow-sm"
     />
   ))

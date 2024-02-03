@@ -106,7 +106,7 @@ const Preview = memo(function Preview(props: PreviewProps) {
     >
       <div className="grid gap-3">
         {Boolean(props.showRemove) && (
-          <div className="absolute right-2 top-5">
+          <div className="absolute right-2 top-2">
             <RemoveButton
               onClick={() => {
                 removeEditor(props.id)
