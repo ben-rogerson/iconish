@@ -1,9 +1,64 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { type VirtuosoHandle } from 'react-virtuoso'
+import { useTheme } from 'next-app-theme/use-theme'
 import { Editors } from '@/feature/editor/components/Editors'
 import { useAppActions, useAppStore } from '@/hooks/appState'
 import { GroupSet } from '@/components/GroupSet'
 import { ConfigPanel } from '@/feature/config/components/ConfigPanel'
-import { type VirtuosoHandle } from 'react-virtuoso'
+import { useToast } from '@/components/ui/use-toast'
+
+const useAutoThemeSwitch = () => {
+  const { theme, toggleTheme } = useTheme()
+  const { getConfig } = useAppActions()
+  const { toast } = useToast()
+
+  const fill = getConfig().fill.toLowerCase()
+
+  useEffect(() => {
+    if (
+      theme === 'light' &&
+      [
+        '#fff',
+        '#ffffff',
+        '#eee',
+        '#eeeeee',
+        '#bbb',
+        '#bbbbbb',
+        '#aaa',
+        '#aaaaaa',
+      ].some(f => f === fill)
+    ) {
+      toggleTheme()
+      toast({
+        title: 'Automatic theme switch',
+        description:
+          'The fill color conflicted with the light theme so it was switched to dark',
+      })
+    }
+    if (
+      theme === 'dark' &&
+      [
+        '#000',
+        '#000000',
+        '#111',
+        '#111111',
+        '#222',
+        '#222222',
+        '#333',
+        '#333333',
+      ].some(f => f === fill)
+    ) {
+      toggleTheme()
+      toast({
+        title: 'Automatic theme switch',
+        description:
+          'The fill color conflicted with the dark theme so it was switched to light',
+      })
+    }
+  }, [fill, theme, toast, toggleTheme])
+
+  return null
+}
 
 /**
  * Update the group list when the hash changes.
@@ -13,6 +68,9 @@ const useGroupRender = () => {
   const { getGroup } = useAppActions()
   const hash = useAppStore(s => s.updateListHash)
   const [group, setGroup] = useState(getGroup())
+
+  useAutoThemeSwitch()
+
   useEffect(() => {
     setGroup(getGroup())
   }, [hash, getGroup])
@@ -21,6 +79,7 @@ const useGroupRender = () => {
 
 const Detail = () => {
   const group = useGroupRender()
+
   // TODO: Move this ref to a provider?
   const virtualListRef = useRef<VirtuosoHandle>(null)
 
@@ -33,6 +92,12 @@ const Detail = () => {
       ) ?? [],
     [group?.editors]
   )
+
+  const totalSaved = `${
+    Math.round(
+      activeEditors.reduce((acc, val) => val[1].svg.savings + acc, 0) * 100
+    ) / 100
+  } KB`
 
   return (
     <div className="grid gap-16">
@@ -62,8 +127,7 @@ const Detail = () => {
       </div>
       {activeEditors.length > 1 && (
         <div className="fixed bottom-0 right-0 z-10 rounded-tl border-l border-t bg-background py-2 pl-4 pr-10 text-sm">
-          Total saved:{' '}
-          {activeEditors.reduce((acc, val) => val[1].svg.savings + acc, 0)} KB
+          Total saved: {totalSaved}
         </div>
       )}
     </div>

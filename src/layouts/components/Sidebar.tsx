@@ -14,7 +14,7 @@ export const WithMobileSidebar = ({
     <>
       <Sheet>
         <SheetTrigger
-          className="fixed right-5 top-7"
+          className="fixed right-7 top-8"
           aria-label="View icon sets"
         >
           <MenuIcon size={24} />

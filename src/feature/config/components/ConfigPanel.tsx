@@ -1,3 +1,10 @@
+import type { MutableRefObject } from 'react'
+import { Fragment, memo, useMemo, useRef, useState } from 'react'
+import validateColor from 'validate-color'
+import debounce from 'lodash/debounce'
+import type { DebouncedFunc } from 'lodash'
+import { RotateCw } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import {
   Select,
   SelectContent,
@@ -11,14 +18,8 @@ import { Slider } from '@/components/ui/slider'
 import { useAppActions, useAppStore } from '@/hooks/appState'
 import { cn, tw } from '@/lib/utils'
 import { run } from '@/utils/run'
-import type { MutableRefObject } from 'react'
-import { Fragment, memo, useMemo, useRef, useState } from 'react'
-import validateColor from 'validate-color'
-import debounce from 'lodash/debounce'
-import type { DebouncedFunc } from 'lodash'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
-import { RotateCw } from 'lucide-react'
 
 // const saveTemplateAsFile = (
 //   filename: string,
@@ -416,6 +417,12 @@ export const FormItems = memo(function FormItems(props: {
   ))
 })
 
+// Don't SSR the toggle since the value on the server will be different than the client
+const SetThemeButton = dynamic(() => import('@/components/Theme'), {
+  ssr: false,
+  loading: () => <div />,
+})
+
 export const ConfigPanel = () => {
   const activeGroupId = useAppStore(s => s.activeGroupId)
   const mainItems = useMainItems()
@@ -452,11 +459,13 @@ export const ConfigPanel = () => {
 
   return (
     <div
-      className="group/config flex w-full grid-cols-4 items-start gap-10 pt-1.5 text-sm"
+      className="group/config flex w-full select-none grid-cols-4 items-start gap-10 pt-1.5 text-sm"
       key={`group-${activeGroupId}-${key}`}
     >
       <FormItems items={mainItems} />
-      <div className="ml-auto grid h-full items-center">
+      <div className="ml-auto grid h-full grid-cols-2 items-center gap-8">
+        <SetThemeButton />
+
         <button
           type="button"
           onClick={handleResetConfig}

@@ -346,8 +346,6 @@ export const useAppStore = create<
               .filter(Boolean)
               .join('\n')
 
-            console.log({ svgs })
-
             return svgs
           },
 

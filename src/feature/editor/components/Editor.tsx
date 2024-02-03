@@ -113,7 +113,7 @@ const Editor = (props: EditorProps) => {
 
   return (
     <div>
-      <div className="pointer-events-none absolute -left-[20%] -top-[2%] h-[500px] w-full rotate-12 rounded-full bg-[radial-gradient(169.40%_89.55%_at_94.76%_6.29%,rgba(36,46,66,1)_0%,rgba(255,255,255,0.00)_100%)] opacity-20 blur-2xl" />
+      <div className="pointer-events-none absolute -left-[20%] -top-[2%] h-[500px] w-full rotate-12 rounded-full opacity-20 blur-2xl dark:bg-[radial-gradient(169.40%_89.55%_at_94.76%_6.29%,rgba(36,46,66,1)_0%,rgba(255,255,255,0.00)_100%)]" />
       <div className="group/editor relative">
         <div className="grid gap-3">
           <div className="grid grid-cols-2">
@@ -138,7 +138,7 @@ const Editor = (props: EditorProps) => {
             <Title id={props.id} title={props.data.title} />
           </div>
           <div
-            className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] rounded-t border bg-black/10 md:grid"
+            className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] rounded-t border bg-[--page-bg-alt] md:grid"
             style={{ borderBottomStyle: 'dashed' }}
           >
             <div className={cn('relative px-[25%] py-[15%]')}>
@@ -171,7 +171,7 @@ const Editor = (props: EditorProps) => {
             </div>
           </div>
         </div>
-        <div className="bg-black/10">
+        <div className="bg-[--page-bg-alt]">
           <div
             className="relative grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] border border-t-0 md:grid"
             style={{ borderBottomStyle: 'dashed' }}

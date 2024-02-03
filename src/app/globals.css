@@ -2,32 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
-.dark {
+:root {
+  color-scheme: light;
+
+  --primary: 220 50% 80%;
+  --secondary: 220 50% 75%;
+  --text: 220 50% 20%;
+  --muted: 220 50% 60%;
+  --bg: 220 50% 98%;
+  --bg-alt: 220 50% 98%;
+  --border: 220 50% 75%;
+  --input: 220 50% 75%;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --primary: 0 0% 100%;
+  --secondary: 220 30% 40%;
+  --text: 220 30% 90.2%;
+  --muted: 220 30% 40%;
+  --bg: 220 30% 7.5%;
+  --bg-alt: 220 30% 6.5%;
+  --border: 220 30% 20%;
+  --input: 220 30% 20%;
+}
+
+/* .dark {
   --primary: 0 0% 100%;
   --secondary: 220 30% 40%;
   --text: 0 0% 90.2%;
   --muted: 220 30% 40%;
   --bg: 220 30% 7.5%;
-  --bg-dark: 0 0% 0%;
-  --bg-darkish: 220 30% 15%;
+  --bg-alt: 220 30% 6.5%;
   --border: 220 30% 20%;
   --input: 220 30% 20%;
+
+  color-scheme: dark;
 }
 
 .light {
   --primary: 0 0% 100%;
   --secondary: 10 30% 75%;
-  --text: 10 20% 30%;
-  --muted: 10 15% 50%;
+  --text: 10 27% 20%;
+  --muted: 10 20% 60%;
   --bg: 10 20% 90%;
-  --bg-dark: 100 0% 0%;
-  --bg-darkish: 120 30% 15%;
+  --bg-alt: 10 20% 92%;
   --border: 10 20% 75%;
   --input: 10 20% 75%;
-}
 
-.light,
-.dark {
+  color-scheme: light;
+} */
+
+:root {
   --background: var(--bg);
   --foreground: 210 40% 98%;
 
@@ -36,6 +63,8 @@
 
   --popover: var(--bg);
   --popover-foreground: 210 40% 98%;
+
+  --radius: 0.4rem;
 
   /* --primary: 210 40% 98%; */
   --primary-foreground: 222.2 47.4% 11.2%;
@@ -46,7 +75,7 @@
   /* --muted: 0 0% 43.1%; */
   --muted-foreground: 215 20.2% 65.1%;
 
-  --accent: var(--bg-darkish);
+  --accent: var(--muted);
   --accent-foreground: 210 40% 98%;
 
   --destructive: 0 62.8% 30.6%;
@@ -63,14 +92,15 @@
   --text-secondary: hsl(var(--secondary));
 
   --page-bg: hsl(var(--bg));
-  --page-scrollbar: hsl(var(--bg-darkish));
+  --page-bg-alt: hsl(var(--bg-alt));
+  --page-scrollbar: hsl(var(--bg));
 
   /* Buttons */
   --button-text: hsl(var(--muted));
   --button-text-muted: hsl(var(--muted));
   --button-text-hover: hsl(var(--text));
   --button-bg: hsl(var(--bg));
-  --button-bg-hover: hsl(var(--bg-darkish));
+  --button-bg-hover: hsl(var(--bg));
 
   /* Input fields */
   --input-text: hsl(var(--text));
@@ -82,6 +112,13 @@
   /* Sortable drag indicators */
   --drag-indicator-text: hsl(var(--muted));
   --drag-indicator-text-active: hsl(var(--text));
+
+  background: var(--page-bg);
+  color: var(--text-normal);
+  font-family: 'Chivo', monospace;
+  font-weight: 250;
+  overflow-y: scroll; /* Always show scrollbar to avoid layout shift */
+  /* scroll-margin-top: 8rem; */
 }
 
 @layer base {
@@ -166,19 +203,8 @@
   /* font-stretch: 25% 151%; */
 }
 
-html {
-  /* font-family: "Space Mono", monospace; */
-  font-family: 'Chivo';
-  font-weight: 250;
-
-  overflow-y: scroll; /* Always show scrollbar to avoid layout shift */
-  /* scroll-margin-top: 8rem; */
-}
-
 body {
   overflow-y: none; /* Always show scrollbar to avoid layout shift */
-  background: var(--page-bg);
-  color: var(--text-normal);
 }
 
 html body {
