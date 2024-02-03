@@ -1,5 +1,5 @@
 import type { RefObject } from 'react'
-import { memo, useEffect, useState } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
 import type { VirtuosoHandle } from 'react-virtuoso'
 import { Editor } from '@/feature/editor/components/Editor'
 import { EditorList } from '@/feature/editor/components/EditorList'
@@ -49,9 +49,23 @@ const useEditorsRender = () => {
   return editors
 }
 
+const EndBlock = () => (
+  <div className="py-16">
+    <div className="h-1 rounded bg-border" />
+  </div>
+)
+
 const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
   const { addEditorAfter } = useAppActions()
   const getEditors = useEditorsRender()
+
+  const editorCount = useMemo(
+    () =>
+      getEditors.filter(
+        e => e[1].svg.output !== '' && e[1].svg.output.includes('<svg')
+      ).length,
+    [getEditors]
+  )
 
   if (getEditors.length === 0)
     return (
@@ -59,10 +73,6 @@ const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
         <Preview id="none" showRemove={false} />
       </div>
     )
-
-  const editorCount = getEditors.filter(
-    e => e[1].svg.output !== '' && e[1].svg.output.includes('<svg')
-  ).length
 
   return (
     <EditorList virtualListRef={props.virtualListRef}>
@@ -103,6 +113,7 @@ const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
           </article>
         )
       })}
+      <EndBlock />
     </EditorList>
   )
 }
