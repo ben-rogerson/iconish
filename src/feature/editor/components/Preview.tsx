@@ -135,7 +135,7 @@ const Preview = memo(function Preview(props: PreviewProps) {
               <input
                 ref={ref}
                 type="text"
-                className="w-full rounded border bg-transparent px-5 py-3 text-[--input-text] placeholder-[var(--text-muted)] focus:outline-0"
+                className="w-full rounded border bg-transparent px-5 py-3 text-[--input-text] placeholder-[var(--text-muted)] caret-[--text-secondary] focus:outline-0"
                 placeholder="Paste SVG, eg: <svg><path .../></svg>"
                 onKeyDown={e => {
                   if (e.key !== 'Enter') return
