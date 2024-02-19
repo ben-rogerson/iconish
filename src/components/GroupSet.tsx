@@ -44,6 +44,7 @@ export function Menu(props: {
   title: string
   groupId: string
   createdAt: number
+  hasIcons: boolean
 }) {
   const { removeGroup } = useAppActions()
   const { toast } = useToast()
@@ -77,11 +78,9 @@ export function Menu(props: {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={copyAll.copy}>
+          <DropdownMenuItem onClick={copyAll.copy} disabled={!props.hasIcons}>
             <Copy className="mr-2 h-4 w-4" />
-            <span>
-              Copy optimized SVGs{copyAll.hasCopied ? 'All copied' : ''}
-            </span>
+            <span>Copy all optimized SVGs</span>
           </DropdownMenuItem>
           <DropdownMenuItem disabled>
             <Layers className="mr-2 h-4 w-4" />
@@ -155,6 +154,7 @@ const Header: FunctionComponent<{
             groupId={props.id}
             createdAt={props.createdAt}
             title={props.title}
+            hasIcons={props.hasIcons}
           />
           {/* <RemoveButton onClick={() => props.removeGroup(props.id)} /> */}
         </div>
