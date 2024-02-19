@@ -1,6 +1,5 @@
 import type { Page } from '@playwright/test'
 import { test, expect } from '@playwright/test'
-import exp from 'constants'
 
 // https://github.com/microsoft/playwright/issues/4302#issuecomment-1165404704
 const scroll = async ({
@@ -25,7 +24,7 @@ const scroll = async ({
 
 const setupFirstEditor = async (page: Page) => {
   // Set a large height to avoid the windowing removing the editor/preview from the DOM
-  await page.setViewportSize({ width: 1200, height: 1200 })
+  await page.setViewportSize({ width: 1200, height: 2200 })
 
   // Assert no add button when starting
   const addButton = page.getByRole('button', { name: /Add SVG/i })
@@ -128,6 +127,61 @@ test('a svg can be added via paste', async ({ page }) => {
 
   const itemsAfter = await getEditorTypes(page)
   expect(itemsAfter).toEqual(['editor'])
+})
+
+test('a svg can be added via upload', async ({ page }) => {
+  const icon = '<svg><circle cx="50" cy="50" r="80"/></svg>'
+
+  const input = page.getByLabel('Upload SVGs')
+  await input.setInputFiles({
+    name: 'icon.svg',
+    mimeType: 'image/svg+xml',
+    buffer: Buffer.from(icon),
+  })
+
+  const itemsAfter = await getEditorTypes(page)
+  expect(itemsAfter).toEqual(['editor'])
+})
+
+test('multiple svgs can be added via upload', async ({ page }) => {
+  // Set a large height to avoid the windowing removing the editor/preview from the DOM
+  await page.setViewportSize({ width: 1200, height: 5000 })
+
+  const icon = '<svg><circle cx="50" cy="50" r="10"/></svg>'
+  const icon2 = '<svg><circle cx="50" cy="50" r="20"/></svg>'
+  const icon3 = '<svg><circle cx="50" cy="50" r="30"/></svg>'
+  const icon4 = '<svg><circle cx="50" cy="50" r="40"/></svg>'
+  const iconTemplate = (iconContent: string, fileName: string) => ({
+    name: `${fileName}.svg`,
+    mimeType: 'image/svg+xml',
+    buffer: Buffer.from(iconContent),
+  })
+
+  const input = page.getByLabel('Upload SVGs')
+  await input.setInputFiles([iconTemplate(icon, 'a'), iconTemplate(icon2, 'b')])
+
+  const itemsAfter = await getEditorTypes(page)
+  expect(itemsAfter).toEqual(['editor', 'editor'])
+
+  // Add a preview panel in the middle
+  const contentList = page.locator('[data-test-id=virtuoso-item-list]')
+  await contentList
+    .getByRole('button', { name: /Add SVG/i })
+    .nth(1)
+    .click()
+
+  const itemsAfterAdd = await getEditorTypes(page)
+  expect(itemsAfterAdd).toEqual(['editor', 'preview', 'editor'])
+
+  // Upload another two svgs in the middle (TODO: check the actual content is correct)
+  const uploadInput = page.getByLabel('Upload SVGs')
+  await uploadInput.setInputFiles([
+    iconTemplate(icon3, 'c'),
+    iconTemplate(icon4, 'd'),
+  ])
+
+  const itemsAfterAddMore = await getEditorTypes(page)
+  expect(itemsAfterAddMore).toEqual(['editor', 'editor', 'editor', 'editor'])
 })
 
 test('a svg can be added via the test buttons', async ({ page }) => {
