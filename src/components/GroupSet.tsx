@@ -186,12 +186,11 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
       : 0
 
   const handleSelectGroup = (groupId: string) => {
-    const { hasSwitched } = setActiveGroup(groupId)
-    if (!hasSwitched) return
-    // toast({ title: `Switched to ‘${props.title || "Untitled set"}’ icon set` });
+    setActiveGroup(groupId)
 
+    // Scroll to the top of the page
     setTimeout(() => {
-      document.querySelector(`#sets`)?.scrollIntoView()
+      document.querySelector(`#top`)?.scrollIntoView()
     }, 0)
   }
 
