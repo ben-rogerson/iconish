@@ -27,7 +27,7 @@ const AddIconInput = forwardRef<
   return (
     <div className="flex items-center gap-1">
       <Upload onUpload={props.onUpload} />
-      <div className="px-8 text-[150%] text-[--text-muted]">/</div>
+      <div className="px-8 text-[150%] text-muted">/</div>
       <input
         ref={ref}
         type="text"
@@ -120,7 +120,7 @@ const Preview = memo(function Preview(props: PreviewProps) {
           </div>
         )}
         <div className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] rounded border text-2xl md:grid">
-          <div className="relative grid place-items-center px-[25%] text-[--text-muted]">
+          <div className="relative grid place-items-center px-[25%] text-muted">
             {iconBarrier}
           </div>
           <div className="relative grid gap-4 py-10 pr-12">
@@ -129,7 +129,7 @@ const Preview = memo(function Preview(props: PreviewProps) {
               <button
                 type="button"
                 onClick={handleAddRandomIcon}
-                className="flex h-full w-full items-center justify-center gap-3 rounded border px-5 py-3"
+                className="flex h-full w-full items-center justify-center gap-3 rounded border bg-background px-5 py-3"
               >
                 <div>{diceIcon}</div>
                 <div>Random SVG</div>
@@ -140,8 +140,8 @@ const Preview = memo(function Preview(props: PreviewProps) {
               <input
                 ref={ref}
                 type="text"
-                className="w-full rounded border bg-transparent px-5 py-3 text-[--input-text] placeholder-[var(--text-muted)] caret-[--text-secondary] focus:outline-0"
-                placeholder="Paste SVG, eg: <svg><path .../></svg>"
+                className="w-full rounded border bg-background px-5 py-3 text-[--input-text] placeholder-[var(--text-muted)] caret-[--text-secondary] focus:outline-0"
+                placeholder="Paste SVG, eg: <svg><path ... /></svg>"
                 onKeyDown={e => {
                   if (e.key !== 'Enter') return
                   handleUpdateEditor(e.currentTarget.value)

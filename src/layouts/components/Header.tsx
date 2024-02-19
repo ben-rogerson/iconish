@@ -3,8 +3,8 @@ import Link from 'next/link'
 
 export function Header() {
   return (
-    <div className="flex items-center justify-between py-7">
-      <Link href="/" className="flex gap-x-[0.25em] text-2xl">
+    <div className="grid py-7">
+      <Link href="/" className="flex items-center gap-x-[0.35em] text-2xl">
         {logoIcon}
         <div>Iconish</div>
       </Link>

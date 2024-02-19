@@ -29,7 +29,7 @@ export function Upload(props: {
   return (
     <div
       className={cn(
-        'w-full rounded border px-5 py-3 text-center text-[--input-text] placeholder-[var(--text-muted)] focus:outline-0',
+        'w-full text-center text-[--input-text] placeholder-[var(--text-muted)] focus:outline-0',
         props.className
       )}
     >
@@ -43,10 +43,10 @@ export function Upload(props: {
       />
       <label
         htmlFor="upload"
-        className="flex h-full items-center justify-center gap-3"
+        className="flex h-full cursor-pointer items-center justify-center gap-3 rounded border bg-background px-5 py-3"
       >
         <div>{uploadIcon}</div>
-        <div>Upload SVG&hellip;</div>
+        <div>Upload SVGs&hellip;</div>
       </label>
     </div>
   )

@@ -49,12 +49,6 @@ const useEditorsRender = () => {
   return editors
 }
 
-const EndBlock = () => (
-  <div className="py-16">
-    <div className="h-1 rounded bg-border" />
-  </div>
-)
-
 const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
   const { addEditorAfter } = useAppActions()
   const getEditors = useEditorsRender()
@@ -67,12 +61,7 @@ const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
     [getEditors]
   )
 
-  if (getEditors.length === 0)
-    return (
-      <div className="pt-20">
-        <Preview id="none" showRemove={false} />
-      </div>
-    )
+  if (getEditors.length === 0) return <Preview id="none" showRemove={false} />
 
   return (
     <EditorList virtualListRef={props.virtualListRef}>
@@ -113,7 +102,6 @@ const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
           </article>
         )
       })}
-      <EndBlock />
     </EditorList>
   )
 }

@@ -109,6 +109,7 @@ const Header: FunctionComponent<{
   const { getConfig } = useAppActions()
   // Perf: Local title state, with updates on input blur / enter
   const [title, setTitle] = useState(props.title)
+
   useEffect(() => {
     setTitle(props.title)
   }, [props.title, props.id])
@@ -116,9 +117,7 @@ const Header: FunctionComponent<{
   return (
     <div className="grid gap-2">
       {Boolean(props.isLarge) && Boolean(props.hasIcons) && (
-        <div
-          className={tw('text-[--text-muted]', { 'text-xs': !props.isLarge })}
-        >
+        <div className={tw('text-muted', { 'text-xs': !props.isLarge })}>
           {getConfig().iconSetType} set
         </div>
       )}
@@ -128,7 +127,7 @@ const Header: FunctionComponent<{
             type="text"
             aria-label="Icon set title"
             value={title}
-            placeholder={title ? '' : 'Untitled set…'}
+            placeholder={title ? '' : 'Add set title…'}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setTitle(e.currentTarget.value)
             }}
@@ -169,7 +168,7 @@ type GroupSetBlock = {
   title: Group['title']
   createdAt: Group['createdAt']
   icons: Group['editors']
-  count?: number
+  count: number
   isCurrent?: boolean
   isHeader?: boolean
   virtualListRef?: RefObject<VirtuosoHandle>
@@ -178,7 +177,6 @@ type GroupSetBlock = {
 export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
   const { updateGroupTitle, setActiveGroup } = useAppActions()
 
-  const iconCount = props.count ?? props.icons.length
   const hasIcons = props.icons.length > 0
   const hiddenCount =
     !props.isHeader && props.count && props.count > props.icons.length
@@ -200,22 +198,35 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
       key={props.id}
       aria-label={props.isHeader ? 'Current set' : 'Icon set'}
     >
-      <Header
-        id={props.id}
-        title={props.title}
-        updateGroupTitle={updateGroupTitle}
-        isCurrent={props.isCurrent ?? false}
-        isLarge={props.isHeader ?? false}
-        createdAt={props.createdAt}
-        hasIcons={hasIcons}
-      />
+      {Boolean(!props.isHeader) && (
+        <Header
+          id={props.id}
+          title={props.title}
+          updateGroupTitle={updateGroupTitle}
+          isCurrent={props.isCurrent ?? false}
+          createdAt={props.createdAt}
+          hasIcons={hasIcons}
+          isLarge={false}
+        />
+      )}
+      {Boolean(props.isHeader) && props.count > 0 && (
+        <Header
+          id={props.id}
+          title={props.title}
+          updateGroupTitle={updateGroupTitle}
+          isCurrent={props.isCurrent ?? false}
+          createdAt={props.createdAt}
+          hasIcons={hasIcons}
+          isLarge
+        />
+      )}
       {Boolean(hasIcons) && (
         <div className="group relative @container">
-          <div className="@4xl:grid-cols-15 pointer-events-none grid grid-cols-2 @xs:grid-cols-4 @lg:grid-cols-5 @2xl:grid-cols-8 @3xl:grid-cols-8 @4xl:grid-cols-12">
+          <div className="@4xl:grid-cols-15 pointer-events-none grid grid-cols-4 @lg:grid-cols-5 @2xl:grid-cols-8 @3xl:grid-cols-8 @4xl:grid-cols-12">
             <div className="z-10 grid place-content-center text-center">
-              <div className="-mb-1 block text-lg">{iconCount}</div>
+              <div className="-mb-1 block text-lg">{props.count}</div>
               <div className="text-md">
-                {iconCount === 1 ? 'icon' : 'icons'}
+                {props.count === 1 ? 'icon' : 'icons'}
               </div>
             </div>
             {/* <Guides /> */}
@@ -250,15 +261,10 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
             )}
 
             {hiddenCount > 0 && (
-              <div className="-mb-1 block text-lg">+{hiddenCount}</div>
+              <div className="grid place-items-center text-lg">
+                +{hiddenCount}
+              </div>
             )}
-            {/* <button
-                type="button"
-                className="pointer-events-auto"
-                onClick={() => handleAddEditor(g.id, "")}
-              >
-                Add icon
-              </button> */}
           </div>
           {!props.isHeader && (
             <SheetClose asChild>
@@ -278,18 +284,15 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
         </div>
       )}
       {!props.isHeader && Boolean(!hasIcons) && (
-        <div className="relative z-10 grid place-content-center p-10 text-center">
-          <div className="text-sm">No icons yet</div>
+        <div className="relative z-10">
+          <div className="text-muted">No icons added yet.</div>
           <SheetClose asChild>
             <button
               type="button"
               onClick={() => {
                 handleSelectGroup(props.id)
               }}
-              className={tw(
-                'absolute inset-0 z-0 cursor-pointer rounded-lg border border-dashed'
-                // props.isCurrent && 'opacity-50'
-              )}
+              className="absolute inset-0 z-0 cursor-pointer rounded-lg"
             />
           </SheetClose>
         </div>

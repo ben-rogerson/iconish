@@ -15,7 +15,7 @@ const Wrap = memo(function Wrap(props: {
   setWordWrap: (checked: boolean) => void
 }) {
   return (
-    <label className="flex cursor-pointer select-none items-center gap-2 text-base text-[--text-muted] hover:text-[--text]">
+    <label className="flex cursor-pointer select-none items-center gap-2 text-base text-muted hover:text-[--text]">
       <input
         checked={props.wordWrap}
         className="hidden"
