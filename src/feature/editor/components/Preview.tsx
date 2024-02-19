@@ -84,9 +84,14 @@ const Preview = memo(function Preview(props: PreviewProps) {
   }
 
   const handleOnUpload = (values: Set<[string, string]>) => {
-    ;[...values].forEach(([fileName, svgCode]) => {
-      addEditor(svgCode, fileName)
-    })
+    // Order and add the icons by fileName
+    const sortedValues = Array.from(values)
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .reverse()
+    for (const [fileName, svgCode] of sortedValues) {
+      addEditor(svgCode, fileName, { after: props.id })
+    }
+    removeEditor(props.id)
   }
 
   const handleAddRandomIcon = () => {
