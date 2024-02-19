@@ -1,21 +1,21 @@
 import { Header } from '@/layouts/components/Header'
-// import { Footer } from "@/components/Footer";
+import { Footer } from '@/layouts/components/Footer'
 import { Toaster } from '@/components/ui/toaster'
 
 const LayoutDefault = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div>
-      <div className="w-full max-w-[1200px] px-4 md:px-20">
+    <>
+      <div className="flex min-h-screen w-full max-w-[1200px] flex-col px-4 md:px-20">
         <header>
           <Header />
         </header>
-        <main>{children}</main>
+        <main id="top">{children}</main>
+        <footer className="grid flex-grow">
+          <Footer />
+        </footer>
       </div>
-      {/* <footer>
-        <Footer />
-      </footer> */}
       <Toaster />
-    </div>
+    </>
   )
 }
 
