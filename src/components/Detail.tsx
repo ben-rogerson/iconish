@@ -29,10 +29,12 @@ const useAutoThemeSwitch = () => {
       ].some(f => f === fill)
     ) {
       toggleTheme()
-      toast({
-        title: 'Automatic theme switch',
-        description:
-          'The fill color conflicted with the light theme so it was switched to dark',
+      setTimeout(() => {
+        toast({
+          title: 'Automatic theme switch',
+          description:
+            'The fill color conflicted with the light theme so it was switched to dark',
+        })
       })
     }
     if (
@@ -49,10 +51,12 @@ const useAutoThemeSwitch = () => {
       ].some(f => f === fill)
     ) {
       toggleTheme()
-      toast({
-        title: 'Automatic theme switch',
-        description:
-          'The fill color conflicted with the dark theme so it was switched to light',
+      setTimeout(() => {
+        toast({
+          title: 'Automatic theme switch',
+          description:
+            'The fill color conflicted with the dark theme so it was switched to light',
+        })
       })
     }
   }, [fill, theme, toast, toggleTheme])
@@ -101,15 +105,13 @@ const Detail = () => {
 
   return (
     <div className="grid gap-16">
-      {activeEditors.length > 0 ? (
+      {activeEditors.length > 0 && (
         <div
-          className="sticky -top-px z-50 flex gap-6 border-y bg-[--page-bg] px-4 py-3"
+          className="sticky -top-1 z-50 flex gap-6 rounded border bg-[--page-bg] px-6 py-3"
           role="toolbar"
         >
           <ConfigPanel />
         </div>
-      ) : (
-        <div className="border-t" />
       )}
       <div>
         {!!group && (
@@ -117,6 +119,7 @@ const Detail = () => {
             id={group.id}
             title={group.title}
             createdAt={group.createdAt}
+            count={activeEditors.length}
             // eslint-disable-next-line react/jsx-no-leaked-render
             icons={activeEditors.length > 1 ? activeEditors : []}
             virtualListRef={virtualListRef}
