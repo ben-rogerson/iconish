@@ -16,7 +16,7 @@ const List = () => {
         data.svg.output !== '<html xmlns="http://www.w3.org/1999/xhtml"/>'
     )
     const count = iconsAll.length
-    const iconsLimit = iconsAll.slice(0, 10)
+    const iconsLimit = iconsAll.slice(0, 6)
     return { ...g, count, icons: iconsLimit }
   })
 
