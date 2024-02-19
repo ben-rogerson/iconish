@@ -1,6 +1,16 @@
 import { MenuIcon } from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { useAppStore } from '@/hooks/appState'
+import dynamic from 'next/dynamic'
+
+// Don't SSR the toggle since the value on the server will be different than the client
+const SetThemeButton = dynamic(
+  () => import('@/components/Theme').then(i => i.ThemeToggler),
+  {
+    ssr: false,
+    loading: () => <div />,
+  }
+)
 
 export const WithMobileSidebar = ({
   children,
@@ -13,17 +23,20 @@ export const WithMobileSidebar = ({
   return (
     <>
       <Sheet>
-        <SheetTrigger
-          className="fixed right-7 top-8"
-          aria-label="View icon sets"
-        >
-          <MenuIcon size={24} />
-          {groups.length > 1 && (
-            <div className="absolute -right-1.5 -top-1.5 rounded-full bg-[--page-bg] px-1 text-xs">
-              {groups.length}
-            </div>
-          )}
-        </SheetTrigger>
+        <div className="absolute -right-1.5 -top-1.5 flex">
+          <SetThemeButton />
+          <SheetTrigger
+            className="px-5 py-10 sm:px-10"
+            aria-label="View icon sets"
+          >
+            <MenuIcon size={24} />
+            {groups.length > 1 && (
+              <div className="rounded-full bg-[--page-bg] px-1 text-xs">
+                {groups.length}
+              </div>
+            )}
+          </SheetTrigger>
+        </div>
         <SheetContent
           side="right"
           className="overflow-y-auto px-7"

@@ -4,7 +4,6 @@ import validateColor from 'validate-color'
 import debounce from 'lodash/debounce'
 import type { DebouncedFunc } from 'lodash'
 import { RotateCw } from 'lucide-react'
-import dynamic from 'next/dynamic'
 import {
   Select,
   SelectContent,
@@ -305,7 +304,7 @@ export const FormItems = memo(function FormItems(props: {
             >
               {/* Can't have clickable label - htmlFor not supported with Slider */}
               <div id={`range-${i}-title`}>{item.title}</div>
-              <div className="flex gap-2 text-[--text-muted]">
+              <div className="flex gap-2 text-muted">
                 <div className="relative -mb-2 -mt-1 flex w-44 items-center gap-1.5">
                   <Slider
                     defaultValue={[Number(item.defaultValue)]}
@@ -333,7 +332,7 @@ export const FormItems = memo(function FormItems(props: {
               })}
             >
               <label htmlFor={`input-${i}`}>{item.title}</label>
-              <div className="flex gap-2 text-[--text-muted]">
+              <div className="flex gap-2 text-muted">
                 <div className={tw`flex w-full items-center gap-x-1.5`}>
                   {!!item.theme && (
                     <div
@@ -348,7 +347,7 @@ export const FormItems = memo(function FormItems(props: {
                     onBlur={item.onBlur}
                     disabled={item.disabled}
                     spellCheck={false}
-                    className="w-full max-w-[7rem] border-b border-b-transparent bg-transparent text-[--text-muted] focus:border-b focus:text-[--text] focus:outline-none"
+                    className="w-full max-w-[7rem] border-b border-b-transparent bg-transparent text-muted focus:border-b focus:text-[--text] focus:outline-none"
                     id={`input-${i}`}
                   />
                 </div>
@@ -368,7 +367,7 @@ export const FormItems = memo(function FormItems(props: {
               <SelectMainLabel htmlFor={`select-${i}`}>
                 {item.title}
               </SelectMainLabel>
-              <div className="flex gap-2 text-[--text-muted]">
+              <div className="flex gap-2 text-muted">
                 <div className="flex items-center gap-x-1.5">
                   <Select
                     onValueChange={item.onChange}
@@ -417,12 +416,6 @@ export const FormItems = memo(function FormItems(props: {
   ))
 })
 
-// Don't SSR the toggle since the value on the server will be different than the client
-const SetThemeButton = dynamic(() => import('@/components/Theme'), {
-  ssr: false,
-  loading: () => <div />,
-})
-
 export const ConfigPanel = () => {
   const activeGroupId = useAppStore(s => s.activeGroupId)
   const mainItems = useMainItems()
@@ -463,18 +456,16 @@ export const ConfigPanel = () => {
       key={`group-${activeGroupId}-${key}`}
     >
       <FormItems items={mainItems} />
-      <div className="ml-auto grid h-full grid-cols-2 items-center gap-8">
-        <SetThemeButton />
-
+      <div className="absolute right-3 top-2 w-4">
         <button
           type="button"
           onClick={handleResetConfig}
           className="text-secondary hover:text-inherit"
         >
-          <RotateCw />
+          <RotateCw className="w-full" />
         </button>
       </div>
-      {/* <div className="flex gap-2 text-[--text-muted]">
+      {/* <div className="flex gap-2 text-muted">
         <div className="flex items-center gap-x-1.5">
           <Select>
             <SelectTrigger className="w-[180px]" aria-label="Stroke options">
