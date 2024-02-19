@@ -56,6 +56,7 @@
 
 :root {
   --background: var(--bg);
+  --background-sheet: 220 30% 7.5%;
   --foreground: 210 40% 98%;
 
   --card: var(--bg);
@@ -195,14 +196,6 @@
   }
 }
 
-@font-face {
-  font-family: 'Chivo';
-  src: url('./../../public/ChivoMono.woff2') format('woff2-variations');
-  src: url('./../../public/ChivoMono.woff2') format('woff2') tech('variations');
-  font-weight: 100 900;
-  /* font-stretch: 25% 151%; */
-}
-
 body {
   overflow-y: none; /* Always show scrollbar to avoid layout shift */
 }
@@ -210,16 +203,6 @@ body {
 html body {
   /* Fix Radix select open interfering with sticky */
   overflow: clip !important;
-}
-
-::-webkit-scrollbar {
-  width: 0.5em;
-  height: 1em;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: var(--page-scrollbar);
-  border-radius: 2.5px;
 }
 
 /* CodeMirror container */
