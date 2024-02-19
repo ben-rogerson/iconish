@@ -41,7 +41,6 @@ test('icons sets can be named', async ({ page }) => {
   await toggleSidebar(page)
 
   const withinSidebar = page.getByTestId('sidebar')
-  const withinHeader = page.getByLabel('Current set')
 
   const iconSet = withinSidebar.getByRole('article', { name: 'Icon set' })
   await expect(iconSet).toHaveCount(1)
@@ -57,7 +56,7 @@ test('icons sets can be named', async ({ page }) => {
   await expect(input).toHaveValue('New set name')
 
   // Test the name is also updated in the header
-  await expect(withinHeader.getByLabel('Icon set title')).toHaveValue(
-    'New set name'
-  )
+  await expect(
+    page.getByTestId('sidebar').getByLabel('Icon set title')
+  ).toHaveValue('New set name')
 })
