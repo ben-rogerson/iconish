@@ -97,7 +97,7 @@ const Preview = memo(function Preview(props: PreviewProps) {
   const handleAddRandomIcon = () => {
     const randomIndex = getRandomIntInclusive(0, examples.length - 1)
     const example = examples[randomIndex]
-    addEditor(example[1].code, example[0])
+    addEditor(example[1].code, example[0], { after: props.id })
     removeEditor(props.id)
   }
 

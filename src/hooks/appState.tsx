@@ -48,7 +48,7 @@ interface AppStoreActions {
   addEditor: (
     input: string,
     title?: string,
-    toGroupId?: string
+    extra?: { after?: string; toGroupId?: string }
   ) => { scrollTo: () => void }
   addEditorAfter: (
     editorId?: string,
@@ -356,11 +356,11 @@ export const useAppStore = create<
               .find(g => g.id === activeGroupId)
           },
 
-          addEditor: (input, title, toGroupId) => {
+          addEditor: (input, title, extra) => {
             const groupAddingTo =
               // (toGroupId ?? activeGroupId) === undefined
               // ? addGroup()?.id:
-              toGroupId ?? get().activeGroupId
+              extra?.toGroupId ?? get().activeGroupId
 
             const isSvg = input.includes('<svg')
 
@@ -411,10 +411,17 @@ export const useAppStore = create<
               //   ? initialEditorData(code, title)
               //   : initialEditorData("", code);
 
-              newGroups.push({
-                ...group,
-                editors: [...group.editors, newEditor],
-              })
+              const newEditors = [...group.editors]
+
+              let editors = [...group.editors, newEditor]
+
+              if (extra?.after) {
+                const index = newEditors.findIndex(e => e[0] === extra.after)
+                newEditors.splice(index + 1, 0, newEditor)
+                editors = newEditors
+              }
+
+              newGroups.push({ ...group, editors })
             }
 
             set({ groups: newGroups })
