@@ -115,19 +115,37 @@ export const setIcon = (
 export const logoIcon = (
   <svg
     fill="none"
-    stroke="currentColor"
-    aria-hidden="true"
-    viewBox="0 0 24 24"
+    viewBox="0 0 61 40"
+    strokeWidth="2"
     xmlns="http://www.w3.org/2000/svg"
-    style={{ width: '1em', height: '1em' }}
+    className="h-[1em] w-[1em] text-5xl"
   >
     <path
-      strokeWidth="2"
-      d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"
+      stroke="currentColor"
+      d="M2.298 24.182C17.494 8.736 32.311-.645 58.787 23.06c-8.242 13.064-31.492 25.866-56.489 1.122Z"
+      vectorEffect="non-scaling-stroke"
     />
     <path
-      strokeWidth="2"
-      d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"
+      stroke="currentColor"
+      d="M2.298 24.154C27 12.5 31.5 12 58.786 23.032"
+      vectorEffect="non-scaling-stroke"
+    />
+    <path
+      stroke="currentColor"
+      d="M42.901 17.149a13.7 13.7 0 0 1 1.826 6.578c.15 7.582-5.873 13.85-13.454 14s-13.85-5.873-14-13.454a13.67 13.67 0 0 1 1.89-7.233"
+      vectorEffect="non-scaling-stroke"
+    />
+    <circle
+      cx="31"
+      cy="24"
+      r="5.354"
+      stroke="currentColor"
+      vectorEffect="non-scaling-stroke"
+    />
+    <path
+      stroke="currentColor"
+      d="M7.757 18.5 3 15m49 2.5 4.5-4.5M15 13 9 7m16 2-2-8m11 8 1-8m8 11 4-8"
+      vectorEffect="non-scaling-stroke"
     />
   </svg>
 )
