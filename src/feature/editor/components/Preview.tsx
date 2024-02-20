@@ -77,17 +77,19 @@ const examples = [
 // }
 
 const Preview = memo(function Preview(props: PreviewProps) {
-  const { removeEditor, addEditor } = useAppActions()
+  const { removeEditor, addEditor, updateEditorSvg } = useAppActions()
   const { toast } = useToast()
   const ref = useRef<HTMLInputElement>(null)
 
-  const handleUpdateEditor = (value: string) => {
-    const { hasUpdated } = addEditor(value)
+  const handlePasteSvg = (svgCode: string) => {
+    const hasUpdated = updateEditorSvg(props.id, svgCode, {
+      allowSvgOnly: true,
+    })
+
     if (!hasUpdated) {
       toast({ title: 'Invalid SVG' })
       return
     }
-    removeEditor(props.id)
   }
 
   const handleOnUpload = (values: Set<[string, string]>) => {
@@ -151,7 +153,7 @@ const Preview = memo(function Preview(props: PreviewProps) {
                 placeholder="Paste SVG, eg: <svg><path ... /></svg>"
                 onKeyDown={e => {
                   if (e.key !== 'Enter') return
-                  handleUpdateEditor(e.currentTarget.value)
+                  handlePasteSvg(e.currentTarget.value)
                 }}
               />
             </div>

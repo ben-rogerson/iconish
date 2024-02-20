@@ -38,7 +38,11 @@ interface AppStoreActions {
   getEditorById: (editorId: string) => EditorState | undefined
   getEditorIndexById: (editorId: string) => number | undefined
   updateEditorTitle: (id: string, title: string) => void
-  updateEditorSvg: (editorId: string, svgCode?: string) => boolean
+  updateEditorSvg: (
+    editorId: string,
+    svgCode?: string,
+    extra?: { allowSvgOnly?: boolean }
+  ) => boolean
   refreshGroup: () => void
   autoSetIconType: () => void
   setEditorOrderByIds: (editorKeys: string[]) => void
@@ -206,9 +210,12 @@ export const useAppStore = create<
           },
 
           // TODO: run updateSvgOutputs thru this
-          updateEditorSvg(editorId, svgCode) {
+          updateEditorSvg(editorId, svgCode, extra) {
             const config = get().actions.getConfig()
+
             let hasUpdated = false
+            const isSvg = svgCode?.includes('<svg')
+            if (extra?.allowSvgOnly && !isSvg) return hasUpdated
 
             const groups = produce(get().groups, draft => {
               for (const group of draft) {
