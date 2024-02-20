@@ -11,6 +11,7 @@ import {
   cookieIconDisplay,
 } from '@/lib/icons'
 import { Upload } from '@/components/Upload'
+import { useToast } from '@/components/ui/use-toast'
 
 type PreviewProps = {
   id: string
@@ -76,11 +77,17 @@ const examples = [
 // }
 
 const Preview = memo(function Preview(props: PreviewProps) {
-  const { removeEditor, updateEditorSvg, addEditor } = useAppActions()
+  const { removeEditor, addEditor } = useAppActions()
+  const { toast } = useToast()
   const ref = useRef<HTMLInputElement>(null)
 
   const handleUpdateEditor = (value: string) => {
-    updateEditorSvg(props.id, value)
+    const { hasUpdated } = addEditor(value)
+    if (!hasUpdated) {
+      toast({ title: 'Invalid SVG' })
+      return
+    }
+    removeEditor(props.id)
   }
 
   const handleOnUpload = (values: Set<[string, string]>) => {

@@ -292,14 +292,16 @@ describe('actions', () => {
             result.current.actions.getEditors()[0][0]
           )
         })
-        expect(result.current.actions.getEditors()).toHaveLength(0)
+        // A blank editor is automatically added when editors.length === 0
+        expect(result.current.actions.getEditors()).toHaveLength(1)
+        expect(result.current.actions.getEditors()[0][1].title).toBe('')
 
         // Add an editor
         act(() => {
           result.current.actions.addEditor(flyaway, 'title')
         })
-        expect(result.current.actions.getEditors()).toHaveLength(1)
-        expect(result.current.actions.getEditors()[0][1].title).toBe('title')
+        expect(result.current.actions.getEditors()).toHaveLength(2)
+        expect(result.current.actions.getEditors()[1][1].title).toBe('title')
         expect(result.current.groups.length).toBe(1)
       })
     })

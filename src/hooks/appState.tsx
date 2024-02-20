@@ -38,7 +38,7 @@ interface AppStoreActions {
   getEditorById: (editorId: string) => EditorState | undefined
   getEditorIndexById: (editorId: string) => number | undefined
   updateEditorTitle: (id: string, title: string) => void
-  updateEditorSvg: (editorId: string, svgCode?: string) => void
+  updateEditorSvg: (editorId: string, svgCode?: string) => boolean
   refreshGroup: () => void
   autoSetIconType: () => void
   setEditorOrderByIds: (editorKeys: string[]) => void
@@ -49,7 +49,7 @@ interface AppStoreActions {
     input: string,
     title?: string,
     extra?: { after?: string; toGroupId?: string }
-  ) => { scrollTo: () => void }
+  ) => { scrollTo: () => void; hasUpdated: boolean }
   addEditorAfter: (
     editorId?: string,
     editor?: EditorState
@@ -208,11 +208,14 @@ export const useAppStore = create<
           // TODO: run updateSvgOutputs thru this
           updateEditorSvg(editorId, svgCode) {
             const config = get().actions.getConfig()
+            let hasUpdated = false
 
             const groups = produce(get().groups, draft => {
               for (const group of draft) {
                 for (const [id, editorData] of group.editors) {
                   if (id !== editorId) continue
+
+                  hasUpdated = true
 
                   const svg = transformSvg(
                     svgCode ?? editorData.svg.original,
@@ -239,6 +242,8 @@ export const useAppStore = create<
 
             set({ groups })
             get().actions.refreshGroup()
+
+            return hasUpdated
           },
 
           updateSvgOutputs() {
@@ -380,6 +385,8 @@ export const useAppStore = create<
             // TODO: Rewrite this to use immer
             const newGroups: Group[] = []
 
+            let hasUpdated = false
+
             // if (get().groups.length === 0) {
             //   // get current editors
             //   const editors = get().actions.getEditors();
@@ -407,6 +414,8 @@ export const useAppStore = create<
                 continue
               }
 
+              hasUpdated = true
+
               // const newEditor = isSvg
               //   ? initialEditorData(code, title)
               //   : initialEditorData("", code);
@@ -428,6 +437,7 @@ export const useAppStore = create<
             get().actions.refreshGroup()
 
             return {
+              hasUpdated,
               scrollTo: () => {
                 setTimeout(() => {
                   document
