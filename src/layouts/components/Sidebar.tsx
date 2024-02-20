@@ -29,12 +29,14 @@ export const WithMobileSidebar = ({
             className="px-5 py-10 sm:px-10"
             aria-label="View icon sets"
           >
-            <MenuIcon size={24} />
-            {groups.length > 1 && (
-              <div className="rounded-full bg-[--page-bg] px-1 text-xs">
-                {groups.length}
-              </div>
-            )}
+            <div className="relative">
+              <MenuIcon size={24} />
+              {groups.length > 1 && (
+                <div className="absolute -right-2 -top-1 rounded-full bg-[--page-bg] px-1 text-xs">
+                  {groups.length}
+                </div>
+              )}
+            </div>
           </SheetTrigger>
         </div>
         <SheetContent
