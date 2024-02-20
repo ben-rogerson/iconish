@@ -212,7 +212,6 @@ html body {
   min-height: 100%;
   background-color: transparent;
 }
-
 .cm-content {
   padding: 0 0.5em 0 0 !important;
 }
@@ -222,7 +221,9 @@ html body {
 .cm-line {
   padding-left: 0 !important;
 }
-/* .cm-gutters, */
+.cm-focused {
+  outline: none !important;
+}
 .cm-activeLineGutter,
 .cm-activeLine {
   background-color: transparent !important;
