@@ -378,22 +378,6 @@ export const svgAttributesTransform: Transform = (doc, options) => {
   return doc
 }
 
-// Run for the output
-const svgAttributesSanitizeTransform = (doc: HTMLElement) => {
-  const svg = doc.querySelector('svg')
-  if (!svg) return doc
-
-  if (svg.getAttribute('width')) {
-    svg.removeAttribute('width')
-  }
-
-  if (svg.hasAttribute('height')) {
-    svg.removeAttribute('height')
-  }
-
-  return doc
-}
-
 export const addId: Transform = (doc, options) => {
   if (!options.title) return doc
 
@@ -422,6 +406,16 @@ export const transforms: Transform[] = [
   strokeColorTransform,
   fillColorTransform,
 ] satisfies Transform[]
+
+const svgAttributesSanitizeTransform = (doc: HTMLElement) => {
+  const svg = doc.querySelector('svg')
+  if (!svg) return '' as unknown as HTMLElement // Avoid showing malformed svg
+
+  if (svg.getAttribute('width')) svg.removeAttribute('width')
+  if (svg.hasAttribute('height')) svg.removeAttribute('height')
+
+  return doc
+}
 
 export const sanitizeTransforms: Array<(doc: HTMLElement) => HTMLElement> = [
   svgAttributesSanitizeTransform,

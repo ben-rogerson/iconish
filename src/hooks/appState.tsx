@@ -550,6 +550,7 @@ export const useAppStore = create<
             get().actions.refreshGroup()
           },
 
+          // TODO: Cleanup editors on load
           cleanEditors: () => {
             const activeGroupId = get().activeGroupId
             const newGroups = get().groups.map(group => {
@@ -557,10 +558,7 @@ export const useAppStore = create<
               const newGroup = {
                 ...group,
                 editors: group.editors.filter(
-                  editor =>
-                    (editor[1].svg.output !== '' &&
-                      editor[1].svg.output.includes('<svg')) ||
-                    editor[1].isDeleted
+                  editor => editor[1].svg.original !== '' || editor[1].isDeleted
                 ),
               }
               return newGroup

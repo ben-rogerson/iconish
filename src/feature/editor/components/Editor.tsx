@@ -172,56 +172,59 @@ const Editor = (props: EditorProps) => {
           </div>
         </div>
         <div className="bg-[--page-bg-alt]">
-          <div
-            className="relative grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] border border-t-0 md:grid"
-            style={{ borderBottomStyle: 'dashed' }}
-          >
-            <div className="relative px-[25%] pb-[25%] pt-[15%]">
-              <div
-                dangerouslySetInnerHTML={{ __html: props.data.svg.output }}
-              />
-              <div className="absolute left-2 top-2 hidden text-xs text-muted group-focus-within/editor:block group-hover/editor:block">
-                {sized.after}
+          {Boolean(output) && (
+            <div
+              className="relative grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] border border-t-0 md:grid"
+              style={{ borderBottomStyle: 'dashed' }}
+            >
+              <div className="relative px-[25%] pb-[25%] pt-[15%]">
+                <div
+                  dangerouslySetInnerHTML={{ __html: props.data.svg.output }}
+                />
+                <div className="absolute left-2 top-2 hidden text-xs text-muted group-focus-within/editor:block group-hover/editor:block">
+                  {sized.after}
+                </div>
               </div>
-            </div>
-            <div className="relative p-6 pl-0">
-              {/* {props.data.svg.output.length > 30 && (
+              <div className="relative p-6 pl-0">
+                {/* {props.data.svg.output.length > 30 && (
                   <div className="absolute right-6 top-0 -mt-2.5 flex justify-end bg-[--page-bg] px-1.5 group-focus-within/editor:block group-hover/editor:block md:hidden">
                     <WordWrapOut />
                   </div>
                 )} */}
-              <CodeMirror
-                extensions={[
-                  javascript({ jsx: true }),
-                  EditorView.editable.of(false),
-                  EditorView.lineWrapping,
-                ]}
-                theme={vscodeDark}
-                value={output}
-                // onUpdate={handleOnUpdateOut}
-              />
+                <CodeMirror
+                  extensions={[
+                    javascript({ jsx: true }),
+                    EditorView.editable.of(false),
+                    EditorView.lineWrapping,
+                  ]}
+                  theme={vscodeDark}
+                  value={output}
+                />
+              </div>
+              <div className="absolute bottom-2 right-2">
+                <Button
+                  aria-label="Copy svg code to clipboard"
+                  type="button"
+                  onClick={() => {
+                    copy(output).catch(() => null)
+                    toast({
+                      itemID: `copied-${props.id}`,
+                      title: `Copied svg code to clipboard`,
+                    })
+                  }}
+                  variant="ghost"
+                  className="rounded text-muted"
+                >
+                  <Copy width={15} />
+                </Button>
+              </div>
             </div>
-            <div className="absolute bottom-2 right-2">
-              <Button
-                aria-label="Copy svg code to clipboard"
-                type="button"
-                onClick={() => {
-                  copy(output).catch(() => null)
-                  toast({
-                    itemID: `copied-${props.id}`,
-                    title: `Copied svg code to clipboard`,
-                  })
-                }}
-                variant="ghost"
-                className="rounded text-muted"
-              >
-                <Copy width={15} />
-              </Button>
+          )}
+          {(props.data.svg.log ?? []).length > 0 && (
+            <div className="rounded-b border border-t-0">
+              <Log logItems={props.data.svg.log} />
             </div>
-          </div>
-          <div className="rounded-b border border-t-0">
-            <Log logItems={props.data.svg.log} />
-          </div>
+          )}
         </div>
       </div>
     </div>
