@@ -23,10 +23,10 @@ export const WithMobileSidebar = ({
   return (
     <>
       <Sheet>
-        <div className="absolute right-0 top-0 flex">
+        <div className="fixed right-0 top-0 flex">
           <SetThemeButton />
           <SheetTrigger
-            className="px-5 py-10 sm:px-10"
+            className="px-5 py-10 sm:pl-10 sm:pr-7 xl:pr-10"
             aria-label="View icon sets"
           >
             <div className="relative">
