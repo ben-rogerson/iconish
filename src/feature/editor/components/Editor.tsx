@@ -166,7 +166,7 @@ const Editor = (props: EditorProps) => {
                 onChange={handleOnChange}
                 theme={vscodeDark}
                 value={props.data.view?.doc ?? ''}
-                editable={false}
+                editable
               />
             </div>
           </div>
