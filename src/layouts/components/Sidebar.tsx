@@ -23,7 +23,7 @@ export const WithMobileSidebar = ({
   return (
     <>
       <Sheet>
-        <div className="absolute -right-1.5 -top-1.5 flex">
+        <div className="absolute right-0 top-0 flex">
           <SetThemeButton />
           <SheetTrigger
             className="px-5 py-10 sm:px-10"

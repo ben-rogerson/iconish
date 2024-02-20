@@ -5,7 +5,7 @@ export function Header() {
   return (
     <div className="grid py-7">
       <Link href="/" className="flex items-center gap-x-[0.35em] text-2xl">
-        {logoIcon}
+        <div className="text-4xl sm:text-5xl">{logoIcon}</div>
         <div className="mt-1.5">Iconish</div>
       </Link>
       <div className="mb-10 mt-12 space-y-6 rounded border p-10">

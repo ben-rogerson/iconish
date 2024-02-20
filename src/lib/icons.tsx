@@ -118,7 +118,7 @@ export const logoIcon = (
     viewBox="0 0 61 40"
     strokeWidth="2"
     xmlns="http://www.w3.org/2000/svg"
-    className="h-[1em] w-[1em] text-5xl"
+    className="h-[1em] w-[1em]"
   >
     <path
       stroke="currentColor"
