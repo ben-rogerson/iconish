@@ -484,20 +484,29 @@ export const useAppStore = create<
 
           removeEditor: (id, shouldRefresh = true) => {
             const activeGroupId = get().activeGroupId
+            let addEditor = false
 
             const newGroups = produce(get().groups, group => {
               const groupIndex = group.findIndex(g => g.id === activeGroupId)
               group[groupIndex].editors = produce(
                 group[groupIndex].editors,
-                editor => {
-                  const editorIndex = editor.findIndex(e => e[0] === id)
-                  if (editor[editorIndex])
-                    editor[editorIndex][1].isDeleted = true
+                editors => {
+                  const editorIndex = editors.findIndex(e => e[0] === id)
+                  if (editors[editorIndex]) {
+                    editors[editorIndex][1].isDeleted = true
+                    const editorsLeft = editors.filter(
+                      e => !e[1].isDeleted
+                    ).length
+                    if (editorsLeft === 0) addEditor = true
+                  }
                 }
               )
             })
 
             set({ groups: newGroups })
+
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Incorrect triggered lint
+            if (addEditor) get().actions.addEditor('')
 
             shouldRefresh && get().actions.refreshGroup()
           },

@@ -61,7 +61,7 @@ const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
     [getEditors]
   )
 
-  if (getEditors.length === 0) return <Preview id="none" showRemove={false} />
+  if (getEditors.length === 0) return
 
   return (
     <EditorList virtualListRef={props.virtualListRef}>
@@ -83,9 +83,6 @@ const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
                 }}
                 isTop
               />
-            )}
-            {!showAdd && (
-              <div className="pt-16" /> // Hack
             )}
             {showOutput ? (
               <Editor key={editorId} id={editorId} data={data} />

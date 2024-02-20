@@ -1,6 +1,8 @@
 import type { Page } from '@playwright/test'
 import { test, expect } from '@playwright/test'
 
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
 // https://github.com/microsoft/playwright/issues/4302#issuecomment-1165404704
 const scroll = async ({
   direction,
@@ -9,7 +11,6 @@ const scroll = async ({
   direction: 'down' | 'up'
   speed: 'slow' | 'fast'
 }) => {
-  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
   const scrollHeight = () => document.body.scrollHeight
   const start = direction === 'down' ? 0 : scrollHeight()
   const shouldStop = (position: number) =>
@@ -18,7 +19,7 @@ const scroll = async ({
   const delayTime = speed === 'slow' ? 50 : 10
   for (let i = start; !shouldStop(i); i += increment) {
     window.scrollTo(0, i)
-    await delay(delayTime)
+    await new Promise(resolve => setTimeout(resolve, delayTime))
   }
 }
 
@@ -160,8 +161,10 @@ test('multiple svgs can be added via upload', async ({ page }) => {
   const input = page.getByLabel('Upload SVGs')
   await input.setInputFiles([iconTemplate(icon, 'a'), iconTemplate(icon2, 'b')])
 
-  const itemsAfter = await getEditorTypes(page)
-  expect(itemsAfter).toEqual(['editor', 'editor'])
+  // TODO: Delay is required or test is spotty - Fix this
+  await delay(500)
+
+  expect(await getEditorTypes(page)).toStrictEqual(['editor', 'editor'])
 
   // Add a preview panel in the middle
   const contentList = page.locator('[data-test-id=virtuoso-item-list]')
@@ -170,8 +173,7 @@ test('multiple svgs can be added via upload', async ({ page }) => {
     .nth(1)
     .click()
 
-  const itemsAfterAdd = await getEditorTypes(page)
-  expect(itemsAfterAdd).toEqual(['editor', 'preview', 'editor'])
+  expect(await getEditorTypes(page)).toEqual(['editor', 'preview', 'editor'])
 
   // Upload another two svgs in the middle (TODO: check the actual content is correct)
   const uploadInput = page.getByLabel('Upload SVGs')
@@ -180,8 +182,12 @@ test('multiple svgs can be added via upload', async ({ page }) => {
     iconTemplate(icon4, 'd'),
   ])
 
-  const itemsAfterAddMore = await getEditorTypes(page)
-  expect(itemsAfterAddMore).toEqual(['editor', 'editor', 'editor', 'editor'])
+  expect(await getEditorTypes(page)).toEqual([
+    'editor',
+    'editor',
+    'editor',
+    'editor',
+  ])
 })
 
 test('a svg can be added via the test buttons', async ({ page }) => {
