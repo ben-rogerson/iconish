@@ -199,6 +199,7 @@ const Editor = (props: EditorProps) => {
                   ]}
                   theme={vscodeDark}
                   value={output}
+                  readOnly
                 />
               </div>
               <div className="absolute bottom-2 right-2">
