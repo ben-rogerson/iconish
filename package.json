@@ -61,7 +61,6 @@
     "next-app-theme": "^0.1.10",
     "node-html-parser": "^6.1.10",
     "react": "18.2.0",
-    "react-aria": "^3.28.0",
     "react-dom": "18.2.0",
     "react-stately": "^3.26.0",
     "react-virtuoso": "^4.6.2",
