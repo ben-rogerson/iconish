@@ -12,7 +12,7 @@ const font = Chivo_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Iconish',
+  title: 'Iconish - SVG icon alignment and minification',
   description: 'Align and minify SVG icons for the web',
 }
 
