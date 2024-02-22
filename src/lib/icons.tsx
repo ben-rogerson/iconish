@@ -116,7 +116,7 @@ export const logoIcon = (
   <svg
     fill="none"
     viewBox="0 0 61 40"
-    strokeWidth="2"
+    strokeWidth="2.25"
     xmlns="http://www.w3.org/2000/svg"
     className="h-[1em] w-[1em]"
   >

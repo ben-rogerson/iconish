@@ -5,7 +5,7 @@ import { Toaster } from '@/components/ui/toaster'
 const LayoutDefault = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <div className="flex min-h-screen w-full max-w-[1200px] flex-col px-4 md:px-20">
+      <div className="flex min-h-screen w-full max-w-[1200px] flex-col px-6 md:px-20">
         <header>
           <Header />
         </header>

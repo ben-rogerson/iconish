@@ -54,6 +54,29 @@
   color-scheme: light;
 } */
 
+@font-face {
+  font-family: 'Nib Pro';
+  src: url('./../../public/NibPro-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Nib Pro';
+  src: url('./../../public/NibPro-BoldItalic.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* TODO: Move this to tailwind.config.js */
+h1,
+h2,
+h3,
+input,
+.logo {
+  font-family: 'Nib Pro';
+}
+
 :root {
   --background: var(--bg);
   --background-sheet: 220 30% 7.5%;

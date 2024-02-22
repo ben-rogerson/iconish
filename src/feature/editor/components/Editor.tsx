@@ -152,7 +152,7 @@ const Editor = (props: EditorProps) => {
               )}
               {/* <div className="absolute -bottom-px left-1/2 top-full h-[25px] w-px origin-top-left bg-[--border] after:absolute after:bottom-px after:h-2 after:w-2 after:-translate-x-[50%] after:-rotate-45 after:border-b after:border-l after:border-b-[--border] after:border-l-[--border]" /> */}
             </div>
-            <div className="relative p-6 pl-0">
+            <div className="relative p-6 xl:pl-0">
               {/* {(props.data.view?.doc.length ?? 0) > 30 && (
                 <div className="absolute right-6 top-0 -mt-2.5 flex justify-end bg-[--page-bg] px-1.5 group-focus-within/editor:block group-hover/editor:block md:hidden">
                   <WordWrapIn />
@@ -185,7 +185,7 @@ const Editor = (props: EditorProps) => {
                   {sized.after}
                 </div>
               </div>
-              <div className="relative p-6 pl-0">
+              <div className="relative p-6 xl:pl-0">
                 {/* {props.data.svg.output.length > 30 && (
                   <div className="absolute right-6 top-0 -mt-2.5 flex justify-end bg-[--page-bg] px-1.5 group-focus-within/editor:block group-hover/editor:block md:hidden">
                     <WordWrapOut />

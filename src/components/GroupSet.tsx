@@ -142,7 +142,7 @@ const Header: FunctionComponent<{
               `w-[inherit] bg-transparent text-xl`,
               `hover:text-text focus:text-[--text] focus:outline-none`,
               `placeholder-[--text-muted] placeholder:italic hover:placeholder-[--text] `,
-              props.isLarge && `text-5xl tracking-tight`
+              props.isLarge && `text-4xl tracking-tight sm:text-5xl`
             )}
           />
         </div>
