@@ -38,8 +38,6 @@ const Log = (props: { logItems: EditorProps['data']['svg']['log'] }) => {
           key={i}
           className={cn({
             'text-red-500': l.type === 'error',
-            '': l.type === 'success',
-            '': l.type === 'debug',
             'text-orange-300': l.type === 'info',
           })}
         >
