@@ -24,9 +24,17 @@ export function Header() {
           </p>
           <p>
             With Iconish, you can quickly tidy and sync all your icons. Align
-            colors, refine paths, and shrink code size for the best possible
-            finish.
+            colors, refine paths, and shrink code size (with{' '}
+            <Link
+              href="https://github.com/svg/svgo"
+              target="_blank"
+              className="underline"
+            >
+              SVGO
+            </Link>
+            ) for the best possible finish.
           </p>
+          <p>Your icons deserve that finishing touch with Iconish.</p>
         </div>
         <div className="pointer-events-none absolute -left-[20%] -top-[1%] z-[-1] h-[500px] w-full rotate-12 rounded-full opacity-80 blur-xl dark:bg-[radial-gradient(169.40%_89.55%_at_94.76%_6.29%,rgba(22,46,66,1)_0%,rgba(255,255,255,0.00)_100%)]" />
       </div>
