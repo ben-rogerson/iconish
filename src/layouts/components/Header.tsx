@@ -1,15 +1,13 @@
 import { logoIcon } from '@/lib/icons'
-import { useTheme } from 'next-app-theme/use-theme'
 import Link from 'next/link'
 
 export function Header() {
-  const { theme } = useTheme()
   return (
     <div className="grid py-7">
       <div>
         <Link href="/" className="inline-flex items-center gap-x-3">
           <div className="text-4xl sm:text-5xl">{logoIcon}</div>
-          <div className="mt-1.5 font-serif text-3xl italic">Iconish</div>
+          <div className="mt-2 font-serif text-3xl italic">Iconish</div>
         </Link>
       </div>
       <div className="relative mb-10 mt-12 space-y-6 rounded lg:space-y-10 lg:p-10 lg:px-24 lg:py-12">
