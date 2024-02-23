@@ -1,10 +1,11 @@
 import parse from 'html-react-parser'
 import { parseSvg } from '@/feature/svg/parseSvg'
 import { type TransformOptions, transforms } from '@/feature/svg/transforms'
-import { optimizeAll } from './svgTasks'
+import { optimizeAll } from '@/feature/svg/svgTasks'
 import { type Config } from '@/feature/config/types'
 import { type SvgLogItem } from '@/utils/types'
 import { calculateSizeSavings } from '@/utils/calculateSizeSavings'
+import isObject from 'lodash/isObject'
 
 export type LogItem = SvgLogItem
 
@@ -29,10 +30,19 @@ const toJSX = (
       | undefined) ?? {}
   const { children, ...rawProps } = props
   const elementProps = Object.entries(rawProps)
-    .map(([key, value]) => `${key}="${String(value)}"`)
+    .map(([key, value]) => {
+      if (isObject(value)) return `${key}={${JSON.stringify(value)}}`
+
+      return `${key}="${String(value)}"`
+    })
     .join(' ')
 
   const allChildren = Array.isArray(children) ? children : [children]
+
+  // Deal with self closing tags
+  if (allChildren.filter(Boolean).length === 0)
+    return `<${element.type} ${elementProps}/>`
+
   return `<${[element.type, elementProps].join(' ')}>${allChildren
     .map(c => (c ? toJSX(c) : ''))
     .join('')}</${element.type}>`

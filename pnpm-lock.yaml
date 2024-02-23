@@ -101,6 +101,9 @@ dependencies:
   lodash.debounce:
     specifier: ^4.0.8
     version: 4.0.8
+  lodash.isobject:
+    specifier: ^3.0.2
+    version: 3.0.2
   lucide-react:
     specifier: ^0.279.0
     version: 0.279.0(react@18.2.0)
@@ -5823,6 +5826,10 @@ packages:
 
   /lodash.debounce@4.0.8:
     resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
+    dev: false
+
+  /lodash.isobject@3.0.2:
+    resolution: {integrity: sha512-3/Qptq2vr7WeJbB4KHUSKlq8Pl7ASXi3UG6CMbBm8WRtXi8+GHm7mKaU3urfpSEzWe2wCIChs6/sdocUsTKJiA==}
     dev: false
 
   /lodash.merge@4.6.2:
