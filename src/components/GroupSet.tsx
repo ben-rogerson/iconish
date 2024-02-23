@@ -9,7 +9,7 @@ import {
   memo,
 } from 'react'
 import { type Group } from '@/utils/types'
-import { Copy, Layers, MoreVertical, Trash } from 'lucide-react'
+import { Copy, Download, Layers, MoreVertical, Trash } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,7 +46,7 @@ export function Menu(props: {
   createdAt: number
   hasIcons: boolean
 }) {
-  const { removeGroup } = useAppActions()
+  const { removeGroup, getConfig } = useAppActions()
   const { toast } = useToast()
   const copyAll = useCopySvgsToClipboard(props.groupId)
 
@@ -68,10 +68,12 @@ export function Menu(props: {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel>
-          Icon set
+          <div>
+            <span className="capitalize">{getConfig().iconSetType}</span> icon
+            set
+          </div>
           {!!props.createdAt && (
             <>
-              <br />
               Added <time>{relativeTime(props.createdAt)}</time>
             </>
           )}
@@ -80,11 +82,15 @@ export function Menu(props: {
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={copyAll.copy} disabled={!props.hasIcons}>
             <Copy className="mr-2 h-4 w-4" />
-            <span>Copy all optimized SVGs</span>
+            <span>Copy all SVGs</span>
           </DropdownMenuItem>
           <DropdownMenuItem disabled>
             <Layers className="mr-2 h-4 w-4" />
             <span>Copy sprite sheet</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem disabled>
+            <Download className="mr-2 h-4 w-4" />
+            <span>Download icon set</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
