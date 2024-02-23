@@ -17,7 +17,7 @@ const Title = (props: { title: string; id: string; svgId?: string }) => {
         onChange={e => {
           updateEditorTitle(props.id, e.currentTarget.value)
         }}
-        className="w-full bg-transparent py-3 text-4xl tracking-tight text-[--input-text-muted] placeholder-[var(--text-muted)] placeholder:italic hover:text-[--input-hover] focus:text-[--input-hover] focus:outline-0"
+        className="w-full bg-transparent py-3 font-serif text-4xl text-[--input-text-muted] placeholder-[var(--text-muted)] transition-colors placeholder:italic focus:text-[--input-hover] focus:outline-0 group-hover/editor:text-[--input-hover]"
       />
     </div>
   )

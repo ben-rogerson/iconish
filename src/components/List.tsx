@@ -23,7 +23,7 @@ const List = () => {
   return (
     <div id="sets" className="grid gap-9">
       <div className="flex items-center justify-between pt-4">
-        <h2 className="text-3xl">Icon sets</h2>
+        <h2 className="font-serif text-3xl italic">Icon sets</h2>
         <div>
           <Button
             onClick={() => {

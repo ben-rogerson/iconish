@@ -28,7 +28,7 @@ const Add = memo(function Memo(props: {
           'invisible group-hover/add:visible': !isVisible,
         })}
       >
-        <div className="bg-[--page-bg] px-5 text-xl">Insert blank icon</div>
+        <div className="bg-background px-5 text-xl">Insert blank icon</div>
       </div>
     </button>
   )

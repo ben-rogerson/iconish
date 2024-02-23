@@ -115,10 +115,10 @@ const Header: FunctionComponent<{
   }, [props.title, props.id])
 
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-4">
       {Boolean(props.isLarge) && Boolean(props.hasIcons) && (
         <div className={tw('text-muted', { 'text-xs': !props.isLarge })}>
-          {getConfig().iconSetType} set
+          <span className="capitalize">{getConfig().iconSetType}</span> icon set
         </div>
       )}
       <header className="relative flex justify-between">
@@ -139,10 +139,10 @@ const Header: FunctionComponent<{
               props.updateGroupTitle(props.id, title)
             }}
             className={tw(
-              `w-[inherit] bg-transparent text-xl`,
+              `w-[inherit] bg-transparent text-2xl`,
               `hover:text-text focus:text-[--text] focus:outline-none`,
-              `placeholder-[--text-muted] placeholder:italic hover:placeholder-[--text] `,
-              props.isLarge && `text-4xl tracking-tight sm:text-5xl`
+              `font-serif placeholder-[--text-muted] placeholder:italic hover:placeholder-[--text]`,
+              props.isLarge && `text-4xl sm:text-5xl`
             )}
           />
         </div>
@@ -223,7 +223,7 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
       {Boolean(hasIcons) && (
         <div className="group relative @container">
           <div className="@4xl:grid-cols-15 pointer-events-none grid grid-cols-4 @lg:grid-cols-5 @2xl:grid-cols-8 @3xl:grid-cols-8 @4xl:grid-cols-12">
-            <div className="z-10 grid place-content-center text-center">
+            <div className="z-10 grid place-content-center text-center font-serif">
               <div className="-mb-1 block text-lg">{props.count}</div>
               <div className="text-md">
                 {props.count === 1 ? 'icon' : 'icons'}

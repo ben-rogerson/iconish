@@ -107,7 +107,7 @@ const Detail = () => {
     <div className="grid gap-16">
       {activeEditors.length > 0 && (
         <div
-          className="sticky -top-1 z-50 flex gap-6 rounded border border-b-4 border-r-4 bg-[--page-bg] px-6 py-3"
+          className="sticky top-[-5px] z-50 flex gap-6 rounded border border-t-[5px] bg-[--page-bg] px-6 py-3"
           role="toolbar"
         >
           <ConfigPanel />

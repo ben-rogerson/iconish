@@ -68,15 +68,6 @@
   font-style: italic;
 }
 
-/* TODO: Move this to tailwind.config.js */
-h1,
-h2,
-h3,
-input,
-.logo {
-  font-family: 'Nib Pro';
-}
-
 :root {
   --background: var(--bg);
   --background-sheet: 220 30% 7.5%;
