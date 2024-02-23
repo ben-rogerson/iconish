@@ -19,7 +19,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useCopySvgsToClipboard } from '@/feature/svg/svg.hooks'
+import {
+  useCopySvgsToClipboard,
+  useDownloadSvgsForGroup,
+} from '@/feature/svg/svg.hooks'
 import { useToast } from '@/components/ui/use-toast'
 import { useCallback, useId } from 'react'
 import {
@@ -49,6 +52,7 @@ export function Menu(props: {
   const { removeGroup, getConfig } = useAppActions()
   const { toast } = useToast()
   const copyAll = useCopySvgsToClipboard(props.groupId)
+  const downloadSvgs = useDownloadSvgsForGroup(props.groupId, props.title)
 
   const handleRemoveGroup = () => {
     const { hasRemoved } = removeGroup(props.groupId)
@@ -84,13 +88,13 @@ export function Menu(props: {
             <Copy className="mr-2 h-4 w-4" />
             <span>Copy all SVGs</span>
           </DropdownMenuItem>
+          <DropdownMenuItem onClick={downloadSvgs}>
+            <Download className="mr-2 h-4 w-4" />
+            <span>Download all SVGs</span>
+          </DropdownMenuItem>
           <DropdownMenuItem disabled>
             <Layers className="mr-2 h-4 w-4" />
             <span>Copy sprite sheet</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem disabled>
-            <Download className="mr-2 h-4 w-4" />
-            <span>Download icon set</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

@@ -31,6 +31,7 @@ interface AppStoreActions {
   addGroup: (title?: string) => void
   removeGroup: (id: string) => { hasSwitched: boolean; hasRemoved: boolean }
   getSvgsFromGroupId: (groupId: string) => string
+  getSvgsFromGroupIdForDownload: (groupId: string) => Array<[string, string]>
   setActiveGroup: (id: string) => { hasSwitched: boolean }
   updateSvgOutputs: (config?: Config) => void
 
@@ -351,6 +352,7 @@ export const useAppStore = create<
               get().groups.find(g => g.id === groupId)?.editors ?? []
             )
               .map(([, data]) => {
+                if (data.isDeleted) return null
                 if (!data.svg.output.startsWith('<svg')) return null
                 const hasJsxOutput = get().actions.getConfig().outputJsx
                 return data.svg[hasJsxOutput ? 'outputJsx' : 'output']
@@ -359,6 +361,34 @@ export const useAppStore = create<
               .join('\n')
 
             return svgs
+          },
+
+          getSvgsFromGroupIdForDownload(groupId: string) {
+            const svgs = (
+              get().groups.find(g => g.id === groupId)?.editors ?? []
+            )
+              .map(([, data]) => {
+                if (data.isDeleted) return null
+                if (!data.svg.output.startsWith('<svg')) return null
+                const hasJsxOutput = get().actions.getConfig().outputJsx
+                return [
+                  data.title,
+                  data.svg[hasJsxOutput ? 'outputJsx' : 'output'],
+                ]
+              })
+              .filter(Boolean) as Array<[string, string]>
+
+            // De-duplicate titles as they'll cause issues when converting to filenames
+            const uniqueElements = new Map<string, string>()
+            svgs.forEach(([title, svgCode], i) => {
+              const fileName = title.replace(/[^a-z0-9]/gi, '-').toLowerCase()
+              const deDupedTitle = uniqueElements.has(fileName)
+                ? `${fileName}-duplicate-${i}`
+                : fileName
+              uniqueElements.set(deDupedTitle, svgCode)
+            })
+
+            return [...uniqueElements]
           },
 
           getGroup() {

@@ -204,7 +204,7 @@ test('the output is jsx when "output jsx" is selected', async ({
   await insertCustomIcon(icon, page)
 
   const expectedJsxOutput =
-    '<svg strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="test" viewBox="0 0 1 1"><path d="M12 12v.01" vectorEffect="non-scaling-stroke"></path></svg>'
+    '<svg strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="test" viewBox="0 0 1 1"><path d="M12 12v.01" vectorEffect="non-scaling-stroke"/></svg>'
 
   await expect(page.getByRole('article', { name: 'editor' })).toContainText(
     expectedJsxOutput
