@@ -24,9 +24,6 @@ const scroll = async ({
 }
 
 const setupFirstEditor = async (page: Page) => {
-  // Set a large height to avoid the windowing removing the editor/preview from the DOM
-  await page.setViewportSize({ width: 1200, height: 2200 })
-
   // Assert no add button when starting
   const addButton = page.getByRole('button', { name: /Add SVG/i })
   await expect(addButton).toHaveCount(0)
@@ -145,9 +142,6 @@ test('a svg can be added via upload', async ({ page }) => {
 })
 
 test('multiple svgs can be added via upload', async ({ page }) => {
-  // Set a large height to avoid the windowing removing the editor/preview from the DOM
-  await page.setViewportSize({ width: 1200, height: 5000 })
-
   const icon = '<svg><circle cx="50" cy="50" r="10"/></svg>'
   const icon2 = '<svg><circle cx="50" cy="50" r="20"/></svg>'
   const icon3 = '<svg><circle cx="50" cy="50" r="30"/></svg>'

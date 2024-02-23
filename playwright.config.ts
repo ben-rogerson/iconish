@@ -42,7 +42,11 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        // Set a large height to avoid the windowing removing the editor/preview from the DOM
+        viewport: { width: 1280, height: 5000 },
+      },
     },
 
     // {

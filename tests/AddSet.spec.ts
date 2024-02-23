@@ -9,7 +9,7 @@ const toggleSidebar = (page: Page) =>
   page.getByRole('button', { name: 'View icon sets' }).click()
 
 const addNewSet = (page: Page) =>
-  page.getByRole('button', { name: 'New set' }).click()
+  page.getByRole('button', { name: 'Add set' }).click()
 
 test('icon sets can be added', async ({ page }) => {
   await toggleSidebar(page)
