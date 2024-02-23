@@ -113,7 +113,7 @@ const Editor = (props: EditorProps) => {
 
   return (
     <div>
-      <div className="pointer-events-none absolute -left-[20%] -top-[2%] h-[500px] w-full rotate-12 rounded-full opacity-30 blur-2xl dark:bg-[radial-gradient(169.40%_89.55%_at_94.76%_6.29%,rgba(36,46,66,1)_0%,rgba(255,255,255,0.00)_100%)]" />
+      <div className="pointer-events-none absolute -left-[20%] -top-[2%] h-[500px] w-full rotate-12 rounded-full bg-[radial-gradient(169.40%_89.55%_at_94.76%_6.29%,rgb(78_161_255_/_20%)_0%,rgba(255,255,255,0.00)_100%)] opacity-30 blur-2xl dark:bg-[radial-gradient(169.40%_89.55%_at_94.76%_6.29%,rgba(36,46,66,1)_0%,rgba(255,255,255,0.00)_100%)]" />
       <div className="group/editor relative">
         <div className="grid gap-3">
           <div className="grid grid-cols-2">

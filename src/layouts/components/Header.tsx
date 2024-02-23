@@ -1,7 +1,9 @@
 import { logoIcon } from '@/lib/icons'
+import { useTheme } from 'next-app-theme/use-theme'
 import Link from 'next/link'
 
 export function Header() {
+  const { theme } = useTheme()
   return (
     <div className="grid py-7">
       <div>
@@ -11,7 +13,7 @@ export function Header() {
         </Link>
       </div>
       <div className="relative mb-10 mt-12 space-y-6 rounded lg:space-y-10 lg:p-10 lg:px-24 lg:py-12">
-        <h1 className="font-serif text-[350%] font-semibold leading-[1.1] tracking-tighter xl:text-[500%]">
+        <h1 className="font-serif text-[350%] font-semibold leading-[1.1] tracking-tighter [text-shadow:1px_1px_2px_var(--page-bg)] xl:text-[500%]">
           <span className="block">
             Align <span className="italic">&amp;</span> minify{' '}
           </span>
@@ -36,7 +38,10 @@ export function Header() {
           </p>
           <p>Your icons deserve that finishing touch with Iconish.</p>
         </div>
-        <div className="pointer-events-none absolute -left-[20%] -top-[1%] z-[-1] h-[500px] w-full rotate-12 rounded-full opacity-80 blur-xl dark:bg-[radial-gradient(169.40%_89.55%_at_94.76%_6.29%,rgba(22,46,66,1)_0%,rgba(255,255,255,0.00)_100%)]" />
+        <div className="pointer-events-none ">
+          <div className="absolute -left-[25%] -top-[1%] z-[-1] h-[500px] w-[50%] -rotate-6 rounded-full bg-[radial-gradient(169.40%_89.55%_at_94.76%_6.29%,rgb(255_252_131_/_25%)_0%,rgb(255_255_255_/0)_100%)] blur-xl dark:bg-[radial-gradient(169.40%_89.55%_at_94.76%_6.29%,rgb(155_252_131_/_15%)_0%,rgb(255_255_255_/0)_100%)]" />
+          <div className="absolute -left-[20%] -top-[1%] z-[-1] h-[500px] w-full rotate-12 rounded-full bg-[radial-gradient(169.40%_89.55%_at_94.76%_6.29%,rgb(78_161_255_/_15%)_0%,rgb(255_255_255_/0)_100%)] blur-xl dark:bg-[radial-gradient(169.40%_89.55%_at_94.76%_6.29%,rgb(22_46_66_/_100%)_0%,rgb(255_255_255_/0)_100%)]" />
+        </div>
       </div>
     </div>
   )
