@@ -48,6 +48,7 @@ export function Menu(props: {
   groupId: string
   createdAt: number
   hasIcons: boolean
+  isLarge: boolean
 }) {
   const { removeGroup } = useAppActions()
   const { toast } = useToast()
@@ -67,7 +68,11 @@ export function Menu(props: {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button type="button" aria-label="More options">
-          <MoreVertical />
+          <MoreVertical
+            className={cn('text-muted hover:text-primary', {
+              'h-10 w-10': props.isLarge,
+            })}
+          />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
@@ -146,18 +151,15 @@ const Header: FunctionComponent<{
             )}
           />
         </div>
-        {/* <div className="flex justify-end gap-10"> */}
-        {/* <div>View spritesheet</div> */}
         <div className="flex">
           <Menu
             groupId={props.id}
             createdAt={props.createdAt}
             title={props.title}
             hasIcons={props.hasIcons}
+            isLarge={props.isLarge}
           />
-          {/* <RemoveButton onClick={() => props.removeGroup(props.id)} /> */}
         </div>
-        {/* </div> */}
       </header>
     </div>
   )
@@ -232,25 +234,6 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
                 {props.count === 1 ? 'icon' : 'icons'}
               </div>
             </div>
-            {/* <Guides /> */}
-
-            {/* {props.icons.map(([id, data], i) => (
-            <button
-              // eslint-disable-next-line react/no-array-index-key
-              key={`${i}-${id}`}
-              type="button"
-              className="pointer-events-auto relative z-10"
-              onClick={() => {
-                setActiveIcon(props.id, data.title, id);
-              }}
-            >
-              <div
-                dangerouslySetInnerHTML={{ __html: data.svg.output }}
-                className="relative z-10 rounded border border-transparent p-5 hover:border-[--text-muted] hover:shadow-sm"
-              />
-              <Guides />
-            </button>
-          ))} */}
 
             {props.isHeader && props.virtualListRef ? (
               <IconListDraggable
@@ -278,8 +261,7 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
                 }}
                 className={tw(
                   'absolute inset-0 z-0 cursor-pointer rounded border opacity-0',
-                  'hover:opacity-50 group-focus-within:opacity-50 group-hover:opacity-50'
-                  // props.isCurrent && 'opacity-50'
+                  'hover:opacity-100 group-focus-within:opacity-100 group-hover:opacity-100'
                 )}
               />
             </SheetClose>
@@ -319,12 +301,7 @@ const IconListDraggable = (props: {
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   )
 
-  const setActiveIcon = (
-    groupId: string,
-    // title: string,
-    // editorId: string,
-    index: number
-  ) => {
+  const setActiveIcon = (groupId: string, index: number) => {
     setActiveGroup(groupId)
 
     props.virtualListRef.current?.scrollToIndex({

@@ -74,9 +74,11 @@ const Log = (props: { logItems: EditorProps['data']['svg']['log'] }) => {
         }}
         className="absolute inset-0 cursor-ns-resize"
       />
-      <div className="flex gap-2 px-7 pt-7">{Boolean(isOpened) && 'log'}</div>
-      <div className="flex justify-between gap-2 py-3">
-        <ul className={cn({ 'py-5': isOpened })}>{items}</ul>
+      <div className="hidden gap-2 px-7 pt-7 md:flex">
+        {Boolean(isOpened) && 'log'}
+      </div>
+      <div className="flex justify-between gap-2 px-6 py-3 md:pl-0 xl:p-0 xl:py-3">
+        <ul className={cn({ 'py-2 md:py-5': isOpened })}>{items}</ul>
       </div>
     </div>
   )
@@ -150,7 +152,7 @@ const Editor = (props: EditorProps) => {
               )}
               {/* <div className="absolute -bottom-px left-1/2 top-full h-[25px] w-px origin-top-left bg-[--border] after:absolute after:bottom-px after:h-2 after:w-2 after:-translate-x-[50%] after:-rotate-45 after:border-b after:border-l after:border-b-[--border] after:border-l-[--border]" /> */}
             </div>
-            <div className="relative p-6 xl:pl-0">
+            <div className="relative p-6 md:pl-0">
               {/* {(props.data.view?.doc.length ?? 0) > 30 && (
                 <div className="absolute right-6 top-0 -mt-2.5 flex justify-end bg-[--page-bg] px-1.5 group-focus-within/editor:block group-hover/editor:block md:hidden">
                   <WordWrapIn />
@@ -183,7 +185,7 @@ const Editor = (props: EditorProps) => {
                   {sized.after}
                 </div>
               </div>
-              <div className="relative p-6 xl:pl-0">
+              <div className="relative p-6 md:pl-0">
                 {/* {props.data.svg.output.length > 30 && (
                   <div className="absolute right-6 top-0 -mt-2.5 flex justify-end bg-[--page-bg] px-1.5 group-focus-within/editor:block group-hover/editor:block md:hidden">
                     <WordWrapOut />

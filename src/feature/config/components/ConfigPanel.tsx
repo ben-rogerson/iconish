@@ -355,26 +355,26 @@ const useConfigItems = () => {
           }, debounceRef)
         },
       } satisfies FormRange,
-      {
-        id: 'stroke-linecap',
-        title: 'Stroke linecap',
-        defaultValue: config.strokeLinecap,
-        disabled: false,
-        options: ['butt', 'round', 'square'],
-        onChange: strokeLinecap => {
-          setConfig({ strokeLinecap })
-        },
-      } satisfies FormSelect,
-      {
-        id: 'stroke-linejoin',
-        title: 'Stroke linejoin',
-        defaultValue: config.strokeLinejoin,
-        disabled: false,
-        options: ['arcs', 'bevel', 'miter', 'miter-clip', 'round'],
-        onChange: strokeLinejoin => {
-          setConfig({ strokeLinejoin })
-        },
-      } satisfies FormSelect,
+      // {
+      //   id: 'stroke-linecap',
+      //   title: 'Stroke linecap',
+      //   defaultValue: config.strokeLinecap,
+      //   disabled: false,
+      //   options: ['butt', 'round', 'square'],
+      //   onChange: strokeLinecap => {
+      //     setConfig({ strokeLinecap })
+      //   },
+      // } satisfies FormSelect,
+      // {
+      //   id: 'stroke-linejoin',
+      //   title: 'Stroke linejoin',
+      //   defaultValue: config.strokeLinejoin,
+      //   disabled: false,
+      //   options: ['arcs', 'bevel', 'miter', 'miter-clip', 'round'],
+      //   onChange: strokeLinejoin => {
+      //     setConfig({ strokeLinejoin })
+      //   },
+      // } satisfies FormSelect,
       {
         id: 'non-scaling-stroke',
         title: 'Non-scaling stroke',
@@ -417,7 +417,7 @@ const useConfigItems = () => {
 export const ConfigPanel = (props: { activeEditors: Group['editors'] }) => {
   const activeGroupId = useAppStore(s => s.activeGroupId)
   const configItems = useConfigItems()
-  const { resetConfig, getConfig } = useAppActions()
+  const { resetConfig } = useAppActions()
   const [key, setKey] = useState(Date.now())
 
   const handleResetConfig = () => {
@@ -436,22 +436,20 @@ export const ConfigPanel = (props: { activeEditors: Group['editors'] }) => {
       className="group/config space-y-5"
       key={`group-${activeGroupId}-${key}`}
     >
-      <div className="font-serif text-2xl">
-        <span className="capitalize">{getConfig().iconSetType}</span> set
-        options
-      </div>
+      <div className="pb-2.5 font-serif text-2xl">Icon set options</div>
       <FormItems items={configItems} />
       <div className="">
-        <div className="top-2 mt-10 flex items-center justify-between border-t pt-5">
+        <div className="top-2 mt-10 flex items-center justify-between gap-4 border-t pt-5">
           {totalSaved > 0 && (
             <div className="text-muted">Saved {totalSaved} KB</div>
           )}
           <button
             type="button"
             onClick={handleResetConfig}
-            className="flex-shrink-0 text-secondary hover:text-inherit"
+            className="ml-auto flex flex-shrink-0 items-center gap-2 text-secondary hover:text-inherit"
           >
-            <RotateCw className="-mt-1 w-5 hover:text-primary" />
+            <RotateCw className="-mt-1 w-4 hover:text-primary" />
+            <span>Reset</span>
           </button>
         </div>
       </div>

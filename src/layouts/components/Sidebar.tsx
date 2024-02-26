@@ -24,11 +24,11 @@ export const WithMobileSidebar = ({
   return (
     <>
       <Sheet>
-        <div className="fixed right-0 top-[9em] z-50 grid h-[4em] w-[4em] place-content-center 2xl:right-[6em] 2xl:top-[1em]">
+        <div className="fixed right-1 top-[9em] z-50 grid h-[4em] w-[4em] place-content-center 2xl:right-[6em] 2xl:top-[1em]">
           <SetThemeButton className="h-[2em] w-[2em]" />
         </div>
         <SheetTrigger
-          className="fixed right-0 top-[1em] z-50 grid h-[4em] w-[4em] place-content-center 2xl:right-[2em] 2xl:top-[1em]"
+          className="fixed right-1 top-[1em] z-50 grid h-[4em] w-[4em] place-content-center 2xl:right-[2em] 2xl:top-[1em]"
           aria-label="View icon sets"
         >
           <div className="relative">
@@ -62,7 +62,7 @@ export const WithConfigSidebar = (props: {
   return (
     <>
       <Sheet>
-        <div className="fixed right-0 top-[5em] z-10 flex">
+        <div className="fixed right-1 top-[5em] z-10 flex">
           <SheetTrigger
             className="grid h-[4em] w-[4em] place-content-center 2xl:hidden"
             aria-label="View set options"

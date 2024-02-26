@@ -3,12 +3,19 @@ import { type VirtuosoHandle } from 'react-virtuoso'
 import { Editors } from '@/feature/editor/components/Editors'
 import { GroupSet } from '@/components/GroupSet'
 import type { Group } from '@/utils/types'
+import { useAppActions } from '@/hooks/appState'
 
 const Detail = (props: { group?: Group; activeEditors: Group['editors'] }) => {
+  const { getConfig } = useAppActions()
   const virtualListRef = useRef<VirtuosoHandle>(null)
 
   return (
-    <div>
+    <div className="grid gap-5">
+      {props.activeEditors.length > 0 && (
+        <div className="text-xl text-muted">
+          <span className="capitalize">{getConfig().iconSetType}</span> set
+        </div>
+      )}
       {!!props.group && (
         <GroupSet
           id={props.group.id}
