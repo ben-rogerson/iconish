@@ -1,8 +1,9 @@
 import { describe, expect, test, it, beforeEach } from 'vitest'
 import { act, waitFor } from '@testing-library/react'
 import { renderHook } from '@testing-library/react'
-import { initialConfig, useAppActions, useAppStore } from '@/hooks/appState'
+import { useAppActions, useAppStore } from '@/hooks/appState'
 import { flyaway } from '@/lib/icons'
+import { initialConfig } from '@/feature/config/initialConfig'
 
 describe('actions', () => {
   describe('config', () => {

@@ -1,4 +1,3 @@
-import { plusIcon } from '@/lib/icons'
 import { GroupSet } from '@/components/GroupSet'
 import { useAppActions, useAppStore } from '@/hooks/appState'
 import { Button } from '@/components/ui/button'
@@ -38,19 +37,23 @@ const List = () => {
         </div>
       </div>
 
-      {groups.length > 0 &&
-        icons.map(g => (
-          <GroupSet
-            key={g.id}
-            id={g.id}
-            title={g.title}
-            isHeader={false}
-            createdAt={g.createdAt}
-            icons={g.icons}
-            count={g.count}
-            isCurrent={g.id === activeGroupId}
-          />
-        ))}
+      {groups.length > 0 && (
+        <div className="divide-y">
+          {icons.map(g => (
+            <div className="pb-3 pt-6" key={g.id}>
+              <GroupSet
+                id={g.id}
+                title={g.title}
+                isHeader={false}
+                createdAt={g.createdAt}
+                icons={g.icons}
+                count={g.count}
+                isCurrent={g.id === activeGroupId}
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

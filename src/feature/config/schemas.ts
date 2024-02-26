@@ -9,6 +9,7 @@ const configSchema = z.object({
   strokeLinejoin: z.string(),
   nonScalingStroke: z.boolean(),
   outputJsx: z.boolean(),
+  cleanupIds: z.boolean(),
 })
 
 export { configSchema }

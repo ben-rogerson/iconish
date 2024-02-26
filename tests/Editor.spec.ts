@@ -200,11 +200,11 @@ test('the output is jsx when "output jsx" is selected', async ({
   context,
 }) => {
   const icon =
-    '<svg stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="test"><path d="M12 12v.01"/></svg>'
+    '<svg viewBox="0 0 1 1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="test"><path d="M12 12v.01"/></svg>'
   await insertCustomIcon(icon, page)
 
   const expectedJsxOutput =
-    '<svg strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="test" viewBox="0 0 1 1"><path d="M12 12v.01" vectorEffect="non-scaling-stroke"/></svg>'
+    '<svg stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="test" viewBox="0 0 1 1"><path d="M12 12v.01" vector-effect="non-scaling-stroke"/></svg>'
 
   await expect(page.getByRole('article', { name: 'editor' })).toContainText(
     expectedJsxOutput
@@ -224,7 +224,7 @@ test('the output is svg when "output jsx" is not selected', async ({
     '<svg stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="test"><path d="M12 12v.01"/></svg>'
   await insertCustomIcon(icon, page)
 
-  await page.getByRole('checkbox', { name: 'output JSX' }).uncheck()
+  await page.getByRole('checkbox', { name: 'Output JSX' }).uncheck()
 
   const expectedSvgOutput =
     '<svg stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="test" viewBox="0 0 1 1"><path d="M12 12v.01" vector-effect="non-scaling-stroke"/></svg>'

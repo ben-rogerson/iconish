@@ -123,7 +123,7 @@ export const transformSvg = (
   }
 
   try {
-    const output = optimizeAll(svgDoc.toString())
+    const output = optimizeAll(svgDoc.toString(), config)
     const outputJsx = config.outputJsx ? toJSX(parse(output)) : ''
     log.add('compressed with svgo')
 

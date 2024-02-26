@@ -1,5 +1,4 @@
 import { describe, it, expect, vi } from 'vitest'
-import { initialConfig } from '@/hooks/appState'
 import {
   type Transform,
   fillColorTransform,
@@ -12,6 +11,7 @@ import {
 } from '@/feature/svg/transforms'
 import { type HTMLElement } from 'node-html-parser'
 import { type Config } from '@/feature/config/types'
+import { initialConfig } from '@/feature/config/initialConfig'
 
 const transform = (
   fn: Transform,

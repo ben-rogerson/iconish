@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export function Header() {
   return (
-    <div className="grid py-7">
+    <div className="grid pt-7">
       <div>
         <Link href="/" className="inline-flex items-center gap-x-3">
           <div className="text-4xl sm:text-5xl">{logoIcon}</div>

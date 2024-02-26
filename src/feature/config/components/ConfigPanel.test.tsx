@@ -31,7 +31,7 @@ describe('<ConfigPanel />', () => {
 
     describe('stroke width', () => {
       const setup = () => {
-        render(<ConfigPanel />)
+        render(<ConfigPanel activeEditors={[]} />)
         const container = within(screen.getByTestId('control-stroke-width'))
         const element = container.getByRole<HTMLSpanElement>('slider')
         const { result } = renderHook(() => useAppActions())
@@ -87,7 +87,7 @@ describe('<ConfigPanel />', () => {
 
     describe('stroke color', () => {
       const setup = () => {
-        render(<ConfigPanel />)
+        render(<ConfigPanel activeEditors={[]} />)
         const container = within(screen.getByTestId('control-stroke-color'))
         const element = container.getByRole<HTMLInputElement>('textbox')
         const { result } = renderHook(() => useAppActions())
@@ -131,7 +131,7 @@ describe('<ConfigPanel />', () => {
 
     describe('non-scaling-stroke', () => {
       const setup = () => {
-        render(<ConfigPanel />)
+        render(<ConfigPanel activeEditors={[]} />)
         const container = within(
           screen.getByTestId('control-non-scaling-stroke')
         )
@@ -176,7 +176,7 @@ describe('<ConfigPanel />', () => {
 
     describe('fill color', () => {
       const setup = () => {
-        render(<ConfigPanel />)
+        render(<ConfigPanel activeEditors={[]} />)
         const container = within(screen.getByTestId('control-fill-color'))
         const element = container.getByRole<HTMLInputElement>('textbox')
         const { result } = renderHook(() => useAppActions())
@@ -234,7 +234,7 @@ describe('<ConfigPanel />', () => {
 
     describe('stroke linecap', () => {
       const setup = () => {
-        render(<ConfigPanel />)
+        render(<ConfigPanel activeEditors={[]} />)
         // await openDropdownByName(/linecap/i);
 
         const container = within(screen.getByTestId('control-stroke-linecap'))
@@ -277,7 +277,7 @@ describe('<ConfigPanel />', () => {
 
     describe('stroke linejoin', () => {
       const setup = () => {
-        render(<ConfigPanel />)
+        render(<ConfigPanel activeEditors={[]} />)
         // await openDropdownByName(/stroke options/i);
 
         const container = within(screen.getByTestId('control-stroke-linejoin'))

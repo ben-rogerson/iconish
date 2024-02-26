@@ -49,7 +49,7 @@ export function Menu(props: {
   createdAt: number
   hasIcons: boolean
 }) {
-  const { removeGroup, getConfig } = useAppActions()
+  const { removeGroup } = useAppActions()
   const { toast } = useToast()
   const copyAll = useCopySvgsToClipboard(props.groupId)
   const downloadSvgs = useDownloadSvgsForGroup(props.groupId, props.title)
@@ -72,13 +72,9 @@ export function Menu(props: {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel>
-          <div>
-            <span className="capitalize">{getConfig().iconSetType}</span> icon
-            set
-          </div>
           {!!props.createdAt && (
             <>
-              Added <time>{relativeTime(props.createdAt)}</time>
+              Created <time>{relativeTime(props.createdAt)}</time>
             </>
           )}
         </DropdownMenuLabel>
@@ -116,7 +112,6 @@ const Header: FunctionComponent<{
   createdAt: number
   updateGroupTitle: (groupId: string, title: string) => void
 }> = props => {
-  const { getConfig } = useAppActions()
   // Perf: Local title state, with updates on input blur / enter
   const [title, setTitle] = useState(props.title)
 
@@ -126,11 +121,6 @@ const Header: FunctionComponent<{
 
   return (
     <div className="grid gap-4">
-      {Boolean(props.isLarge) && Boolean(props.hasIcons) && (
-        <div className={tw('text-muted', { 'text-xs': !props.isLarge })}>
-          <span className="capitalize">{getConfig().iconSetType}</span> icon set
-        </div>
-      )}
       <header className="relative flex justify-between">
         <div className="grid w-full gap-2">
           <input
@@ -204,8 +194,11 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
 
   return (
     <article
-      className="group/set grid gap-3"
       key={props.id}
+      className={cn('group/set grid', {
+        'gap-8': props.isHeader,
+        'gap-2': !props.isHeader,
+      })}
       aria-label={props.isHeader ? 'Current set' : 'Icon set'}
     >
       {Boolean(!props.isHeader) && (
@@ -295,7 +288,7 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
       )}
       {!props.isHeader && Boolean(!hasIcons) && (
         <div className="relative z-10">
-          <div className="text-muted">No icons added yet.</div>
+          <div className="py-5 text-muted">No icons added yet.</div>
           <SheetClose asChild>
             <button
               type="button"

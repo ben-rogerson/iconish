@@ -19,30 +19,7 @@ import { cn, tw } from '@/lib/utils'
 import { run } from '@/utils/run'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
-
-// const saveTemplateAsFile = (
-//   filename: string,
-//   dataObjToWrite: Record<string, unknown>
-// ) => {
-//   const json = JSON.stringify(dataObjToWrite);
-//   const blob = new Blob([json], { type: "text/json" });
-//   const link = document.createElement("a");
-
-//   link.download = filename;
-//   link.href = window.URL.createObjectURL(blob);
-//   link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
-
-//   const evt = new MouseEvent("click", {
-//     view: window,
-//     bubbles: true,
-//     cancelable: true,
-//   });
-
-//   link.dispatchEvent(evt);
-//   link.remove();
-
-//   return json;
-// };
+import type { Group } from '@/utils/types'
 
 type FormRange = {
   id: string
@@ -91,6 +68,7 @@ type FormSelect = {
 type FormCheckbox = {
   id: string
   title: string
+  description?: string
   defaultChecked: boolean
   type: 'checkbox'
   hidden?: boolean
@@ -135,17 +113,169 @@ const debouncer = (
   ref.current()
 }
 
-const useMainItems = () => {
+const FieldInput = (props: FormInput) => {
+  const [color, setColor] = useState(props.theme)
+  return (
+    <div
+      data-testid={`control-${props.id}`}
+      className={cn('grid gap-1.5', {
+        'opacity-25': props.disabled,
+        hidden: props.hidden,
+      })}
+      hidden={props.hidden ?? undefined}
+    >
+      <label htmlFor={`input-${props.id}`}>{props.title}</label>
+      <div className="flex gap-2 text-muted">
+        <div className={tw`flex w-full items-center gap-x-1.5`}>
+          {!!props.theme && (
+            <div
+              className={tw`h-3 w-3 rounded-sm`}
+              style={{ backgroundColor: color }}
+            />
+          )}
+          <input
+            type="text"
+            defaultValue={props.defaultValue}
+            onChange={e => {
+              setColor(e.target.value)
+              props.onChange(e)
+            }}
+            onBlur={props.onBlur}
+            disabled={props.disabled}
+            spellCheck={false}
+            className="w-full border-b border-b-transparent bg-transparent text-muted focus:border-b focus:text-[--text] focus:outline-none"
+            id={`input-${props.id}`}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export const FormItems = memo(function FormItems(props: {
+  items: FormItemType[]
+  type?: 'small'
+}) {
+  return props.items.map(item => (
+    <Fragment key={item.id}>
+      {run(() => {
+        if (isRadioGroup(item))
+          return (
+            <RadioGroup
+              data-testid={`control-${item.id}`}
+              defaultValue={item.defaultValue}
+              onValueChange={item.onChange}
+            >
+              {item.options.map(([value, text]) => (
+                <div className="flex items-center space-x-2" key={value}>
+                  <RadioGroupItem value={value} id={value} />
+                  <Label htmlFor={value}>{text}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+          )
+
+        if (isRange(item))
+          return (
+            <div
+              data-testid={`control-${item.id}`}
+              className={cn('grid gap-2 pb-3', {
+                hidden: item.disabled,
+              })}
+              hidden={item.hidden ?? undefined}
+            >
+              {/* Can't have clickable label - htmlFor not supported with Slider */}
+              <div id={`range-${item.id}-title`}>{item.title}</div>
+              <div className="flex gap-2 text-muted">
+                <div className="relative -mb-2 -mt-1 flex w-full items-center gap-1.5">
+                  <Slider
+                    defaultValue={[Number(item.defaultValue)]}
+                    max={5}
+                    min={1}
+                    step={0.5}
+                    aria-labelledby={`range-${item.id}-title`}
+                    onValueChange={item.onChange}
+                    id={`range-${item.id}`}
+                    disabled={item.disabled}
+                  />
+                  <div className="min-w-[3ch]">{item.defaultValue}</div>
+                </div>
+              </div>
+            </div>
+          )
+
+        if (isInput(item)) return <FieldInput {...item} />
+
+        if (isSelect(item))
+          return (
+            <div
+              data-testid={`control-${item.id}`}
+              className={cn({
+                'opacity-25': item.disabled,
+              })}
+              hidden={item.hidden ?? undefined}
+            >
+              <SelectMainLabel htmlFor={`select-${item.id}`}>
+                {item.title}
+              </SelectMainLabel>
+              <div className="flex gap-2 text-muted">
+                <div className="flex w-full items-center gap-x-1.5">
+                  <Select
+                    onValueChange={item.onChange}
+                    defaultValue={item.defaultValue}
+                  >
+                    <SelectTrigger id={`select-${item.id}`}>
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {item.options.map(o => (
+                        <SelectItem key={o} value={o}>
+                          {o}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+          )
+
+        if (isCheckbox(item))
+          return (
+            <div
+              data-testid={`control-${item.id}`}
+              className={cn({
+                'opacity-25': item.disabled,
+              })}
+              hidden={item.hidden ?? undefined}
+            >
+              <label className="flex h-full cursor-pointer items-center gap-x-3">
+                <Checkbox
+                  id={`checkbox-${item.id}`}
+                  defaultChecked={item.defaultChecked}
+                  onCheckedChange={item.onChange}
+                />
+                <span>{item.title}</span>
+              </label>
+              {Boolean(item.description) && <div>{item.description}</div>}
+            </div>
+          )
+      })}
+    </Fragment>
+  ))
+})
+
+const useConfigItems = () => {
   const { getConfig, setConfig } = useAppActions()
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const debounceRef = useRef<DebouncedFunc<() => void>>(null)
   const config = getConfig()
 
-  const mainItems = useMemo(
+  const items = useMemo(
     () => [
       {
         id: 'fill-color',
-        title: 'fill',
+        title: 'Fill',
         defaultValue: config.fill,
         type: 'text',
         theme: config.fill,
@@ -187,27 +317,17 @@ const useMainItems = () => {
         },
       } satisfies FormInput,
       {
-        id: 'stroke-width',
-        title: 'stroke width',
-        defaultValue: config.strokeWidth,
-        type: 'range',
-        disabled: config.iconSetType === 'solid',
-        hidden: config.iconSetType === 'solid',
-        onChange: (val: number[]) => {
-          debouncer(() => {
-            setConfig({ strokeWidth: String(val[0]) })
-          }, debounceRef)
-        },
-      } satisfies FormRange,
-      {
         id: 'stroke-color',
-        title: 'stroke color',
+        title: 'Stroke color',
         defaultValue: config.stroke,
         type: 'text',
         theme: config.stroke,
         hidden: config.iconSetType === 'solid',
         disabled: config.iconSetType === 'solid',
-        onChange: e => {
+        // onClick(e) {
+        //   e.target.select() // TODO: Add select all on click
+        // },
+        onChange(e) {
           const stroke =
             e.target.value && isColor(e.target.value) ? e.target.value : null
           if (!stroke) return
@@ -222,10 +342,22 @@ const useMainItems = () => {
           e.target.value = config.stroke
         },
       } satisfies FormInput,
-
+      {
+        id: 'stroke-width',
+        title: 'Stroke width',
+        defaultValue: config.strokeWidth,
+        type: 'range',
+        disabled: config.iconSetType === 'solid',
+        hidden: config.iconSetType === 'solid',
+        onChange: (val: number[]) => {
+          debouncer(() => {
+            setConfig({ strokeWidth: String(val[0]) })
+          }, debounceRef)
+        },
+      } satisfies FormRange,
       {
         id: 'stroke-linecap',
-        title: 'linecap',
+        title: 'Stroke linecap',
         defaultValue: config.strokeLinecap,
         disabled: false,
         options: ['butt', 'round', 'square'],
@@ -235,7 +367,7 @@ const useMainItems = () => {
       } satisfies FormSelect,
       {
         id: 'stroke-linejoin',
-        title: 'linejoin',
+        title: 'Stroke linejoin',
         defaultValue: config.strokeLinejoin,
         disabled: false,
         options: ['arcs', 'bevel', 'miter', 'miter-clip', 'round'],
@@ -245,7 +377,8 @@ const useMainItems = () => {
       } satisfies FormSelect,
       {
         id: 'non-scaling-stroke',
-        title: 'non-scaling stroke',
+        title: 'Non-scaling stroke',
+        // description: 'Keep the stroke width consistent, no matter the size.',
         defaultChecked: config.nonScalingStroke,
         disabled: config.iconSetType === 'solid',
         hidden: config.iconSetType === 'solid',
@@ -255,8 +388,18 @@ const useMainItems = () => {
         },
       } satisfies FormCheckbox,
       {
+        id: 'keep-ids',
+        title: 'ID attributes',
+        defaultChecked: !config.cleanupIds,
+        disabled: false,
+        type: 'checkbox',
+        onChange: isChecked => {
+          setConfig({ cleanupIds: !isChecked })
+        },
+      } satisfies FormCheckbox,
+      {
         id: 'output-jsx',
-        title: 'output jsx',
+        title: 'Output JSX',
         defaultChecked: config.outputJsx,
         disabled: false,
         type: 'checkbox',
@@ -268,223 +411,50 @@ const useMainItems = () => {
     [setConfig, config]
   )
 
-  return mainItems
+  return items
 }
 
-export const FormItems = memo(function FormItems(props: {
-  items: FormItemType[]
-}) {
-  return props.items.map((item, i) => (
-    <Fragment key={item.id}>
-      {run(() => {
-        if (isRadioGroup(item))
-          return (
-            <RadioGroup
-              data-testid={`control-${item.id}`}
-              defaultValue={item.defaultValue}
-              onValueChange={item.onChange}
-            >
-              {item.options.map(([value, text]) => (
-                <div className="flex items-center space-x-2" key={value}>
-                  <RadioGroupItem value={value} id={value} />
-                  <Label htmlFor={value}>{text}</Label>
-                </div>
-              ))}
-            </RadioGroup>
-          )
-
-        if (isRange(item))
-          return (
-            <div
-              data-testid={`control-${item.id}`}
-              className={cn('grid gap-2', {
-                'opacity-25': item.disabled,
-                hidden: item.hidden,
-              })}
-            >
-              {/* Can't have clickable label - htmlFor not supported with Slider */}
-              <div id={`range-${i}-title`}>{item.title}</div>
-              <div className="flex gap-2 text-muted">
-                <div className="relative -mb-2 -mt-1 flex w-44 items-center gap-1.5">
-                  <Slider
-                    defaultValue={[Number(item.defaultValue)]}
-                    max={5}
-                    min={1}
-                    step={0.5}
-                    aria-labelledby={`range-${i}-title`}
-                    onValueChange={item.onChange}
-                    id={`range-${i}`}
-                    disabled={item.disabled}
-                  />
-                  <div className="min-w-[3ch]">{item.defaultValue}</div>
-                </div>
-              </div>
-            </div>
-          )
-
-        if (isInput(item))
-          return (
-            <div
-              data-testid={`control-${item.id}`}
-              className={cn('grid gap-1.5', {
-                'opacity-25': item.disabled,
-                hidden: item.hidden,
-              })}
-            >
-              <label htmlFor={`input-${i}`}>{item.title}</label>
-              <div className="flex gap-2 text-muted">
-                <div className={tw`flex w-full items-center gap-x-1.5`}>
-                  {!!item.theme && (
-                    <div
-                      className={tw`h-3 w-3 rounded-sm`}
-                      style={{ backgroundColor: item.theme }}
-                    />
-                  )}
-                  <input
-                    type="text"
-                    defaultValue={item.defaultValue}
-                    onChange={item.onChange}
-                    onBlur={item.onBlur}
-                    disabled={item.disabled}
-                    spellCheck={false}
-                    className="w-full max-w-[7rem] border-b border-b-transparent bg-transparent text-muted focus:border-b focus:text-[--text] focus:outline-none"
-                    id={`input-${i}`}
-                  />
-                </div>
-              </div>
-            </div>
-          )
-
-        if (isSelect(item))
-          return (
-            <div
-              data-testid={`control-${item.id}`}
-              className={cn('max-w-[105px]', {
-                'opacity-25': item.disabled,
-                hidden: item.hidden,
-              })}
-            >
-              <SelectMainLabel htmlFor={`select-${i}`}>
-                {item.title}
-              </SelectMainLabel>
-              <div className="flex gap-2 text-muted">
-                <div className="flex items-center gap-x-1.5">
-                  <Select
-                    onValueChange={item.onChange}
-                    defaultValue={item.defaultValue}
-                  >
-                    <SelectTrigger className="w-[180px]" id={`select-${i}`}>
-                      <SelectValue placeholder="Select..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {item.options.map(o => (
-                        <SelectItem key={o} value={o}>
-                          {o}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-          )
-
-        if (isCheckbox(item))
-          return (
-            <div
-              data-testid={`control-${item.id}`}
-              className={cn(
-                'flex h-full cursor-pointer items-center gap-x-1.5',
-                {
-                  'opacity-25': item.disabled,
-                  hidden: item.hidden,
-                }
-              )}
-            >
-              <Checkbox
-                id={`checkbox-${i}`}
-                defaultChecked={item.defaultChecked}
-                onCheckedChange={item.onChange}
-              />
-              <label htmlFor={`checkbox-${i}`} className="cursor-pointer">
-                {item.title}
-              </label>
-            </div>
-          )
-      })}
-    </Fragment>
-  ))
-})
-
-export const ConfigPanel = () => {
+export const ConfigPanel = (props: { activeEditors: Group['editors'] }) => {
   const activeGroupId = useAppStore(s => s.activeGroupId)
-  const mainItems = useMainItems()
-  const { resetConfig } = useAppActions()
+  const configItems = useConfigItems()
+  const { resetConfig, getConfig } = useAppActions()
   const [key, setKey] = useState(Date.now())
-
-  // const handleSaveConfig = () => {
-  //   let theDate = new Date();
-  //   theDate.toISOString().split("T")[0];
-
-  //   const offset = theDate.getTimezoneOffset();
-  //   theDate = new Date(theDate.getTime() - offset * 60 * 1000);
-
-  //   const filename = `${
-  //     theDate.toISOString().split("T")[0]
-  //   }-iconish-config.json`;
-
-  //   saveTemplateAsFile(filename, { config });
-
-  //   toast({ title: "Config saved", description: `${filename}` });
-  // };
-
-  // const handleLoadConfig = () => {
-  //   // Open file dialog
-  //   // Read file
-  //   // Set config
-  //   console.log("TODO: handleLoadConfig");
-  // };
 
   const handleResetConfig = () => {
     resetConfig()
     setKey(Date.now())
   }
 
+  const totalSaved =
+    Math.round(
+      props.activeEditors.reduce((acc, val) => val[1].svg.savings + acc, 0) *
+        100
+    ) / 100
+
   return (
     <div
-      className="group/config flex w-full select-none grid-cols-4 items-start gap-10 pt-1.5 text-sm"
+      className="group/config space-y-5"
       key={`group-${activeGroupId}-${key}`}
     >
-      <FormItems items={mainItems} />
-      <div className="absolute right-3 top-2 w-4">
-        <button
-          type="button"
-          onClick={handleResetConfig}
-          className="text-secondary hover:text-inherit"
-        >
-          <RotateCw className="w-full" />
-        </button>
+      <div className="font-serif text-2xl">
+        <span className="capitalize">{getConfig().iconSetType}</span> set
+        options
       </div>
-      {/* <div className="flex gap-2 text-muted">
-        <div className="flex items-center gap-x-1.5">
-          <Select>
-            <SelectTrigger className="w-[180px]" aria-label="Stroke options">
-              Stroke options
-            </SelectTrigger>
-            <SelectContent align="end">
-              <div className="px-4 py-3 grid gap-2"></div>
-            </SelectContent>
-          </Select>
+      <FormItems items={configItems} />
+      <div className="">
+        <div className="top-2 mt-10 flex items-center justify-between border-t pt-5">
+          {totalSaved > 0 && (
+            <div className="text-muted">Saved {totalSaved} KB</div>
+          )}
+          <button
+            type="button"
+            onClick={handleResetConfig}
+            className="flex-shrink-0 text-secondary hover:text-inherit"
+          >
+            <RotateCw className="-mt-1 w-5 hover:text-primary" />
+          </button>
         </div>
-      </div> */}
-
-      {/* Config:
-      <button type="button" onClick={handleLoadConfig}>
-        Load
-      </button>
-      <button type="button" onClick={handleSaveConfig}>
-        Save
-      </button> */}
+      </div>
     </div>
   )
 }

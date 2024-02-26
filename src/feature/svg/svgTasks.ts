@@ -1,13 +1,21 @@
 import { optimize } from 'svgo'
 import { sanitizeTransforms } from '@/feature/svg/transforms'
 import { parseSvg } from '@/feature/svg/parseSvg'
+import { type Config } from '@/feature/config/types'
 
-export const optimizeAll = (svg: string) => {
+export const optimizeAll = (svg: string, config: Config) => {
   try {
     const result = optimize(svg, {
       multipass: true,
       plugins: [
-        { name: 'preset-default' },
+        {
+          name: 'preset-default',
+          params: {
+            overrides: {
+              cleanupIds: config.cleanupIds ? undefined : false,
+            },
+          },
+        },
         {
           name: 'removeAttributesBySelector',
           params: {
@@ -34,5 +42,11 @@ export const optimizeAll = (svg: string) => {
   }
 }
 
-export const doSanitizeSvg = (svgInput: string) =>
-  sanitizeTransforms.reduce((a, t) => t(a), parseSvg(svgInput)).toString()
+export const doSanitizeSvg = (svg: string) => {
+  let result = svg
+  result = sanitizeTransforms
+    .reduce((a, t) => t(a), parseSvg(result))
+    .toString()
+  result = /<svg\b[^>]*?>([\s\S]*?)<\/svg>/.exec(result)?.join('') ?? ''
+  return result
+}

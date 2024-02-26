@@ -28,80 +28,37 @@
   --input: 220 30% 20%;
 }
 
-/* .dark {
-  --primary: 0 0% 100%;
-  --secondary: 220 30% 40%;
-  --text: 0 0% 90.2%;
-  --muted: 220 30% 40%;
-  --bg: 220 30% 7.5%;
-  --bg-alt: 220 30% 6.5%;
-  --border: 220 30% 20%;
-  --input: 220 30% 20%;
-
-  color-scheme: dark;
-}
-
-.light {
-  --primary: 0 0% 100%;
-  --secondary: 10 30% 75%;
-  --text: 10 27% 20%;
-  --muted: 10 20% 60%;
-  --bg: 10 20% 90%;
-  --bg-alt: 10 20% 92%;
-  --border: 10 20% 75%;
-  --input: 10 20% 75%;
-
-  color-scheme: light;
-} */
-
-@font-face {
-  font-family: 'Nib Pro';
-  src: url('./../../public/NibPro-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Nib Pro';
-  src: url('./../../public/NibPro-BoldItalic.woff2') format('woff2');
-  font-weight: 700;
-  font-style: italic;
-}
-
 :root {
+  --foreground: 210 40% 98%;
   --background: var(--bg);
   --background-sheet: 220 30% 7.5%;
-  --foreground: 210 40% 98%;
 
   --card: var(--bg);
-  --card-foreground: 210 40% 98%;
+  --card-foreground: var(--foreground);
 
   --popover: var(--bg);
   --popover-foreground: var(--text);
 
-  --radius: 0.4rem;
-
-  /* --primary: 210 40% 98%; */
   --primary-foreground: 222.2 47.4% 11.2%;
-
-  /* --secondary: 220 30% 20%; */
-  --secondary-foreground: 210 40% 98%;
-
-  /* --muted: 0 0% 43.1%; */
+  --secondary-foreground: var(--foreground);
   --muted-foreground: 215 20.2% 65.1%;
 
   --accent: var(--muted);
-  --accent-foreground: 210 40% 98%;
+  --accent-foreground: var(--foreground);
 
   --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
+  --destructive-foreground: var(--foreground);
+
+  --warning: 47.29 100% 50%;
 
   --ring: 212.7 26.8% 83.9%;
+
+  --radius: 0.4rem;
 
   /* Generic */
   --text-normal: hsl(var(--text));
   --text-muted: hsl(var(--muted));
-  --text-warning: #ffc900;
+  --text-warning: hsl(var(--warning));
 
   --text-primary: hsl(var(--primary));
   --text-secondary: hsl(var(--secondary));
@@ -109,6 +66,7 @@
   --page-bg: hsl(var(--bg));
   --page-bg-alt: hsl(var(--bg-alt));
   --page-scrollbar: hsl(var(--bg));
+  --page-border: hsl(var(--border));
 
   /* Buttons */
   --button-text: hsl(var(--muted));
@@ -127,45 +85,40 @@
   /* Sortable drag indicators */
   --drag-indicator-text: hsl(var(--muted));
   --drag-indicator-text-active: hsl(var(--text));
+}
 
+:root {
   background: var(--page-bg);
   color: var(--text-normal);
   font-family: 'Chivo', monospace;
   font-weight: 250;
   overflow-y: scroll; /* Always show scrollbar to avoid layout shift */
-  /* scroll-margin-top: 8rem; */
+}
+
+::selection {
+  color: var(--text-muted);
+  background-color: var(--text-primary);
+}
+
+@font-face {
+  font-family: 'Nib Pro';
+  src: url('./../../public/NibPro-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Nib Pro';
+  src: url('./../../public/NibPro-BoldItalic.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
 }
 
 @layer base {
   * {
     @apply border-border;
-    min-width: 0; /* Giving this a trial */
+    min-width: 0;
   }
-}
-
-.loader {
-  animation: rotates 1s infinite;
-  height: 50px;
-  width: 50px;
-}
-.loader:before,
-.loader:after {
-  border-radius: 50%;
-  content: '';
-  display: block;
-  height: 20px;
-  width: 20px;
-}
-.loader:before {
-  animation: ball1 1s infinite;
-  background-color: #fff;
-  box-shadow: 30px 0 0 hsl(var(--border));
-  margin-bottom: 10px;
-}
-.loader:after {
-  animation: ball2 1s infinite;
-  background-color: hsl(var(--border));
-  box-shadow: 30px 0 0 #fff;
 }
 
 @keyframes rotates {
@@ -182,41 +135,58 @@
 
 @keyframes ball1 {
   0% {
-    box-shadow: 30px 0 0 hsl(var(--border));
+    box-shadow: 30px 0 0 var(--page-border);
   }
   50% {
-    box-shadow: 0 0 0 hsl(var(--border));
+    box-shadow: 0 0 0 var(--page-border);
     margin-bottom: 0;
     transform: translate(15px, 15px);
   }
   100% {
-    box-shadow: 30px 0 0 hsl(var(--border));
+    box-shadow: 30px 0 0 var(--page-border);
     margin-bottom: 10px;
   }
 }
 
 @keyframes ball2 {
   0% {
-    box-shadow: 30px 0 0 #fff;
+    box-shadow: 30px 0 0 var(--text-muted);
   }
   50% {
-    box-shadow: 0 0 0 #fff;
+    box-shadow: 0 0 0 var(--text-muted);
     margin-top: -20px;
     transform: translate(15px, 15px);
   }
   100% {
-    box-shadow: 30px 0 0 #fff;
+    box-shadow: 30px 0 0 var(--text-muted);
     margin-top: 0;
   }
 }
 
-body {
-  overflow-y: none; /* Always show scrollbar to avoid layout shift */
+.loader {
+  animation: rotates 1s infinite;
+  height: 50px;
+  width: 50px;
 }
-
-html body {
-  /* Fix Radix select open interfering with sticky */
-  overflow: clip !important;
+.loader:before,
+.loader:after {
+  border-radius: 50%;
+  content: '';
+  display: block;
+  height: 20px;
+  width: 20px;
+  mix-blend-mode: multiply;
+}
+.loader:before {
+  animation: ball1 1s infinite;
+  background-color: var(--text-muted);
+  box-shadow: 30px 0 0 var(--page-border);
+  margin-bottom: 10px;
+}
+.loader:after {
+  animation: ball2 1s infinite;
+  background-color: var(--page-border);
+  box-shadow: 30px 0 0 var(--text-muted);
 }
 
 /* CodeMirror container */

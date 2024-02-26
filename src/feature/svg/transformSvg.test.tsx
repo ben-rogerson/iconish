@@ -1,6 +1,6 @@
-import { initialConfig } from '@/hooks/appState'
-import { transformSvg } from './transformSvg'
 import { describe, it, expect, vi } from 'vitest'
+import { initialConfig } from '@/feature/config/initialConfig'
+import { transformSvg } from './transformSvg'
 
 vi.mock('@/feature/svg/transforms', () => ({
   transforms: [],

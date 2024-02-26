@@ -45,7 +45,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         // Set a large height to avoid the windowing removing the editor/preview from the DOM
-        viewport: { width: 1280, height: 5000 },
+        viewport: { width: 1580, height: 5000 },
       },
     },
 

@@ -1,7 +1,8 @@
-import { MenuIcon } from 'lucide-react'
+import { Boxes, Cog } from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { useAppStore } from '@/hooks/appState'
 import dynamic from 'next/dynamic'
+import type { Group } from '@/utils/types'
 
 // Don't SSR the toggle since the value on the server will be different than the client
 const SetThemeButton = dynamic(
@@ -23,22 +24,22 @@ export const WithMobileSidebar = ({
   return (
     <>
       <Sheet>
-        <div className="fixed right-0 top-0 flex">
-          <SetThemeButton />
-          <SheetTrigger
-            className="px-5 py-10 sm:pl-10 sm:pr-7 xl:pr-10"
-            aria-label="View icon sets"
-          >
-            <div className="relative">
-              <MenuIcon size={24} />
-              {groups.length > 1 && (
-                <div className="absolute -right-2 -top-1 rounded-full bg-[--page-bg] px-1 text-xs">
-                  {groups.length}
-                </div>
-              )}
-            </div>
-          </SheetTrigger>
+        <div className="fixed right-0 top-[9em] z-50 grid h-[4em] w-[4em] place-content-center 2xl:right-[6em] 2xl:top-[1em]">
+          <SetThemeButton className="h-[2em] w-[2em]" />
         </div>
+        <SheetTrigger
+          className="fixed right-0 top-[1em] z-50 grid h-[4em] w-[4em] place-content-center 2xl:right-[2em] 2xl:top-[1em]"
+          aria-label="View icon sets"
+        >
+          <div className="relative">
+            <Boxes size={24} className="h-[2em] w-[2em]" />
+            {groups.length > 1 && (
+              <span className="absolute -right-2 -top-1 rounded-full bg-[--page-bg] px-1 text-xs">
+                {groups.length}
+              </span>
+            )}
+          </div>
+        </SheetTrigger>
         <SheetContent
           side="right"
           className="overflow-y-auto px-7"
@@ -52,38 +53,32 @@ export const WithMobileSidebar = ({
   )
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-const WithDesktopSidebar = ({
-  children,
-  sidebarContent: SidebarContent,
-}: {
+export const WithConfigSidebar = (props: {
   children: React.ReactNode
-  sidebarContent: () => JSX.Element
+  sidebarContent: (props: { activeEditors: Group['editors'] }) => JSX.Element
+  activeEditors: Group['editors']
 }) => {
+  const SidebarContent = props.sidebarContent
   return (
-    // style used from here -> https://github.com/shadcn-ui/ui/blob/1cf5fad881b1da8f96923b7ad81d22d0aa3574b9/apps/www/app/docs/layout.tsx#L12
-    <div className="container h-screen flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">
-      <aside className="fixed top-14 z-30 -ml-2 hidden h-screen w-full shrink-0 border-r md:sticky md:block">
-        <div className="h-full py-6 pl-8 pr-6 lg:py-8">
-          <SidebarContent />
+    <>
+      <Sheet>
+        <div className="fixed right-0 top-[5em] z-10 flex">
+          <SheetTrigger
+            className="grid h-[4em] w-[4em] place-content-center 2xl:hidden"
+            aria-label="View set options"
+          >
+            <Cog className="h-[2em] w-[2em]" />
+          </SheetTrigger>
         </div>
-      </aside>
-      {children}
-    </div>
-  )
-}
-
-export const Sidebar = ({
-  children,
-  ...props
-}: {
-  children: React.ReactNode
-  sidebarContent: () => JSX.Element
-}) => {
-  return (
-    <WithDesktopSidebar {...props}>
-      <WithMobileSidebar {...props}>{children}</WithMobileSidebar>
-    </WithDesktopSidebar>
+        <SheetContent
+          side="right"
+          className="overflow-y-auto px-7 py-10 2xl:hidden"
+          data-testid="options-sidebar-small"
+        >
+          <SidebarContent activeEditors={props.activeEditors} />
+        </SheetContent>
+      </Sheet>
+      {props.children}
+    </>
   )
 }

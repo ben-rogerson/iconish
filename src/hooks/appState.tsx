@@ -7,6 +7,7 @@ import { type LogItem, transformSvg } from '@/feature/svg/transformSvg'
 import { subscribeWithSelector } from 'zustand/middleware'
 import { hashCode } from '@/utils/hash'
 import { produce } from 'immer'
+import { initialConfig } from '@/feature/config/initialConfig'
 
 type ConfigItem = Partial<Config>
 type SVGData = {
@@ -67,17 +68,6 @@ interface AppStoreState {
   groups: Group[]
   activeGroupId: Group['id']
 }
-
-export const initialConfig = {
-  iconSetType: 'outlined',
-  strokeWidth: '2',
-  stroke: 'currentColor',
-  fill: 'currentColor',
-  strokeLinecap: 'round',
-  strokeLinejoin: 'round',
-  nonScalingStroke: true,
-  outputJsx: true,
-} as const satisfies Config
 
 const makeGroup = (config?: Config, editors?: EditorState[]) =>
   ({
