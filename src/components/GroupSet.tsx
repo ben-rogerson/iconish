@@ -1,5 +1,5 @@
 import { useAppActions } from '@/hooks/appState'
-import { cn, tw } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import type { RefObject } from 'react'
 import {
   type FunctionComponent,
@@ -143,7 +143,7 @@ const Header: FunctionComponent<{
               if (e.key !== 'Enter') return
               props.updateGroupTitle(props.id, title)
             }}
-            className={tw(
+            className={cn(
               `w-[inherit] bg-transparent text-2xl`,
               `hover:text-text focus:text-[--text] focus:outline-none`,
               `font-serif placeholder-[--text-muted] placeholder:italic hover:placeholder-[--text]`,
@@ -259,7 +259,7 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
                 onClick={() => {
                   handleSelectGroup(props.id)
                 }}
-                className={tw(
+                className={cn(
                   'absolute inset-0 z-0 cursor-pointer rounded border opacity-0',
                   'hover:opacity-100 group-focus-within:opacity-100 group-hover:opacity-100'
                 )}

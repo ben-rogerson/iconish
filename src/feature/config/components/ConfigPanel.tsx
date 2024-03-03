@@ -15,7 +15,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox'
 import { Slider } from '@/components/ui/slider'
 import { useAppActions, useAppStore } from '@/hooks/appState'
-import { cn, tw } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { run } from '@/utils/run'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
@@ -126,10 +126,10 @@ const FieldInput = (props: FormInput) => {
     >
       <label htmlFor={`input-${props.id}`}>{props.title}</label>
       <div className="flex gap-2 text-muted">
-        <div className={tw`flex w-full items-center gap-x-1.5`}>
+        <div className="flex w-full items-center gap-x-1.5">
           {!!props.theme && (
             <div
-              className={tw`h-3 w-3 rounded-sm`}
+              className="h-3 w-3 rounded-sm"
               style={{ backgroundColor: color }}
             />
           )}

@@ -4,7 +4,7 @@ import type { VirtuosoHandle } from 'react-virtuoso'
 import { Editor } from '@/feature/editor/components/Editor'
 import { EditorList } from '@/feature/editor/components/EditorList'
 import { useAppActions, useAppStore } from '@/hooks/appState'
-import { cn, tw } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { Preview } from '@/feature/editor/components/Preview'
 
 const Add = memo(function Memo(props: {
@@ -15,7 +15,7 @@ const Add = memo(function Memo(props: {
   const isVisible = props.isVisible ?? false
   return (
     <button
-      className={tw(
+      className={cn(
         'group/add block w-full pb-8 pt-10',
         props.isTop ? '-top-16' : '-bottom-34'
       )}
