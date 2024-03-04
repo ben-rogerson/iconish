@@ -53,7 +53,7 @@ const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
   const { addEditorAfter } = useAppActions()
   const getEditors = useEditorsRender()
 
-  const editorCount = useMemo(
+  const svgEditors = useMemo(
     () => getEditors.filter(e => e[1].svg.original !== '').length,
     [getEditors]
   )
@@ -64,7 +64,7 @@ const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
     <EditorList virtualListRef={props.virtualListRef}>
       {getEditors.map(([editorId, data], index) => {
         const showOutput = data.svg.original !== ''
-        const showAdd = editorCount > 0
+        const showAdd = svgEditors > 0 || getEditors.length > 1
         return (
           <article
             id={editorId}
