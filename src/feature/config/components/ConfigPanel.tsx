@@ -20,6 +20,7 @@ import { run } from '@/utils/run'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import type { Group } from '@/utils/types'
+import { ColorPicker } from '@/components/ColorPicker'
 
 type FormRange = {
   id: string
@@ -36,12 +37,11 @@ type FormInput = {
   title: string
   defaultValue: string
   type: 'text'
-  theme?: string
+  theme: string
   hidden?: boolean
   disabled: boolean
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  onBlur: (e: React.FocusEvent<HTMLInputElement>) => void
-  onClick?: (e: React.MouseEvent<HTMLInputElement>) => void
+  onChange: (color: string) => void
+  onBlur: (color: string) => void
 }
 
 type FormRadioGroup = {
@@ -114,7 +114,13 @@ const debouncer = (
 }
 
 const FieldInput = (props: FormInput) => {
-  const [color, setColor] = useState(props.theme)
+  const [color, setColor] = useState(props.defaultValue)
+
+  const handleSetColor = (background: string) => {
+    setColor(background)
+    props.onChange(background)
+  }
+
   return (
     <div
       data-testid={`control-${props.id}`}
@@ -127,23 +133,11 @@ const FieldInput = (props: FormInput) => {
       <label htmlFor={`input-${props.id}`}>{props.title}</label>
       <div className="flex gap-2 text-muted">
         <div className="flex w-full items-center gap-x-1.5">
-          {!!props.theme && (
-            <div
-              className="h-3 w-3 rounded-sm"
-              style={{ backgroundColor: color }}
-            />
-          )}
-          <input
-            type="text"
-            defaultValue={props.defaultValue}
-            onChange={e => {
-              setColor(e.target.value)
-              props.onChange(e)
-            }}
+          <ColorPicker
+            color={color}
+            setColor={handleSetColor}
             onBlur={props.onBlur}
             disabled={props.disabled}
-            spellCheck={false}
-            className="w-full border-b border-b-transparent bg-transparent text-muted focus:border-b focus:text-[--text] focus:outline-none"
             id={`input-${props.id}`}
           />
         </div>
@@ -281,13 +275,12 @@ const useConfigItems = () => {
         theme: config.fill,
         hidden: config.iconSetType === 'outlined',
         disabled: config.iconSetType === 'outlined',
-        onChange: e => {
+        onChange: color => {
           const fill =
-            e.target.value &&
-            (validateColor(e.target.value) ||
-              (e.target.value.startsWith('var(--') &&
-                e.target.value.endsWith(')')))
-              ? e.target.value
+            color &&
+            (validateColor(color) ||
+              (color.startsWith('var(--') && color.endsWith(')')))
+              ? color
               : null
           if (!fill) return
 
@@ -296,23 +289,22 @@ const useConfigItems = () => {
             setConfig({ fill })
           }, 0)
         },
-        onBlur: e => {
+        onBlur: color => {
           const fill =
-            e.target.value &&
-            (validateColor(e.target.value) ||
-              (e.target.value.startsWith('var(--') &&
-                e.target.value.endsWith(')')))
-              ? e.target.value
+            color &&
+            (validateColor(color) ||
+              (color.startsWith('var(--') && color.endsWith(')')))
+              ? color
               : null
           if (!fill) {
             // Reset to previous value
-            e.target.value = config.fill
+            color = config.fill
             return
           }
 
           // Allow the color to be added, then update the config
           setTimeout(() => {
-            e.target.value = config.fill
+            color = config.fill
           }, 0)
         },
       } satisfies FormInput,
@@ -324,12 +316,8 @@ const useConfigItems = () => {
         theme: config.stroke,
         hidden: config.iconSetType === 'solid',
         disabled: config.iconSetType === 'solid',
-        // onClick(e) {
-        //   e.target.select() // TODO: Add select all on click
-        // },
-        onChange(e) {
-          const stroke =
-            e.target.value && isColor(e.target.value) ? e.target.value : null
+        onChange(color) {
+          const stroke = color && isColor(color) ? color : null
           if (!stroke) return
 
           // Allow the color to be added, then update the config
@@ -337,9 +325,9 @@ const useConfigItems = () => {
             setConfig({ stroke })
           }, 0)
         },
-        onBlur: e => {
-          if (isColor(e.target.value)) return
-          e.target.value = config.stroke
+        onBlur: color => {
+          if (isColor(color)) return
+          color = config.stroke
         },
       } satisfies FormInput,
       {
