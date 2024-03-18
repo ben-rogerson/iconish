@@ -469,7 +469,7 @@ export const useAppStore = create<
                 setTimeout(() => {
                   document
                     .querySelector(`#${newEditorId}`)
-                    ?.scrollIntoView({ behavior: 'smooth' })
+                    ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
                 }, 0)
               },
             }
@@ -503,7 +503,7 @@ export const useAppStore = create<
                 setTimeout(() => {
                   document
                     .querySelector(`#${newEditor[0]}`)
-                    ?.scrollIntoView({ behavior: 'smooth' })
+                    ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
                 }, 0)
               },
             }

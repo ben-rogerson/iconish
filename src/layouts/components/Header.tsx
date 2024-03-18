@@ -10,21 +10,21 @@ export function Header() {
           <div className="mt-2 font-serif text-3xl italic">Iconish</div>
         </Link>
       </div>
-      <div className="relative mb-10 mt-12 space-y-6 rounded lg:space-y-10 lg:p-10 lg:px-24 lg:py-12">
-        <h1 className="font-serif text-[350%] font-semibold leading-[1.1] tracking-tighter [text-shadow:1px_1px_2px_var(--page-bg)] xl:text-[500%]">
+      <div className="relative mb-10 mt-12 grid space-y-6 rounded lg:place-content-center lg:space-y-10 lg:p-10 lg:px-24 lg:py-12 lg:text-center">
+        <h1 className="font-serif text-[250%] font-semibold leading-[1.1] tracking-tighter [text-shadow:1px_1px_2px_var(--page-bg)] md:text-[400%] lg:text-[600%]">
           <span className="block">
-            Align <span className="italic">&amp;</span> minify{' '}
+            Align <span className="italic">&amp;</span> minify
           </span>
-          your svg <span className="whitespace-nowrap">icon sets</span>
+          svg <span className="whitespace-nowrap">icon sets</span>
         </h1>
-        <div className="max-w-[600px] space-y-7 text-lg">
+        <div className="text-md max-w-[710px] space-y-7 md:text-lg lg:text-xl">
           <p>
-            Exporting icons as SVG from tools like Figma can be hit or miss. The
-            code is messy, and colors may not match.
+            Copying SVGs from websites or tools like Figma often lack essential
+            optimizations needed for production.
           </p>
           <p>
-            With Iconish, you can quickly tidy and sync all your icons. Align
-            colors, refine paths, and shrink code size (with{' '}
+            Iconish will tidy and sync svg colors, refine paths, and shrink code
+            size (with{' '}
             <Link
               href="https://github.com/svg/svgo"
               target="_blank"
@@ -34,7 +34,6 @@ export function Header() {
             </Link>
             ) for the best possible finish.
           </p>
-          <p>Your icons deserve that finishing touch with Iconish.</p>
         </div>
         <div className="pointer-events-none ">
           <div className="absolute -left-[25%] -top-[1%] z-[-1] h-[500px] w-[50%] -rotate-6 rounded-full bg-[radial-gradient(169.40%_89.55%_at_94.76%_6.29%,rgb(255_252_131_/_25%)_0%,rgb(255_255_255_/0)_100%)] blur-xl dark:bg-[radial-gradient(169.40%_89.55%_at_94.76%_6.29%,rgb(155_252_131_/_15%)_0%,rgb(255_255_255_/0)_100%)]" />

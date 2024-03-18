@@ -12,7 +12,7 @@ const LayoutDefault = (props: {
   return (
     <>
       <div className="mx-6 min-h-screen md:mx-20">
-        <header className="flex flex-col">
+        <header className="flex max-w-[1200px] flex-col">
           <Header />
         </header>
         <div className="flex min-h-[400px] items-start">

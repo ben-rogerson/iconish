@@ -298,7 +298,7 @@ const IconListDraggable = (props: {
   title: string
   virtualListRef: RefObject<VirtuosoHandle>
 }) => {
-  const { setEditorOrderByIds } = useAppActions()
+  const { setEditorOrderByIds, getEditors } = useAppActions()
   const { setActiveGroup } = useAppActions()
   const sortableContextId = useId()
   const sensors = useSensors(
@@ -307,12 +307,12 @@ const IconListDraggable = (props: {
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   )
 
-  const setActiveIcon = (groupId: string, index: number) => {
+  const setActiveIcon = (groupId: string, id: string) => {
     setActiveGroup(groupId)
 
     props.virtualListRef.current?.scrollToIndex({
-      index,
-      align: 'center',
+      index: getEditors().findIndex(e => e[0] === id),
+      align: 'start',
       behavior: 'smooth',
     })
   }
@@ -329,7 +329,7 @@ const IconListDraggable = (props: {
         key={`${i}-${id}`}
         id={id}
         handleOnClick={() => {
-          setActiveIcon(props.id, i)
+          setActiveIcon(props.id, id)
         }}
       >
         <div className="grid">
@@ -341,7 +341,6 @@ const IconListDraggable = (props: {
             )}
           />
         </div>
-        {/* <Guides /> */}
       </SortableItem>
     )
   })
