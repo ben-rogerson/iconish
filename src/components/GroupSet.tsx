@@ -227,7 +227,13 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
       )}
       {Boolean(hasIcons) && (
         <div className="group relative @container">
-          <div className="@4xl:grid-cols-15 pointer-events-none grid grid-cols-4 @lg:grid-cols-5 @2xl:grid-cols-8 @3xl:grid-cols-8 @4xl:grid-cols-12">
+          <div
+            className={cn(
+              'pointer-events-none grid',
+              'grid-cols-4 @lg:grid-cols-5 @2xl:grid-cols-8 @4xl:grid-cols-12',
+              '[&>*]:bg-[linear-gradient(0deg,transparent_29.9%,hsl(var(--border))_30%,transparent_32%,transparent_49.9%,hsl(var(--border))_50%,transparent_52%,transparent_69.9%,hsl(var(--border))_70%,transparent_72%)]'
+            )}
+          >
             <div className="z-10 grid place-content-center text-center font-serif">
               <div className="-mb-1 block text-lg">{props.count}</div>
               <div className="text-md">
