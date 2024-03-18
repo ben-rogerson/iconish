@@ -1,5 +1,6 @@
 /* v8 ignore start */
 import { type Config } from 'tailwindcss'
+import containerQueries from './tailwindcss-container-queries'
 
 export default {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
@@ -74,8 +75,5 @@ export default {
       },
     },
   },
-  plugins: [
-    require('tailwindcss-animate'),
-    require('@tailwindcss/container-queries'),
-  ],
+  plugins: [require('tailwindcss-animate'), containerQueries],
 } satisfies Config
