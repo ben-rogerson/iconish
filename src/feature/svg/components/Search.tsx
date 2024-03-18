@@ -88,9 +88,9 @@ export default function Search(props: {
           <div>Search</div>
         </button>
       </DialogTrigger>
-      <DialogContent className="px-12 py-14 sm:max-w-2xl">
+      <DialogContent className="gap-6 px-6 py-8 sm:max-w-2xl sm:px-20 sm:py-16">
         <DialogHeader>
-          <DialogTitle className="font-serif text-[250%]">
+          <DialogTitle className="font-serif text-3xl">
             Search for icons
           </DialogTitle>
         </DialogHeader>
@@ -118,7 +118,7 @@ export default function Search(props: {
                 labelled “{activeKeywords}”
               </h2>
               {Boolean(results.length > 0) && (
-                <div className="grid max-h-[50dvh] grid-cols-4 gap-2 overflow-y-scroll">
+                <div className="grid max-h-[50dvh] grid-cols-4 gap-2 overflow-y-scroll pr-4">
                   {results.map(data => {
                     const link = data.authorUrl ? (
                       <Link
