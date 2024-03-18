@@ -7,6 +7,7 @@ module.exports = {
   extends: [
     'next/core-web-vitals',
     'eslint:recommended',
+    'plugin:eslint-comments/recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-type-checked',
     require.resolve('@vercel/style-guide/eslint/react'),
@@ -23,6 +24,7 @@ module.exports = {
     'react/function-component-definition': 'off',
     'react/jsx-sort-props': 'off',
     'react/jsx-no-leaked-render': [2, { validStrategies: ['coerce'] }],
+    'eslint-comments/no-unused-disable': 'error',
   },
   parserOptions: { project },
   overrides: [

@@ -1,7 +1,9 @@
 import z from 'zod'
 
+const iconSetTypeSchema = z.enum(['outlined', 'solid', 'indeterminate'])
+
 const configSchema = z.object({
-  iconSetType: z.enum(['outlined', 'solid']),
+  iconSetType: iconSetTypeSchema,
   strokeWidth: z.string(),
   stroke: z.string(),
   fill: z.string(),
@@ -12,4 +14,4 @@ const configSchema = z.object({
   cleanupIds: z.boolean(),
 })
 
-export { configSchema }
+export { iconSetTypeSchema, configSchema }

@@ -15,6 +15,15 @@ export type TransformOptions = {
   editorId?: string
 }
 
+const getCounts = (tagNames: Array<HTMLElement['tagName']>) =>
+  Object.entries(
+    tagNames.reduce<Record<string, number>>((acc, name) => {
+      acc[name] = (acc[name] || 0) + 1
+      return acc
+    }, {})
+  )
+    .map(([key, value]) => `${key}${value > 1 ? ` (${value}x)` : ''}`)
+    .join(', ')
 // const viewBoxTransform = (doc: HTMLElement) => {
 //   const svg = doc.querySelector("svg");
 //   if (!svg) return doc;
@@ -23,9 +32,18 @@ export type TransformOptions = {
 //   return doc;
 // };
 
-const ELEMENT_COMMON_IGNORE_VALUES = [
+// const ELEMENT_COMMON_IGNORE_VALUES = [
+//   'none',
+//   'currentColor',
+//   'inherit',
+//   'initial',
+//   'transparent',
+//   'unset',
+//   '0',
+// ]
+
+const ELEMENT_HIDDEN_VALUES = [
   'none',
-  'currentColor',
   'inherit',
   'initial',
   'transparent',
@@ -34,35 +52,31 @@ const ELEMENT_COMMON_IGNORE_VALUES = [
 ]
 
 export const fillColorTransform: Transform = (doc, options) => {
-  if (options.config.iconSetType === 'outlined') return doc
+  if (options.config.iconSetType !== 'solid') return doc
 
-  const paths = doc.querySelectorAll(
-    'path[fill], line[fill], polygon[fill], polyline[fill], ellipse[fill], rect[fill], circle[fill]'
-  )
+  const paths = doc.querySelectorAll('*[fill], *[stroke]')
 
   const fillPaths = new Set<HTMLElement>()
   const tagNames: Array<HTMLElement['tagName']> = []
 
   for (const path of paths) {
-    if (!path.hasAttribute('fill')) continue
-
     const value = path.getAttribute('fill') ?? ''
-    if (ELEMENT_COMMON_IGNORE_VALUES.includes(value)) continue
+    if (ELEMENT_HIDDEN_VALUES.includes(value)) continue
 
     fillPaths.add(path)
     tagNames.push(path.tagName.toLowerCase())
 
-    if (fillPaths.size > 1) {
-      options.log.add(
-        `fill: “${options.config.fill}” wasn’t applied as ${
-          fillPaths.size
-        } colors were found (${getCounts(
-          [...fillPaths].map(p => p.getAttribute('fill') ?? '')
-        )})`,
-        'info'
-      )
-      return doc
-    }
+    //   if (fillPaths.size > 1) {
+    //     options.log.add(
+    //       `fill: “${options.config.fill}” wasn’t applied as ${
+    //         fillPaths.size
+    //       } colors were found (${getCounts(
+    //         [...fillPaths].map(([, p]) => p.getAttribute('fill') ?? '')
+    //       )})`,
+    //       'info'
+    //     )
+    //     return doc
+    //   }
   }
 
   // Split into two loops to avoid modifying the DOM while performing the color checks
@@ -139,19 +153,9 @@ export const strokeLineJoinTransform: Transform = (doc, options) => {
   return doc
 }
 
-const getCounts = (tagNames: Array<HTMLElement['tagName']>) =>
-  Object.entries(
-    tagNames.reduce<Record<string, number>>((acc, name) => {
-      acc[name] = (acc[name] || 0) + 1
-      return acc
-    }, {})
-  )
-    .map(([key, value]) => `${key}${value > 1 ? ` (${value}x)` : ''}`)
-    .join(', ')
-
 export const strokeWidthTransform: Transform = (doc, options) => {
   // Avoid applying stroke width to solid icons
-  if (options.config.iconSetType === 'solid') return doc
+  if (options.config.iconSetType !== 'outlined') return doc
 
   const elementTargets = [
     'svg',
@@ -164,7 +168,10 @@ export const strokeWidthTransform: Transform = (doc, options) => {
     'circle',
   ]
   const elementTargetsString = elementTargets
-    .map(e => `${e}[strokewidth], ${e}[strokeWidth], ${e}[stroke-width]`)
+    .map(
+      e =>
+        `${e}[strokewidth], ${e}[strokeWidth], ${e}[stroke-width], ${e}[stroke]`
+    )
     .join(', ')
   const paths = doc.querySelectorAll(elementTargetsString)
 
@@ -189,19 +196,17 @@ export const strokeWidthTransform: Transform = (doc, options) => {
 
 export const strokeColorTransform: Transform = (doc, options) => {
   // Avoid applying stroke color to solid icons
-  if (options.config.iconSetType === 'solid') return doc
+  if (options.config.iconSetType !== 'outlined') return doc
 
-  const paths = doc.querySelectorAll(
-    'path[stroke], line[stroke], polygon[stroke], polyline[stroke], ellipse[stroke], rect[stroke], circle[stroke]'
-  )
+  const paths = doc.querySelectorAll('*[stroke]')
 
   // Check for a colored svg to avoid applying stroke color
   const valueSet = new Set()
   for (const path of paths) {
-    if (!path.hasAttribute('stroke')) continue
+    // if (!path.hasAttribute('stroke')) continue
 
     const value = path.getAttribute('stroke') ?? ''
-    if (ELEMENT_COMMON_IGNORE_VALUES.includes(value)) continue
+    if (ELEMENT_HIDDEN_VALUES.includes(value)) continue
     valueSet.add(value)
   }
 
@@ -244,15 +249,16 @@ export const strokeColorTransform: Transform = (doc, options) => {
 
 export const vectorEffectTransform: Transform = (doc, options) => {
   // Avoid applying the stroke changes to solid icons
-  if (options.config.iconSetType === 'solid') return doc
+  if (options.config.iconSetType !== 'outlined') return doc
 
   const svg = doc.querySelector('svg')
-  const hasSvgStrokeWidth =
-    svg?.getAttribute('stroke-width') ??
-    svg?.getAttribute('strokewidth') ??
-    svg?.getAttribute('strokeWidth')
-
-  if (!hasSvgStrokeWidth) return doc
+  // const hasSvgStrokeWidth =
+  //   svg?.getAttribute('stroke-width') ??
+  //   svg?.getAttribute('strokewidth') ??
+  //   svg?.getAttribute('strokeWidth') ??
+  //   svg?.getAttribute('strokeWidth')
+  // console.log({ hasSvgStrokeWidth })
+  // if (!hasSvgStrokeWidth) return doc
 
   const paths = doc.querySelectorAll(
     'path, line, polygon, polyline, ellipse, rect, circle'

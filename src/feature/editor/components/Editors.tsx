@@ -46,25 +46,27 @@ const useEditorsRender = () => {
   useEffect(() => {
     setEditors(getEditors())
   }, [hash, getEditors])
-  return editors
+
+  const editorsWithContent = useMemo(
+    () => getEditors({ withPlaceholders: false }).length,
+    [getEditors]
+  )
+
+  return { editors, editorsWithContent }
 }
 
 const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
   const { addEditorAfter } = useAppActions()
-  const getEditors = useEditorsRender()
+  const { editors } = useEditorsRender()
 
-  const svgEditors = useMemo(
-    () => getEditors.filter(e => e[1].svg.original !== '').length,
-    [getEditors]
-  )
+  if (editors.length === 0) return
 
-  if (getEditors.length === 0) return
+  const showAdd = true
 
   return (
     <EditorList virtualListRef={props.virtualListRef}>
-      {getEditors.map(([editorId, data], index) => {
+      {editors.map(([editorId, data], index) => {
         const showOutput = data.svg.original !== ''
-        const showAdd = svgEditors > 0 || getEditors.length > 1
         return (
           <article
             id={editorId}
@@ -83,7 +85,11 @@ const Editors = (props: { virtualListRef: RefObject<VirtuosoHandle> }) => {
             {showOutput ? (
               <Editor key={editorId} id={editorId} data={data} />
             ) : (
-              <Preview id={editorId} showRemove={getEditors.length > 1} />
+              <Preview
+                id={editorId}
+                showRemove={editors.length > 1}
+                virtualListRef={props.virtualListRef}
+              />
             )}
             {Boolean(showAdd) && (
               <Add

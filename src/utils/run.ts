@@ -32,3 +32,4 @@
  * @returns The return value of the function.
  */
 export const run = <T>(fn: () => T): T => fn()
+/* eslint-enable tsdoc/syntax */

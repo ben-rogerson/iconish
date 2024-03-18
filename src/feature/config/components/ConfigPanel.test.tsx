@@ -1,4 +1,4 @@
-/* eslint-disable vitest/no-commented-out-tests */
+/* eslint-disable vitest/no-commented-out-tests  */
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
   render,
@@ -295,3 +295,5 @@ describe('<ConfigPanel />', () => {
   // })
   // })
 })
+
+/* eslint-enable vitest/no-commented-out-tests  */

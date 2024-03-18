@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTheme } from 'next-app-theme/use-theme'
 import { Detail } from '@/components/Detail'
 import { List } from '@/components/List'
@@ -79,12 +79,12 @@ const useAutoThemeSwitch = () => {
 const useGroupRender = () => {
   const { getGroup } = useAppActions()
   const hash = useAppStore(s => s.updateListHash)
-  const [group, setGroup] = useState(getGroup())
+  const [group, setGroup] = useState(getGroup({ withPlaceholders: false }))
 
   useAutoThemeSwitch()
 
   useEffect(() => {
-    setGroup(getGroup())
+    setGroup(getGroup({ withPlaceholders: false }))
   }, [hash, getGroup])
   return group
 }
@@ -92,15 +92,7 @@ const useGroupRender = () => {
 const IconSets = () => {
   const group = useGroupRender()
 
-  const activeEditors = useMemo(
-    () =>
-      group?.editors.filter(
-        ([, data]) =>
-          data.svg.output &&
-          data.svg.output !== '<html xmlns="http://www.w3.org/1999/xhtml"/>'
-      ) ?? [],
-    [group?.editors]
-  )
+  const activeEditors = group?.editors ?? []
 
   return (
     <WithConfigSidebar
@@ -109,7 +101,11 @@ const IconSets = () => {
     >
       <WithMobileSidebar sidebarContent={List}>
         <LayoutDefault activeEditors={activeEditors}>
-          <Detail group={group} activeEditors={activeEditors} />
+          <Detail
+            group={group}
+            activeEditors={activeEditors}
+            iconSetType={group?.config.iconSetType}
+          />
         </LayoutDefault>
       </WithMobileSidebar>
     </WithConfigSidebar>

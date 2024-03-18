@@ -261,7 +261,7 @@ export const FormItems = memo(function FormItems(props: {
 
 const useConfigItems = () => {
   const { getConfig, setConfig } = useAppActions()
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
+   
   const debounceRef = useRef<DebouncedFunc<() => void>>(null)
   const config = getConfig()
 

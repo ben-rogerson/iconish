@@ -6,6 +6,7 @@ import { type Config } from '@/feature/config/types'
 import { type SvgLogItem } from '@/utils/types'
 import { calculateSizeSavings } from '@/utils/calculateSizeSavings'
 import isObject from 'lodash/isObject'
+import { getSvgType } from '@/feature/svg/getSvgType'
 
 export type LogItem = SvgLogItem
 
@@ -79,26 +80,21 @@ export const transformSvg = (
     }
   }
 
-  const type =
-    svgDoc.hasAttribute('stroke-width') ||
-    svgDoc.hasAttribute('strokeWidth') ||
-    svgDoc.hasAttribute('strokewidth')
-      ? 'outlined'
-      : 'solid'
+  const type = getSvgType(svgDoc)
 
   // Set the type
   log.add(type, 'data.type')
 
   if (type === 'outlined' && config.iconSetType === 'solid') {
     log.add(
-      'This icon doesn’t match the set, it seems to be an outlined icon',
-      'info'
+      'This icon seems to be an outlined icon and doesn’t match the set. Recommend moving it to a separate outlined icon set.',
+      'error'
     )
   }
   if (type === 'solid' && config.iconSetType === 'outlined') {
     log.add(
-      'This icon doesn’t match the set, it seems to be a solid icon',
-      'info'
+      'This icon seems to be a solid icon and doesn’t match the set. Recommend moving it to a separate solid icon set.',
+      'error'
     )
   }
 

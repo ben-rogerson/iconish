@@ -1,13 +1,15 @@
-import { newId } from '@/utils/newId'
-import { type EditorState, type Group } from '@/utils/types'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { type Config } from '../feature/config/types'
+import { produce } from 'immer'
+import { newId } from '@/utils/newId'
+import { type EditorState, type Group } from '@/utils/types'
+import { type Config } from '@/feature/config/types'
 import { type LogItem, transformSvg } from '@/feature/svg/transformSvg'
+import { getSvgType } from '@/feature/svg/getSvgType'
 import { subscribeWithSelector } from 'zustand/middleware'
 import { hashCode } from '@/utils/hash'
-import { produce } from 'immer'
 import { initialConfig } from '@/feature/config/initialConfig'
+import { parseSvg } from '@/feature/svg/parseSvg'
 
 type ConfigItem = Partial<Config>
 type SVGData = {
@@ -27,8 +29,8 @@ interface AppStoreActions {
   resetConfig: () => void
 
   updateGroupTitle: (groupId: string, title: string) => void
-  getGroup: () => Group | undefined
-  getGroups: () => Group[]
+  getGroup: (props?: { withPlaceholders?: boolean }) => Group | undefined
+  getGroups: (props?: { withPlaceholders?: boolean }) => Group[]
   addGroup: (title?: string) => void
   removeGroup: (id: string) => { hasSwitched: boolean; hasRemoved: boolean }
   getSvgsFromGroupId: (groupId: string) => string
@@ -36,7 +38,7 @@ interface AppStoreActions {
   setActiveGroup: (id: string) => { hasSwitched: boolean }
   updateSvgOutputs: (config?: Config) => void
 
-  getEditors: () => EditorState[]
+  getEditors: (props?: { withPlaceholders?: boolean }) => EditorState[]
   getEditorById: (editorId: string) => EditorState | undefined
   getEditorIndexById: (editorId: string) => number | undefined
   updateEditorTitle: (id: string, title: string) => void
@@ -51,11 +53,25 @@ interface AppStoreActions {
   removeEditor: (id: string, shouldRefresh?: boolean) => void
   clearEditors: () => void
   undoRemoveEditor: (id: string) => void
+  searchIcons: (
+    query: string,
+    iconSetType?: Config['iconSetType']
+  ) => Promise<
+    Array<{
+      url: string
+      type: 'outlined' | 'solid'
+      iconFullName: string
+      name: string
+      author: string
+      authorUrl: string
+      svg: string
+    }>
+  >
   addEditor: (
     input: string,
     title?: string,
-    extra?: { after?: string; toGroupId?: string }
-  ) => { scrollTo: () => void; hasUpdated: boolean }
+    extra?: { after?: string; toGroupId?: string; removeAfter?: boolean }
+  ) => { hasUpdated: boolean; newIndex: number }
   addEditorAfter: (
     editorId?: string,
     editor?: EditorState
@@ -119,6 +135,7 @@ export const useAppStore = create<
           setHydrated() {
             set({ _hasHydrated: true })
           },
+
           setConfig(configItem, shouldRefresh = true) {
             const activeGroupId = get().activeGroupId
 
@@ -146,10 +163,18 @@ export const useAppStore = create<
 
           // Groups
 
-          getGroups() {
+          getGroups(params) {
             return get().groups.map(group => ({
               ...group,
-              editors: group.editors.filter(e => !e[1].isDeleted),
+              editors: group.editors.filter(e => {
+                if (
+                  params?.withPlaceholders === false &&
+                  e[1].svg.original === ''
+                )
+                  return false
+
+                return !e[1].isDeleted
+              }),
             }))
           },
 
@@ -293,9 +318,14 @@ export const useAppStore = create<
           },
 
           autoSetIconType: () => {
-            const editors = get()
-              .actions.getEditors()
-              .filter(e => e[1].svg.output.includes('<svg'))
+            const editors = get().actions.getEditors({
+              withPlaceholders: false,
+            })
+
+            if (editors.length === 0) {
+              get().actions.setConfig({ iconSetType: 'indeterminate' }, false)
+              return
+            }
 
             const isOutlined =
               editors.filter(([, data]) =>
@@ -308,11 +338,11 @@ export const useAppStore = create<
             const currentValue = get().actions.getConfig().iconSetType
             if (isOutlined) {
               if (currentValue === 'outlined') return
-              get().actions.setConfig({ iconSetType: 'outlined' })
+              get().actions.setConfig({ iconSetType: 'outlined' }, false)
             }
             if (!isOutlined) {
               if (currentValue === 'solid') return
-              get().actions.setConfig({ iconSetType: 'solid' })
+              get().actions.setConfig({ iconSetType: 'solid' }, false)
             }
           },
 
@@ -322,14 +352,18 @@ export const useAppStore = create<
             set({ updateListHash: hashCode(newId()) })
           },
 
-          getEditors: () => {
+          getEditors: params => {
             const activeGroupId = get().activeGroupId
 
-            return (
+            const editors =
               get()
                 .groups.find(g => g.id === activeGroupId)
                 ?.editors.filter(e => Boolean(!e[1].isDeleted)) ?? []
-            )
+
+            if (params?.withPlaceholders === false)
+              return editors.filter(e => e[1].svg.original !== '')
+
+            return editors
           },
 
           getEditorById: editorId =>
@@ -381,25 +415,97 @@ export const useAppStore = create<
             return [...uniqueElements]
           },
 
-          getGroup() {
+          getGroup(params) {
             const activeGroupId = get().activeGroupId
             return get()
-              .actions.getGroups()
+              .actions.getGroups(params)
               .find(g => g.id === activeGroupId)
           },
 
+          searchIcons: async (query, iconSetType) => {
+            const res = await fetch(
+              `https://api.iconify.design/search?query=${query} palette=false`
+            )
+
+            if (!res.ok) {
+              // This will activate the closest `error.js` Error Boundary
+              throw new Error('Failed to fetch data')
+            }
+
+            const json = (await res.json()) as {
+              collections: Record<
+                string,
+                { name: string; author: { url: string } }
+              >
+              icons: string[]
+            }
+
+            const authors = Object.entries(json.collections).map(
+              ([folder, data]) => [folder, data.name, data.author.url]
+            )
+
+            const icons = await Promise.all(
+              json.icons.map(async iconFullName => {
+                const [folder, name] = iconFullName.split(':')
+                const url = `https://api.iconify.design/${folder}/${name}.svg`
+                const iconFetch = await fetch(url)
+                const svgData = await iconFetch.text()
+
+                const doc = parseSvg(svgData)
+                const svgDoc = doc.querySelector('svg')
+                if (!svgDoc) return
+
+                const svgType = getSvgType(svgDoc)
+
+                if (iconSetType && iconSetType !== svgType) return
+
+                const [, author, authorUrl] =
+                  authors.find(([folderName]) => folderName === folder) ?? []
+
+                const data = {
+                  url,
+                  type: svgType,
+                  iconFullName,
+                  name,
+                  author,
+                  authorUrl,
+                  svg: svgDoc.toString(),
+                }
+
+                return data
+              })
+            )
+
+            const filtered = icons.filter(Boolean) as Array<
+              NonNullable<(typeof icons)[number]>
+            >
+            return filtered
+          },
+
           addEditor: (input, title, extra) => {
+            const currentGroup = get().actions.getGroup()
+            // currentGroup?.config.iconSetType
+            // console.log({ addEditor: true })
+
             const groupAddingTo =
               // (toGroupId ?? activeGroupId) === undefined
               // ? addGroup()?.id:
-              extra?.toGroupId ?? get().activeGroupId
+              extra?.toGroupId ?? currentGroup?.id ?? get().activeGroupId
 
             const isSvg = input.includes('<svg')
+
+            // Set the svg type ahead of adding editor so transforms are can be applied
+            let config = get().actions.getConfig()
+            if (currentGroup?.config.iconSetType === 'indeterminate' && isSvg) {
+              const svgType = getSvgType(parseSvg(input))
+              get().actions.setConfig({ iconSetType: svgType })
+              config = { ...config, iconSetType: svgType }
+            }
 
             const newEditor = isSvg
               ? initialEditorData(
                   {
-                    ...transformSvg(input, get().actions.getConfig(), {
+                    ...transformSvg(input, config, {
                       title: title ?? '',
                     }),
                     original: input,
@@ -435,6 +541,8 @@ export const useAppStore = create<
             //   };
             // }
 
+            let editors: EditorState[] = []
+
             for (const group of get().groups) {
               if (groupAddingTo !== group.id) {
                 newGroups.push(group)
@@ -443,13 +551,9 @@ export const useAppStore = create<
 
               hasUpdated = true
 
-              // const newEditor = isSvg
-              //   ? initialEditorData(code, title)
-              //   : initialEditorData("", code);
-
               const newEditors = [...group.editors]
 
-              let editors = [...group.editors, newEditor]
+              editors = [...group.editors, newEditor]
 
               if (extra?.after) {
                 const index = newEditors.findIndex(e => e[0] === extra.after)
@@ -463,15 +567,17 @@ export const useAppStore = create<
             set({ groups: newGroups })
             get().actions.refreshGroup()
 
+            if (extra?.removeAfter && extra.after) {
+              get().actions.removeEditor(extra.after)
+            }
+
+            const newIndex = get()
+              .actions.getEditors()
+              .findIndex(e => e[0] === newEditorId)
+
             return {
               hasUpdated,
-              scrollTo: () => {
-                setTimeout(() => {
-                  document
-                    .querySelector(`#${newEditorId}`)
-                    ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                }, 0)
-              },
+              newIndex,
             }
           },
 

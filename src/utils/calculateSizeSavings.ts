@@ -17,3 +17,4 @@ export const calculateSizeSavings = (codeBefore: string, codeAfter: string) => {
         : null,
   }
 }
+/* eslint-enable no-irregular-whitespace */

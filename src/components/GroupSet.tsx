@@ -203,28 +203,15 @@ export const GroupSet = memo(function GroupSet(props: GroupSetBlock) {
       })}
       aria-label={props.isHeader ? 'Current set' : 'Icon set'}
     >
-      {Boolean(!props.isHeader) && (
-        <Header
-          id={props.id}
-          title={props.title}
-          updateGroupTitle={updateGroupTitle}
-          isCurrent={props.isCurrent ?? false}
-          createdAt={props.createdAt}
-          hasIcons={hasIcons}
-          isLarge={false}
-        />
-      )}
-      {Boolean(props.isHeader) && props.count > 0 && (
-        <Header
-          id={props.id}
-          title={props.title}
-          updateGroupTitle={updateGroupTitle}
-          isCurrent={props.isCurrent ?? false}
-          createdAt={props.createdAt}
-          hasIcons={hasIcons}
-          isLarge
-        />
-      )}
+      <Header
+        id={props.id}
+        title={props.title}
+        updateGroupTitle={updateGroupTitle}
+        isCurrent={props.isCurrent ?? false}
+        createdAt={props.createdAt}
+        hasIcons={hasIcons}
+        isLarge={props.isHeader ?? true}
+      />
       {Boolean(hasIcons) && (
         <div className="group relative @container">
           <div
@@ -336,7 +323,7 @@ const IconListDraggable = (props: {
           <div
             dangerouslySetInnerHTML={{ __html: data.svg.output }}
             className={cn(
-              'relative z-10 rounded border border-transparent p-[25%] hover:border-[--text-muted] hover:shadow-sm @sm:p-[32%] @3xl:p-[22%]',
+              'relative z-10 rounded border border-transparent p-[25%] hover:border-[--text-muted] hover:shadow-sm @sm:px-[32%] @sm:py-[20%] @3xl:px-[22%]',
               { 'border-red-800': hasError }
             )}
           />
