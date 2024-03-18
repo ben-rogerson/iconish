@@ -11,17 +11,17 @@ const LayoutDefault = (props: {
 }) => {
   return (
     <>
-      <div className="mx-6 min-h-screen md:mx-20">
-        <div className="grid max-w-[1100px] 2xl:max-w-[1300px]">
+      <div className="mx-6 min-h-screen max-w-[1100px] md:mx-20 2xl:max-w-[1300px]">
+        <div className="grid">
           <header>
             <Header />
           </header>
           <div className="flex items-start">
-            <main id="top" className="grid w-full flex-col 2xl:pr-20">
+            <main id="top" className="grid w-full flex-col">
               {props.children}
             </main>
             {(props.activeEditors ?? []).length > 0 && (
-              <aside className="sticky right-10 top-24 hidden min-w-fit max-w-fit rounded-lg border bg-background px-10 py-8 2xl:block [@media(min-width:1785px)]:top-8">
+              <aside className="sticky right-10 top-24 hidden min-w-fit max-w-fit rounded-lg border bg-background px-10 py-8 2xl:ml-20 2xl:block [@media(min-width:1785px)]:top-8">
                 <ConfigPanel activeEditors={props.activeEditors ?? []} />
               </aside>
             )}
