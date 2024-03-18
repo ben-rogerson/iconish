@@ -151,7 +151,7 @@ const Header: FunctionComponent<{
             )}
           />
         </div>
-        <div className="flex">
+        <div className="-mt-2.5 flex">
           <Menu
             groupId={props.id}
             createdAt={props.createdAt}
