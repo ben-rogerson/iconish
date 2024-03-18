@@ -1,4 +1,3 @@
-'use client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -8,7 +7,6 @@ import {
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
 import { Paintbrush } from 'lucide-react'
-import { useState } from 'react'
 
 export function ColorPicker({
   color,
