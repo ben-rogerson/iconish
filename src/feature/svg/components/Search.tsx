@@ -33,25 +33,23 @@ type ExternalIconData = {
 export default function Search(props: {
   handleOnAfterAddExternalIcon: (svgCode: string, name: string) => void
 }) {
-  const { searchIcons, getConfig, getEditors } = useAppActions()
+  const { searchIcons, getConfig } = useAppActions()
   const [results, setResults] = useState<ExternalIconData[]>([])
   const [keywords, setKeywords] = useState('')
   const [activeKeywords, setActiveKeywords] = useState('')
   const [searching, setSearching] = useState(false)
+  const type = getConfig().iconSetType
 
   const search = useCallback(
     async (query: string) => {
       setSearching(true)
       setActiveKeywords(query)
       setResults([])
-      const type =
-        getEditors({ withPlaceholders: false }).length > 0 &&
-        getConfig().iconSetType
-      const res = await searchIcons(query, type || undefined)
+      const res = await searchIcons(query, type)
       setResults(res)
       setSearching(false)
     },
-    [getConfig, getEditors, searchIcons]
+    [searchIcons, type]
   )
 
   const handleClearResults = () => {
@@ -142,19 +140,28 @@ export default function Search(props: {
                                 data.name
                               )
                             }}
-                            className="flex justify-center gap-3 rounded-lg border p-4 align-middle hover:border-muted"
+                            className="relative grid place-content-center gap-3 rounded-lg border p-4 hover:border-muted"
                           >
                             <Icon
                               icon={data.iconFullName}
                               style={{ fontSize: '300%' }}
+                              className="mx-auto"
                             />
+                            {type === 'indeterminate' && (
+                              <div className="mt-1 text-xs text-muted">
+                                {data.type}
+                              </div>
+                            )}
                           </TooltipTrigger>
                           <TooltipContent side="bottom">
-                            <div className="grid gap-1">
+                            <div className="grid gap-1 text-center">
                               <div className="text-lg font-bold">
                                 {data.name}
                               </div>
                               <div>{link}</div>
+                              {type !== 'indeterminate' && (
+                                <div className="mt-1 text-xs">{data.type}</div>
+                              )}
                             </div>
                           </TooltipContent>
                         </Tooltip>

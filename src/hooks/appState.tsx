@@ -457,7 +457,12 @@ export const useAppStore = create<
 
                 const svgType = getSvgType(svgDoc)
 
-                if (iconSetType && iconSetType !== svgType) return
+                if (
+                  iconSetType &&
+                  iconSetType !== 'indeterminate' &&
+                  iconSetType !== svgType
+                )
+                  return
 
                 const [, author, authorUrl] =
                   authors.find(([folderName]) => folderName === folder) ?? []
