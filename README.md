@@ -6,7 +6,7 @@ Exporting icons as SVG from tools like Figma can be hit or miss. The code is mes
 
 With Iconish, you can quickly tidy and sync your icon sets. Align colors, refine paths, and shrink code size for the best possible finish.
 
-:point_right: [Take a look at Iconish](https://iconish.vercel.app/) :point_left:
+:point_right: [Take a look at Iconish](https://iconish.benrogerson.dev/) :point_left:
 
 ## Performance
 
