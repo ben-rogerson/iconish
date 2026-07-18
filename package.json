@@ -111,7 +111,8 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.2.2",
     "vite": "^5.0.8",
-    "vitest": "^1.6.0"
+    "vitest": "^1.6.0",
+    "wrangler": "^4.112.0"
   },
   "pnpm": {
     "overrides": {
