@@ -1,9 +1,12 @@
-import million from 'million/compiler';
+// import MillionLint from '@million/lint';
+import million from 'million/compiler'
+
 /* v8 ignore start */
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
-
+  output: 'export',
+  images: { unoptimized: true },
   /**
    * If you are using `appDir` then you must comment the below `i18n` config out.
    *
@@ -14,9 +17,9 @@ const config = {
   //   defaultLocale: "en",
   // },
 
-  experimental: {
-    serverActions: true,
-  },
+  // experimental: {
+  //   serverActions: true,
+  // },
 
   webpack(config, { nextRuntime }) {
     // as of Next.js latest versions, the nextRuntime is preferred over `isServer`, because of edge-runtime
@@ -26,12 +29,16 @@ const config = {
         fs: false,
       }
     }
-
     return config
   },
 }
-
-export default million.next(
-  config
-, { auto: { rsc: true } }
-)
+export default million.next(config, {
+  auto: {
+    rsc: true,
+  },
+  rsc: true,
+})
+// export default million.next(
+//   config
+// , { auto: { rsc: true } }
+// )

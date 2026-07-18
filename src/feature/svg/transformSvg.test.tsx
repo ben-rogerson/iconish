@@ -80,7 +80,7 @@ describe('transformSvg', () => {
     })
 
     it('sets the icon type log to outlined when an outlined svg is added', () => {
-      const svg = '<svg stroke-width="anything"></svg>'
+      const svg = '<svg fill="none"></svg>'
       const { log } = transformSvg(svg, initialConfig)
 
       expect(

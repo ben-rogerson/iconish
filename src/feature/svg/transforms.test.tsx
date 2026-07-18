@@ -348,14 +348,14 @@ describe('strokeColorTransform', () => {
     )
   })
 
-  it('should make updates if there are elements with different stroke values but they fall under "currentColor, inherit, initial, transparent, unset, 0"', () => {
+  it('should make updates if there are elements with different stroke values but they fall under "inherit, initial, transparent, unset, 0"', () => {
     // TODO: Add outputSolid / outputOutlined tests for this
     const output = transform(
       strokeColorTransform,
-      '<svg><path stroke="currentColor" /><path stroke="inherit" /><path stroke="initial" /><path stroke="transparent" /><path stroke="unset" /><path stroke="0" /><path stroke="blue"></svg>'
+      '<svg><path stroke="inherit" /><path stroke="initial" /><path stroke="transparent" /><path stroke="unset" /><path stroke="0" /><path stroke="blue"></svg>'
     )
     expect(output.outerHTML).toMatchInlineSnapshot(
-      `"<svg><path stroke="currentColor"></path><path stroke="currentColor"></path><path stroke="currentColor"></path><path stroke="currentColor"></path><path stroke="currentColor"></path><path stroke="currentColor"></path><path stroke="currentColor"></path></svg>"`
+      `"<svg><path stroke="currentColor"></path><path stroke="currentColor"></path><path stroke="currentColor"></path><path stroke="currentColor"></path><path stroke="currentColor"></path><path stroke="currentColor"></path></svg>"`
     )
   })
 
@@ -517,7 +517,7 @@ describe('fillColorTransform', () => {
     ).toBeNull()
   })
 
-  it('should avoid updates if there are elements with different fill values', () => {
+  it('should update elements with different fill values (solid sets only)', () => {
     const outputSolid = transform(
       fillColorTransform,
       '<svg fill="orange"><path fill="blue" /><path fill="red" /></svg>',
@@ -530,14 +530,14 @@ describe('fillColorTransform', () => {
     )
 
     expect(outputSolid.outerHTML).toMatchInlineSnapshot(
-      `"<svg fill="orange"><path fill="blue"></path><path fill="red"></path></svg>"`
+      `"<svg fill="currentColor"><path fill="currentColor"></path><path fill="currentColor"></path></svg>"`
     )
     expect(outputOutlined.outerHTML).toMatchInlineSnapshot(
       `"<svg fill="orange"><path fill="blue"></path><path fill="red"></path></svg>"`
     )
   })
 
-  it('should make updates if there are elements with different fill values but not when they fall under "currentColor, inherit, initial, transparent, unset, 0"', () => {
+  it('should make updates if there are elements with different fill values but not when they fall under "inherit, initial, transparent, unset, 0"', () => {
     const outputSolid = transform(
       fillColorTransform,
       '<svg fill="unset"><path fill="currentColor" /><path fill="inherit" /><path fill="initial" /><path fill="transparent" /><path fill="unset" /><path fill="0" /><path fill="blue" /></svg>',
@@ -550,7 +550,7 @@ describe('fillColorTransform', () => {
     )
 
     expect(outputSolid.outerHTML).toMatchInlineSnapshot(
-      `"<svg fill="unset"><path fill="currentColor"></path><path fill="inherit"></path><path fill="initial"></path><path fill="transparent"></path><path fill="unset"></path><path fill="0"></path><path fill="new-color"></path></svg>"`
+      `"<svg fill="unset"><path fill="new-color"></path><path fill="inherit"></path><path fill="initial"></path><path fill="transparent"></path><path fill="unset"></path><path fill="0"></path><path fill="new-color"></path></svg>"`
     )
     expect(outputOutlined.outerHTML).toMatchInlineSnapshot(
       `"<svg fill="unset"><path fill="currentColor"></path><path fill="inherit"></path><path fill="initial"></path><path fill="transparent"></path><path fill="unset"></path><path fill="0"></path><path fill="blue"></path></svg>"`

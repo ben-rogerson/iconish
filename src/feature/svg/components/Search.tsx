@@ -1,9 +1,10 @@
+import type { AppStoreActions } from '@/hooks/appState'
 import { useAppActions } from '@/hooks/appState'
 import { useCallback, useEffect, useState } from 'react'
 import { Icon } from '@iconify/react'
 import { run } from '@/utils/run'
 import { InputIcon } from '@/components/InputIcon'
-import { pluralize } from '../../../utils/pluralize'
+import { pluralize } from '@/utils/pluralize'
 import { SearchIcon } from '@/lib/icons'
 import {
   Dialog,
@@ -20,15 +21,10 @@ import {
 } from '@/components/ui/tooltip'
 import Link from 'next/link'
 
-type ExternalIconData = {
-  url: string
-  type: 'outlined' | 'solid'
-  iconFullName: string
-  name: string
-  author: string
-  authorUrl: string
-  svg: string
-}
+// Surely a better way to share these types
+type ExternalIconData = Awaited<
+  ReturnType<AppStoreActions['searchIcons']>
+>[number]
 
 export default function Search(props: {
   handleOnAfterAddExternalIcon: (svgCode: string, name: string) => void
@@ -78,7 +74,7 @@ export default function Search(props: {
       <DialogTrigger asChild>
         <button
           type="button"
-          className="flex h-full w-full items-center justify-center gap-3 rounded border bg-background px-5 py-3"
+          className="flex h-full w-full items-center justify-center gap-3 rounded border bg-background px-5 py-3 transition-all duration-200 hover:border-muted hover:shadow-[0_4px_20px_-8px_hsl(var(--secondary)/0.5)]"
         >
           <div>
             <SearchIcon className="h-[1em] w-[1em] text-3xl" />
@@ -86,7 +82,7 @@ export default function Search(props: {
           <div>Search</div>
         </button>
       </DialogTrigger>
-      <DialogContent className="gap-6 px-6 py-8 sm:max-w-2xl sm:px-20 sm:py-16">
+      <DialogContent className="gap-6 px-6 py-8 sm:max-w-2xl sm:px-16 sm:py-14">
         <DialogHeader>
           <DialogTitle className="font-serif text-3xl">
             Search for icons
@@ -160,7 +156,14 @@ export default function Search(props: {
                               </div>
                               <div>{link}</div>
                               {type !== 'indeterminate' && (
-                                <div className="mt-1 text-xs">{data.type}</div>
+                                <div className="mt-1 text-xs">
+                                  Type: {data.type}
+                                </div>
+                              )}
+                              {Boolean(data.viewBox) && (
+                                <div className="mt-1 text-xs">
+                                  Viewbox: {data.viewBox}
+                                </div>
                               )}
                             </div>
                           </TooltipContent>

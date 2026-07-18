@@ -18,15 +18,19 @@ describe('<ConfigPanel />', () => {
     // With the default single editor
     expect(result.current.getConfig().iconSetType).toBe('outlined')
 
-    // With no editors
+    // With no editors the type can’t be detected
     result.current.clearEditors()
-    expect(result.current.getConfig().iconSetType).toBe('outlined')
+    expect(result.current.getConfig().iconSetType).toBe('indeterminate')
   })
 
   describe('outlined mode', () => {
     beforeEach(() => {
       const { result } = renderHook(() => useAppActions())
-      result.current.setConfig({ iconSetType: 'outlined' }, true)
+      result.current.setConfig(
+        { iconSetType: 'outlined' },
+        // GOTCHA: Prevent updating as that will re-detect the iconSetType
+        false
+      )
       expect(result.current.getConfig().iconSetType).toBe('outlined')
     })
 

@@ -21,7 +21,7 @@ type SVGData = {
   savings: number
 }
 
-interface AppStoreActions {
+export interface AppStoreActions {
   setHydrated: () => void
 
   setConfig: (configItem: ConfigItem, shouldUpdate?: boolean) => void
@@ -65,6 +65,7 @@ interface AppStoreActions {
       author: string
       authorUrl: string
       svg: string
+      viewBox: string | undefined
     }>
   >
   addEditor: (
@@ -475,6 +476,7 @@ export const useAppStore = create<
                   author,
                   authorUrl,
                   svg: svgDoc.toString(),
+                  viewBox: svgDoc.getAttribute('viewBox'),
                 }
 
                 return data

@@ -9,13 +9,19 @@ const LayoutDefault = (props: {
   children: React.ReactNode
   activeEditors?: Group['editors']
 }) => {
+  // The marketing header only shows while the set is empty, and stays hidden
+  // while hydrating so it doesn't flash for returning users
+  const showHeader = props.activeEditors?.length === 0
+
   return (
     <>
       <div className="mx-6 min-h-screen max-w-[1100px] md:mx-20 2xl:max-w-[1300px]">
-        <div className="grid">
-          <header>
-            <Header />
-          </header>
+        <div className={showHeader ? 'grid' : 'grid pt-8'}>
+          {props.activeEditors?.length === 0 && (
+            <header>
+              <Header />
+            </header>
+          )}
           <div className="flex items-start">
             <main id="top" className="grid w-full flex-col">
               {props.children}

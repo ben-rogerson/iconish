@@ -110,23 +110,38 @@ const Preview = memo(function Preview(props: PreviewProps) {
             />
           </div>
         )}
-        <div className="grid-cols-[minmax(0,_0.25fr)_minmax(0,_1fr)] rounded border text-xl md:grid lg:text-2xl">
-          <div className="relative hidden place-items-center px-[25%] text-muted md:grid">
-            {iconBarrier}
-          </div>
-          <div className="relative grid gap-4 px-12 py-10 md:pl-0">
-            <div className="grid grid-cols-2 gap-5">
-              <Upload onUpload={handleOnUpload} className="w-full" />
-              <Search
-                handleOnAfterAddExternalIcon={handleOnAfterAddExternalIcon}
-              />
+        <div className="group/add relative overflow-hidden rounded-lg border text-xl transition-colors duration-300 hover:border-muted lg:text-2xl">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,transparent_0%,hsl(var(--bg))_95%)]" />
+          <div className="relative grid justify-items-center gap-8 px-6 py-12 md:px-12 md:py-14">
+            <div className="grid justify-items-center gap-5">
+              <div className="grid h-16 w-16 place-items-center rounded-2xl border bg-background text-muted shadow-[0_10px_35px_-10px_hsl(var(--secondary)/0.4)] transition-colors duration-300 group-hover/add:text-[--text-secondary] [&_svg]:h-8 [&_svg]:w-8">
+                {iconBarrier}
+              </div>
+              <div className="grid justify-items-center gap-2 text-center">
+                <h3 className="font-serif text-3xl font-bold text-[--text-secondary] lg:text-4xl">
+                  Start your set
+                </h3>
+                <p className="text-base text-muted lg:text-lg">
+                  Upload files, search the library or paste SVG code
+                </p>
+              </div>
             </div>
-
-            <div className="grid items-center">
+            <div className="grid w-full max-w-2xl gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Upload onUpload={handleOnUpload} className="w-full" />
+                <Search
+                  handleOnAfterAddExternalIcon={handleOnAfterAddExternalIcon}
+                />
+              </div>
+              <div className="flex items-center gap-4 text-sm uppercase tracking-widest text-muted">
+                <div className="h-px flex-1 bg-border" />
+                or
+                <div className="h-px flex-1 bg-border" />
+              </div>
               <input
                 ref={ref}
                 type="text"
-                className="w-full rounded border bg-background px-5 py-3 text-[--input-text] placeholder-[var(--text-muted)] caret-[--text-secondary] focus:outline-0"
+                className="w-full rounded border bg-background px-5 py-3 text-[--input-text] placeholder-[var(--text-muted)] caret-[--text-secondary] transition-colors duration-200 hover:border-muted focus:border-muted focus:outline-0"
                 placeholder="Paste SVG, eg: <svg><path ... /></svg>"
                 onKeyDown={e => {
                   if (e.key !== 'Enter') return

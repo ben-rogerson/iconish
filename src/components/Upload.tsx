@@ -43,7 +43,7 @@ export function Upload(props: {
       />
       <label
         htmlFor="upload"
-        className="flex h-full cursor-pointer items-center justify-center gap-3 rounded border bg-background px-5 py-3"
+        className="flex h-full cursor-pointer items-center justify-center gap-3 rounded border bg-background px-5 py-3 transition-all duration-200 hover:border-muted hover:shadow-[0_4px_20px_-8px_hsl(var(--secondary)/0.5)]"
       >
         <div>{uploadIcon}</div>
         <div>Upload SVGs&hellip;</div>

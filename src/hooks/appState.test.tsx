@@ -329,41 +329,41 @@ describe('actions', () => {
       const { result } = renderHook(() => useAppActions())
 
       act(() => {
-        result.current.addEditor('<svg stroke-width="anything"></svg>')
+        result.current.addEditor('<svg fill="none"></svg>')
       })
 
       expect(result.current.getEditors()).toHaveLength(1)
       expect(result.current.getConfig().iconSetType).toBe('outlined')
     })
 
-    it('sets the icon type to outlined when an outlined svg is added (alt strokeWidth casing)', () => {
+    it('sets the icon type to outlined when an svg with fill="0" is added', () => {
       const { result } = renderHook(() => useAppActions())
 
       act(() => {
-        result.current.addEditor('<svg strokeWidth="anything"></svg>')
+        result.current.addEditor('<svg fill="0"></svg>')
       })
 
       expect(result.current.getEditors()).toHaveLength(1)
       expect(result.current.getConfig().iconSetType).toBe('outlined')
     })
 
-    it('sets the icon type to outlined when an outlined svg is added (alt strokewidth casing)', () => {
+    it('sets the icon type to outlined when an svg with an unfilled child is added', () => {
       const { result } = renderHook(() => useAppActions())
 
       act(() => {
-        result.current.addEditor('<svg strokewidth="anything"></svg>')
+        result.current.addEditor('<svg><path fill="none"/></svg>')
       })
 
       expect(result.current.getEditors()).toHaveLength(1)
       expect(result.current.getConfig().iconSetType).toBe('outlined')
     })
 
-    it('sets the icon type to solid when a solid and an outlined svg are added', () => {
+    it('sets the icon type to outlined when a solid and an outlined svg are added', () => {
       const { result } = renderHook(() => useAppActions())
 
       act(() => {
         result.current.addEditor('<svg></svg>')
-        result.current.addEditor('<svg stroke-width="outlinedIcon"></svg>')
+        result.current.addEditor('<svg fill="none"></svg>')
       })
 
       expect(result.current.getEditors()).toHaveLength(2)
@@ -375,8 +375,8 @@ describe('actions', () => {
 
       act(() => {
         result.current.addEditor('<svg></svg>')
-        result.current.addEditor('<svg stroke-width="outlinedIcon"></svg>')
-        result.current.addEditor('<svg stroke-width="outlinedIcon"></svg>')
+        result.current.addEditor('<svg fill="none"></svg>')
+        result.current.addEditor('<svg fill="none"></svg>')
       })
 
       expect(result.current.getEditors()).toHaveLength(3)
@@ -389,7 +389,7 @@ describe('actions', () => {
       act(() => {
         result.current.addEditor('<svg></svg>')
         result.current.addEditor('<svg></svg>')
-        result.current.addEditor('<svg stroke-width="outlinedIcon"></svg>')
+        result.current.addEditor('<svg fill="none"></svg>')
       })
 
       expect(result.current.getEditors()).toHaveLength(3)
